@@ -1,0 +1,287 @@
+<div class="dashboard-container">
+  <h2>Dashboard Analítico</h2>
+
+  <!-- Filtro de ano + Limite mensal -->
+  <div class="controls-row">
+    <mat-form-field appearance="outline" class="control-field">
+      <mat-label>Ano</mat-label>
+      <mat-select [(value)]="anoSelecionado" (selectionChange)="carregarDados()">
+        <mat-option *ngFor="let ano of anos" [value]="ano">{{ ano }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="control-field">
+      <mat-label>Limite Mensal (R$)</mat-label>
+      <input matInput type="number" [(ngModel)]="limiteMensal" min="0" step="100">
+      <mat-icon matSuffix>savings</mat-icon>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="salvarLimite()" class="btn-salvar-limite">
+      <mat-icon>save</mat-icon> Salvar Limite
+    </button>
+  </div>
+
+  <!-- Cards de resumo -->
+  <div class="resumo-grid" *ngIf="faturas.length > 0">
+    <!-- Total comprometido -->
+    <mat-card class="resumo-card card-total">
+      <mat-card-content>
+        <div class="card-icon-wrap bg-blue">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="card-info">
+          <span class="card-label">Total Comprometido em {{ anoSelecionado }}</span>
+          <span class="card-valor">R$ {{ totalComprometido | number:'1.2-2' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Média mensal -->
+    <mat-card class="resumo-card card-media">
+      <mat-card-content>
+        <div class="card-icon-wrap bg-purple">
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+        <div class="card-info">
+          <span class="card-label">Média Mensal</span>
+          <span class="card-valor">R$ {{ mediaMensal | number:'1.2-2' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Maior fatura -->
+    <mat-card class="resumo-card card-maior" *ngIf="maiorFatura">
+      <mat-card-content>
+        <div class="card-icon-wrap bg-red">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="card-info">
+          <span class="card-label">Maior Fatura ({{ getNomeMes(maiorFatura.mes) }})</span>
+          <span class="card-valor valor-red">R$ {{ maiorFatura.valorTotal | number:'1.2-2' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Menor fatura -->
+    <mat-card class="resumo-card card-menor" *ngIf="menorFatura">
+      <mat-card-content>
+        <div class="card-icon-wrap bg-green">
+          <mat-icon>trending_down</mat-icon>
+        </div>
+        <div class="card-info">
+          <span class="card-label">Menor Fatura ({{ getNomeMes(menorFatura.mes) }})</span>
+          <span class="card-valor valor-green">R$ {{ menorFatura.valorTotal | number:'1.2-2' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Saúde financeira geral -->
+  <mat-card class="saude-card" [ngClass]="'saude-' + saudeFinanceira" *ngIf="faturas.length > 0">
+    <mat-card-content>
+      <mat-icon class="saude-icon">{{ saudeIcon }}</mat-icon>
+      <div class="saude-info">
+        <span class="saude-titulo">Saúde Financeira: <strong>{{ saudeLabel }}</strong></span>
+        <span class="saude-descricao">{{ saudeDescricao }}</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Área principal: gráfico + painéis laterais -->
+  <div class="main-grid" *ngIf="faturas.length > 0">
+
+    <!-- Gráfico de barras -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Comprometido por Mês</mat-card-title>
+        <div class="chart-controls">
+          <button mat-button [class.active]="ordenacao === 'cronologica'" (click)="ordenacao = 'cronologica'"
+                  matTooltip="Ordem cronológica">
+            <mat-icon>date_range</mat-icon>
+          </button>
+          <button mat-button [class.active]="ordenacao === 'valor'" (click)="ordenacao = 'valor'"
+                  matTooltip="Ordenar por valor">
+            <mat-icon>sort</mat-icon>
+          </button>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-area">
+          <!-- Linha do limite -->
+          <div class="limite-line" [style.left.%]="getLimiteBarWidth()"
+               matTooltip="Limite: R$ {{ limiteMensal | number:'1.2-2' }}">
+            <span class="limite-label">Limite</span>
+          </div>
+          <div class="chart-row" *ngFor="let fatura of faturasOrdenadas">
+            <div class="chart-label">
+              {{ getNomeMes(fatura.mes) | slice:0:3 }}
+            </div>
+            <div class="chart-bar-container">
+              <div class="chart-bar" [style.width.%]="getBarWidth(fatura.valorTotal)"
+                   [style.background]="getBarColor(fatura)"
+                   [matTooltip]="getNomeMes(fatura.mes) + ': R$ ' + (fatura.valorTotal | number:'1.2-2') + ' (' + (getPctLimite(fatura) | number:'1.0-0') + '% do limite)'">
+              </div>
+              <span class="chart-value">
+                R$ {{ fatura.valorTotal | number:'1.2-2' }}
+                <span *ngIf="fatura.quitada" class="badge-quitada">✓</span>
+              </span>
+            </div>
+            <div class="chart-status">
+              <mat-icon [class]="'status-icon status-' + getStatus(fatura)"
+                        [matTooltip]="getStatusLabel(getStatus(fatura))">
+                {{ getStatusIcon(getStatus(fatura)) }}
+              </mat-icon>
+            </div>
+          </div>
+        </div>
+        <!-- Legenda -->
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot bg-legend-green"></span> Saudável (&lt;50%)</span>
+          <span class="legend-item"><span class="legend-dot bg-legend-yellow"></span> Atenção (50-100%)</span>
+          <span class="legend-item"><span class="legend-dot bg-legend-red"></span> Estourado (&gt;100%)</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Painel lateral -->
+    <div class="side-panels">
+      <!-- Top 3 meses -->
+      <mat-card class="ranking-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="title-icon">emoji_events</mat-icon> Top 3 Maiores Gastos
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="ranking-list">
+            <div class="ranking-item" *ngFor="let fatura of top3Meses; let i = index">
+              <span class="ranking-position" [ngClass]="'pos-' + (i + 1)">{{ i + 1 }}º</span>
+              <span class="ranking-mes">{{ getNomeMes(fatura.mes) }}</span>
+              <span class="ranking-valor">R$ {{ fatura.valorTotal | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Alertas -->
+      <mat-card class="alertas-card" *ngIf="temAlertas">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="title-icon" style="color: #f44336;">notifications_active</mat-icon> Alertas
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="mesesEstourados.length > 0" class="alerta-section">
+            <span class="alerta-subtitle">❌ Acima do limite</span>
+            <div class="alerta-item estourado" *ngFor="let f of mesesEstourados">
+              <span>{{ getNomeMes(f.mes) }}</span>
+              <span class="alerta-valor">
+                R$ {{ f.valorTotal | number:'1.2-2' }}
+                ({{ getPctLimite(f) | number:'1.0-0' }}%)
+              </span>
+            </div>
+          </div>
+          <div *ngIf="mesesProximosLimite.length > 0" class="alerta-section">
+            <span class="alerta-subtitle">⚠️ Próximo do limite (&gt;80%)</span>
+            <div class="alerta-item proximo" *ngFor="let f of mesesProximosLimite">
+              <span>{{ getNomeMes(f.mes) }}</span>
+              <span class="alerta-valor">
+                R$ {{ f.valorTotal | number:'1.2-2' }}
+                ({{ getPctLimite(f) | number:'1.0-0' }}%)
+              </span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Sem alertas -->
+      <mat-card class="sem-alertas-card" *ngIf="!temAlertas && faturas.length > 0">
+        <mat-card-content>
+          <mat-icon class="sem-alertas-icon">verified</mat-icon>
+          <span class="sem-alertas-text">Nenhum alerta! Todos os meses estão dentro do limite.</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Classificação detalhada dos meses -->
+  <mat-card *ngIf="faturas.length > 0" class="classificacao-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">assessment</mat-icon> Classificação Mensal
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="classificacao-grid">
+        <div class="classificacao-item" *ngFor="let fatura of faturas"
+             [ngClass]="'cls-' + getStatus(fatura)">
+          <div class="cls-header">
+            <span class="cls-mes">{{ getNomeMes(fatura.mes) | slice:0:3 }}</span>
+            <mat-icon class="cls-icon">{{ getStatusIcon(getStatus(fatura)) }}</mat-icon>
+          </div>
+          <span class="cls-valor">R$ {{ fatura.valorTotal | number:'1.2-2' }}</span>
+          <span class="cls-status">{{ getStatusLabel(getStatus(fatura)) }}</span>
+          <mat-progress-bar [value]="getPctLimite(fatura) > 100 ? 100 : getPctLimite(fatura)"
+                            [color]="getStatus(fatura) === 'saudavel' ? 'primary' : getStatus(fatura) === 'atencao' ? 'accent' : 'warn'">
+          </mat-progress-bar>
+          <span class="cls-pct">{{ getPctLimite(fatura) | number:'1.0-0' }}%</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Nenhuma fatura -->
+  <div *ngIf="faturas.length === 0">
+    <mat-card class="empty-card">
+      <mat-card-content>
+        <mat-icon class="empty-icon">inbox</mat-icon>
+        <p>Nenhuma fatura encontrada para {{ anoSelecionado }}.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Simulação de compra -->
+  <mat-card class="simulacao-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">calculate</mat-icon> Simulação de Compra
+      </mat-card-title>
+      <mat-card-subtitle>Veja como as parcelas seriam distribuídas nas faturas (sem salvar)</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="sim-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput [(ngModel)]="simNome" #simNomeRef="ngModel" required placeholder="Ex: Notebook">
+          <mat-error *ngIf="simNomeRef.invalid && simTentouSubmeter">Nome é obrigatório</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Data</mat-label>
+          <input matInput type="date" [(ngModel)]="simData" #simDataRef="ngModel" required>
+          <mat-error *ngIf="simDataRef.invalid && simTentouSubmeter">Data é obrigatória</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Parcelas</mat-label>
+          <input matInput type="number" [(ngModel)]="simParcelas" #simParcelasRef="ngModel" required min="1">
+          <mat-error *ngIf="simParcelasRef.invalid && simTentouSubmeter">Parcelas é obrigatório</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Valor Total (R$)</mat-label>
+          <input matInput type="number" [(ngModel)]="simValor" #simValorRef="ngModel" required min="0.01" step="0.01">
+          <mat-error *ngIf="simValorRef.invalid && simTentouSubmeter">Valor é obrigatório</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="sim-actions">
+        <button mat-raised-button color="accent" (click)="simular()">
+          <mat-icon>calculate</mat-icon> Simular
+        </button>
+        <button mat-button (click)="limparSimulacao()" *ngIf="simulacao.length > 0">Limpar</button>
+      </div>
+
+      <div *ngIf="simulacao.length > 0" class="sim-result">
+        <mat-divider style="margin: 16px 0;"></mat-divider>
+        <h4>Resultado da Simulação</h4>
+        <app-simulacao-resultado [simulacao]="simulacao"></app-simulacao-resultado>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,227 @@
+.filtro-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.total-ano {
+  font-size: 16px;
+  color: #333;
+}
+
+.faturas-tabs {
+  margin-top: 8px;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab-label.tab-com-fatura {
+  font-weight: 500;
+}
+
+.tab-label.tab-quitada {
+  color: #4caf50;
+}
+
+.tab-icon-ok {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #4caf50;
+}
+
+.tab-content {
+  padding: 24px 0;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fatura-detail-card {
+  max-width: 100%;
+}
+
+.fatura-detail-card.quitada {
+  border-left: 4px solid #4caf50;
+}
+
+.fatura-detail-card.em-aberto {
+  border-left: 4px solid #3f51b5;
+  border-right: 4px solid #3f51b5;
+}
+
+.fatura-resumo {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin: 20px 0 16px;
+}
+
+.resumo-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.resumo-label {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resumo-valor {
+  font-size: 22px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-edit-orcamento {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+}
+
+.btn-edit-orcamento mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.orcamento-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.orcamento-section {
+  margin: 16px 0;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.orcamento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.orcamento-titulo {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.orcamento-percentual {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.alerta-orcamento {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  border-radius: 6px;
+  border-left: 4px solid;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.orcamento-detalhe {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+.acoes-fatura {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status.paga {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.sem-fatura {
+  text-align: center;
+  padding: 48px;
+  color: #999;
+}
+
+/* Inline detail section */
+.section-divider {
+  margin: 24px 0 20px;
+}
+
+.detalhe-inline {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.detalhe-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  justify-content: center;
+  color: #888;
+  font-size: 14px;
+}
+
+.parcelas-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 16px;
+}
+
+.parcelas-titulo mat-icon {
+  color: #3f51b5;
+}
+
+.parcelas-table {
+  width: 100%;
+}
+
+.parcelas-table th {
+  font-weight: 600;
+}
+
+.sem-parcelas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  padding: 24px;
+  color: #999;
+  font-size: 14px;
+}

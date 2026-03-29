@@ -1,0 +1,198 @@
+<div class="container">
+  <h2>Faturas</h2>
+
+  <div class="filtro-row">
+    <mat-form-field appearance="outline" style="width: 150px;">
+      <mat-label>Ano</mat-label>
+      <mat-select [(value)]="anoSelecionado" (selectionChange)="carregarFaturas()">
+        <mat-option *ngFor="let ano of anos" [value]="ano">{{ ano }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <span class="total-ano" *ngIf="faturas.length > 0">
+      Total: <strong>R$ {{ getTotalAno() | number:'1.2-2' }}</strong>
+    </span>
+  </div>
+
+  <div *ngIf="carregando" style="text-align: center; padding: 48px;">
+    <mat-spinner diameter="40" style="margin: 0 auto;"></mat-spinner>
+  </div>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">assessment</mat-icon> Faturas Detalhadas
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-tab-group *ngIf="!carregando" [selectedIndex]="mesSelecionado"
+                     (selectedIndexChange)="onTabChange($event)" class="faturas-tabs" mat-stretch-tabs="false"
+                     animationDuration="300ms">
+        <mat-tab *ngFor="let mes of meses; let i = index" [label]="mes">
+          <ng-template mat-tab-label>
+            <span class="tab-label" [class.tab-com-fatura]="getFaturaPorMes(i + 1)"
+                  [class.tab-quitada]="getFaturaPorMes(i + 1)?.quitada">
+              {{ mes }}
+              <mat-icon *ngIf="getFaturaPorMes(i + 1)?.quitada" class="tab-icon-ok">check_circle</mat-icon>
+            </span>
+          </ng-template>
+
+          <div class="tab-content">
+            <!-- Fatura existe para este mês -->
+            <ng-container *ngIf="getFaturaPorMes(i + 1) as fatura">
+              <mat-card class="fatura-detail-card" [class.quitada]="fatura.quitada" [class.em-aberto]="!fatura.quitada">
+                <mat-card-header>
+                  <mat-icon mat-card-avatar [style.color]="fatura.quitada ? '#4caf50' : '#3f51b5'" style="font-size: 36px; width: 36px; height: 36px;">
+                    {{ fatura.quitada ? 'check_circle' : 'receipt_long' }}
+                  </mat-icon>
+                  <mat-card-title>{{ mes }} / {{ fatura.ano }}</mat-card-title>
+                  <mat-card-subtitle>
+                    <span class="status" [class.paga]="fatura.quitada">
+                      {{ fatura.quitada ? 'Quitada' : 'Em aberto' }}
+                    </span>
+                  </mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content>
+                  <!-- Valor e Parcelas -->
+                  <div class="fatura-resumo">
+                    <div class="resumo-item">
+                      <span class="resumo-label">Valor Total</span>
+                      <span class="resumo-valor">R$ {{ fatura.valorTotal | number:'1.2-2' }}</span>
+                    </div>
+                    <div class="resumo-item">
+                      <span class="resumo-label">Parcelas</span>
+                      <span class="resumo-valor">{{ fatura.quantidadeParcelas }}</span>
+                    </div>
+                    <div class="resumo-item">
+                      <span class="resumo-label">Orçamento</span>
+                      <span class="resumo-valor" *ngIf="!editandoOrcamento[fatura.mes]">
+                        {{ fatura.orcamento > 0 ? ('R$ ' + (fatura.orcamento | number:'1.2-2')) : 'Não definido' }}
+                        <button mat-icon-button (click)="iniciarEdicaoOrcamento(fatura)" matTooltip="Editar orçamento" class="btn-edit-orcamento">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                      </span>
+                      <span *ngIf="editandoOrcamento[fatura.mes]" class="orcamento-edit">
+                        <mat-form-field appearance="outline" style="width: 150px;">
+                          <mat-label>Orçamento</mat-label>
+                          <input matInput type="number" [(ngModel)]="orcamentoTemp[fatura.mes]" min="0" step="100">
+                        </mat-form-field>
+                        <button mat-icon-button color="primary" (click)="salvarOrcamento(fatura)" matTooltip="Salvar">
+                          <mat-icon>check</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="cancelarEdicaoOrcamento(fatura.mes)" matTooltip="Cancelar">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Barra de orçamento -->
+                  <div class="orcamento-section" *ngIf="fatura.orcamento > 0">
+                    <div class="orcamento-header">
+                      <span class="orcamento-titulo">Uso do Orçamento</span>
+                      <span class="orcamento-percentual"
+                            [style.color]="getCorOrcamento(getPercentualOrcamento(fatura))">
+                        {{ getPercentualOrcamento(fatura) | number:'1.1-1' }}%
+                      </span>
+                    </div>
+                    <mat-progress-bar mode="determinate"
+                                      [value]="getProgressValue(getPercentualOrcamento(fatura))"
+                                      [ngStyle]="{'--mdc-linear-progress-active-indicator-color': getCorOrcamento(getPercentualOrcamento(fatura))}">
+                    </mat-progress-bar>
+
+                    <!-- Alerta -->
+                    <div class="alerta-orcamento"
+                         [style.background-color]="getCorOrcamento(getPercentualOrcamento(fatura)) + '1a'"
+                         [style.border-left-color]="getCorOrcamento(getPercentualOrcamento(fatura))">
+                      <mat-icon [style.color]="getCorOrcamento(getPercentualOrcamento(fatura))">
+                        {{ getIconeAlerta(getPercentualOrcamento(fatura)) }}
+                      </mat-icon>
+                      <span [style.color]="getCorOrcamento(getPercentualOrcamento(fatura))">
+                        {{ getMensagemAlerta(getPercentualOrcamento(fatura)) }}
+                      </span>
+                    </div>
+
+                    <div class="orcamento-detalhe">
+                      <span>Gasto: <strong>R$ {{ fatura.valorTotal | number:'1.2-2' }}</strong></span>
+                      <span>
+                        Disponível: <strong [style.color]="fatura.orcamento - fatura.valorTotal >= 0 ? '#4caf50' : '#f44336'">
+                          R$ {{ (fatura.orcamento - fatura.valorTotal) | number:'1.2-2' }}
+                        </strong>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Ações da fatura -->
+                  <div class="acoes-fatura">
+                    <button mat-raised-button color="primary" *ngIf="!fatura.quitada" (click)="quitarFatura(fatura)">
+                      <mat-icon>check</mat-icon> Quitar Fatura
+                    </button>
+                    <button mat-raised-button color="warn" *ngIf="fatura.quitada" (click)="reabrirFatura(fatura)">
+                      <mat-icon>replay</mat-icon> Reabrir Fatura
+                    </button>
+                  </div>
+
+                  <mat-divider class="section-divider"></mat-divider>
+
+                  <!-- Detalhe inline: parcelas -->
+                  <div class="detalhe-inline">
+                    <!-- Loading do detalhe -->
+                    <div *ngIf="isCarregandoDetalhe(fatura.id)" class="detalhe-loading">
+                      <mat-spinner diameter="32"></mat-spinner>
+                      <span>Carregando parcelas...</span>
+                    </div>
+
+                    <!-- Tabela de parcelas -->
+                    <ng-container *ngIf="getDetalhe(fatura.id) as detalhe">
+                      <h3 class="parcelas-titulo">
+                        <mat-icon>list_alt</mat-icon> Parcelas
+                      </h3>
+
+                      <table mat-table [dataSource]="detalhe.parcelas" class="parcelas-table"
+                             *ngIf="detalhe.parcelas.length > 0">
+                        <ng-container matColumnDef="nomeCompra">
+                          <th mat-header-cell *matHeaderCellDef>Compra</th>
+                          <td mat-cell *matCellDef="let parcela">{{ parcela.nomeCompra }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="parcela">
+                          <th mat-header-cell *matHeaderCellDef>Parcela</th>
+                          <td mat-cell *matCellDef="let parcela">{{ parcela.numeroParcela }}/{{ parcela.totalParcelas }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="valor">
+                          <th mat-header-cell *matHeaderCellDef>Valor</th>
+                          <td mat-cell *matCellDef="let parcela">R$ {{ parcela.valor | number:'1.2-2' }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="dataVencimento">
+                          <th mat-header-cell *matHeaderCellDef>Vencimento</th>
+                          <td mat-cell *matCellDef="let parcela">{{ formatarData(parcela.dataVencimento) }}</td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                      </table>
+
+                      <div *ngIf="detalhe.parcelas.length === 0" class="sem-parcelas">
+                        <mat-icon>info_outline</mat-icon>
+                        <span>Nenhuma parcela vinculada a esta fatura.</span>
+                      </div>
+                    </ng-container>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </ng-container>
+
+            <!-- Nenhuma fatura para este mês -->
+            <div *ngIf="!getFaturaPorMes(i + 1)" class="sem-fatura">
+              <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #ccc;">receipt_long</mat-icon>
+              <p>Nenhuma fatura para {{ mes }} de {{ anoSelecionado }}.</p>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>

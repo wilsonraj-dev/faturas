@@ -1,0 +1,53 @@
+<div class="simulacao-resultado" *ngIf="simulacao.length > 0">
+  <div *ngFor="let item of simulacao; let i = index">
+    <div class="sim-item" (click)="toggleExpandir(i)" [class.sim-item-expandido]="expandido[i]">
+      <mat-icon class="sim-icon">receipt</mat-icon>
+      <span class="sim-mes">{{ getNomeMes(item.mes) }}/{{ item.ano }}</span>
+      <span class="sim-parcela">Parcela {{ i + 1 }}/{{ simulacao.length }}</span>
+      <span class="sim-valor">R$ {{ item.valorParcela | number:'1.2-2' }}</span>
+      <mat-icon class="sim-expand-icon" [class.rotated]="expandido[i]">expand_more</mat-icon>
+    </div>
+
+    <!-- Painel expandido -->
+    <div class="sim-detalhe" *ngIf="expandido[i]">
+      <div *ngIf="carregandoFaturas" class="sim-detalhe-loading">
+        <mat-spinner diameter="20"></mat-spinner>
+        <span>Carregando dados...</span>
+      </div>
+
+      <ng-container *ngIf="!carregandoFaturas">
+        <div class="sim-detalhe-row">
+          <span class="sim-detalhe-label">Valor atual da fatura</span>
+          <span class="sim-detalhe-valor">
+            R$ {{ getValorAtual(item) | number:'1.2-2' }}
+          </span>
+        </div>
+        <div class="sim-detalhe-row">
+          <span class="sim-detalhe-label">Valor com esta parcela</span>
+          <span class="sim-detalhe-valor sim-detalhe-destaque">
+            R$ {{ getValorCombinado(item) | number:'1.2-2' }}
+          </span>
+        </div>
+        <div class="sim-detalhe-row" *ngIf="getOrcamento(item) > 0">
+          <span class="sim-detalhe-label">
+            Uso do orçamento
+            <span class="sim-orcamento-info">(R$ {{ getOrcamento(item) | number:'1.2-2' }})</span>
+          </span>
+          <span class="sim-detalhe-valor" [style.color]="getCorPercentual(getPercentualOrcamento(item))">
+            <strong>{{ getPercentualOrcamento(item) | number:'1.1-1' }}%</strong>
+          </span>
+        </div>
+        <mat-progress-bar
+          *ngIf="getOrcamento(item) > 0"
+          mode="determinate"
+          [value]="getPercentualOrcamento(item) > 100 ? 100 : getPercentualOrcamento(item)"
+          [ngStyle]="{'--mdc-linear-progress-active-indicator-color': getCorPercentual(getPercentualOrcamento(item))}">
+        </mat-progress-bar>
+        <div class="sim-sem-orcamento" *ngIf="getOrcamento(item) <= 0">
+          <mat-icon>info_outline</mat-icon>
+          <span>Orçamento não definido para este mês.</span>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+.form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.preview {
+  margin: 8px 0 16px;
+}
+
+.preview-text {
+  font-size: 18px;
+  color: #3f51b5;
+  margin-top: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.simulacao-result {
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

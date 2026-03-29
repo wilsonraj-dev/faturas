@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="fatura.client/fatura.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Fatura.Server/Fatura.Server.csproj" />
+</Solution>

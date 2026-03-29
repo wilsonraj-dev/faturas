@@ -1,0 +1,57 @@
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.header-row h2 {
+  margin: 0;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status.paga {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.resumo-card .resumo-info {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 8px 0;
+  flex-wrap: wrap;
+}
+
+.resumo-info .label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+}
+
+.resumo-info .valor {
+  display: block;
+  font-size: 28px;
+  font-weight: 500;
+  color: #333;
+}
+
+.resumo-info .acoes {
+  margin-left: auto;
+}
+
+.parcelas-table {
+  width: 100%;
+}
+
+.parcelas-table th {
+  font-weight: 600;
+}
