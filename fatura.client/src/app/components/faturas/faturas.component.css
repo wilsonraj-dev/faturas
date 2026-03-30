@@ -5,6 +5,10 @@
   margin-bottom: 16px;
 }
 
+  .filtro-row .spacer {
+    flex: 1 1 auto;
+  }
+
 .total-ano {
   font-size: 16px;
   color: #333;
@@ -20,13 +24,13 @@
   gap: 4px;
 }
 
-.tab-label.tab-com-fatura {
-  font-weight: 500;
-}
+  .tab-label.tab-com-fatura {
+    font-weight: 500;
+  }
 
-.tab-label.tab-quitada {
-  color: #4caf50;
-}
+  .tab-label.tab-quitada {
+    color: #4caf50;
+  }
 
 .tab-icon-ok {
   font-size: 16px;
@@ -41,22 +45,29 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fatura-detail-card {
   max-width: 100%;
 }
 
-.fatura-detail-card.quitada {
-  border-left: 4px solid #4caf50;
-}
+  .fatura-detail-card.quitada {
+    border-left: 4px solid #4caf50;
+  }
 
-.fatura-detail-card.em-aberto {
-  border-left: 4px solid #3f51b5;
-  border-right: 4px solid #3f51b5;
-}
+  .fatura-detail-card.em-aberto {
+    border-left: 4px solid #3f51b5;
+    border-right: 4px solid #3f51b5;
+  }
 
 .fatura-resumo {
   display: flex;
@@ -92,11 +103,11 @@
   line-height: 28px;
 }
 
-.btn-edit-orcamento mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
+  .btn-edit-orcamento mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 
 .orcamento-edit {
   display: flex;
@@ -164,10 +175,10 @@
   color: #1565c0;
 }
 
-.status.paga {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
+  .status.paga {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
 
 .sem-fatura {
   text-align: center;
@@ -204,17 +215,17 @@
   margin: 0 0 16px;
 }
 
-.parcelas-titulo mat-icon {
-  color: #3f51b5;
-}
+  .parcelas-titulo mat-icon {
+    color: #3f51b5;
+  }
 
 .parcelas-table {
   width: 100%;
 }
 
-.parcelas-table th {
-  font-weight: 600;
-}
+  .parcelas-table th {
+    font-weight: 600;
+  }
 
 .sem-parcelas {
   display: flex;

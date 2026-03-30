@@ -12,6 +12,13 @@
     <span class="total-ano" *ngIf="faturas.length > 0">
       Total: <strong>R$ {{ getTotalAno() | number:'1.2-2' }}</strong>
     </span>
+
+    <span class="spacer"></span>
+
+    <button mat-raised-button color="accent" (click)="exportarExcel()" [disabled]="exportando || faturas.length === 0">
+      <mat-icon>file_download</mat-icon>
+      {{ exportando ? 'Exportando...' : 'Exportar para Excel' }}
+    </button>
   </div>
 
   <div *ngIf="carregando" style="text-align: center; padding: 48px;">
@@ -154,6 +161,11 @@
                         <ng-container matColumnDef="nomeCompra">
                           <th mat-header-cell *matHeaderCellDef>Compra</th>
                           <td mat-cell *matCellDef="let parcela">{{ parcela.nomeCompra }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="fornecedor">
+                          <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+                          <td mat-cell *matCellDef="let parcela">{{ parcela.fornecedorNome || '—' }}</td>
                         </ng-container>
 
                         <ng-container matColumnDef="parcela">

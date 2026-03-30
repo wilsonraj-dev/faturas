@@ -53,4 +53,12 @@ export class FaturaService {
   obterDashboard(ano: number): Observable<FaturaResumo[]> {
     return this.http.get<FaturaResumo[]>(`${this.baseUrl}/dashboard?ano=${ano}`);
   }
+
+  exportarExcel(ano?: number): Observable<Blob> {
+    const url = ano ? `${this.baseUrl}/exportar?ano=${ano}` : `${this.baseUrl}/exportar`;
+    return this.http.get(url, { responseType: 'blob' });
+  }
+}
+}
+}
 }

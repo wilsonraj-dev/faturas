@@ -13,6 +13,7 @@ export class FaturasComponent implements OnInit {
   anoSelecionado: number = new Date().getFullYear();
   anos: number[] = [];
   carregando = false;
+  exportando = false;
   mesSelecionado: number = new Date().getMonth();
 
   meses = [
@@ -26,7 +27,7 @@ export class FaturasComponent implements OnInit {
   // Detail (inline)
   detalhesCache: { [faturaId: number]: FaturaDetalhe } = {};
   carregandoDetalhe: { [faturaId: number]: boolean } = {};
-  displayedColumns = ['nomeCompra', 'parcela', 'valor', 'dataVencimento'];
+  displayedColumns = ['nomeCompra', 'fornecedor', 'parcela', 'valor', 'dataVencimento'];
 
   constructor(
     private faturaService: FaturaService,
@@ -193,5 +194,25 @@ export class FaturasComponent implements OnInit {
 
   formatarData(data: string): string {
     return new Date(data).toLocaleDateString('pt-BR');
+  }
+
+  exportarExcel(): void {
+    this.exportando = true;
+    this.faturaService.exportarExcel(this.anoSelecionado).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `faturas_${this.anoSelecionado}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.exportando = false;
+        this.snackBar.open('Excel exportado com sucesso!', 'OK', { duration: 2000 });
+      },
+      error: () => {
+        this.snackBar.open('Erro ao exportar Excel', 'OK', { duration: 3000 });
+        this.exportando = false;
+      }
+    });
   }
 }
