@@ -4,8 +4,20 @@
   gap: 0 16px;
 }
 
-.form-grid .full-width {
-  grid-column: 1 / -1;
+  .form-grid .full-width {
+    grid-column: 1 / -1;
+  }
+
+.novo-fornecedor-inline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.novo-fornecedor-field {
+  flex: 1;
+  max-width: 400px;
 }
 
 .preview {

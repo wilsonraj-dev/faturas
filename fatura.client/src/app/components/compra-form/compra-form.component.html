@@ -33,6 +33,27 @@
           <mat-icon matSuffix>attach_money</mat-icon>
           <mat-error *ngIf="valorRef.invalid && tentouSubmeter">Valor é obrigatório</mat-error>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Fornecedor (opcional)</mat-label>
+          <mat-select [(value)]="fornecedorId">
+            <mat-option [value]="null">Nenhum</mat-option>
+            <mat-option *ngFor="let f of fornecedores" [value]="f.id">{{ f.nome }}</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>store</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Criar novo fornecedor rapidamente -->
+      <div class="novo-fornecedor-inline">
+        <mat-form-field appearance="outline" class="novo-fornecedor-field">
+          <mat-label>Novo Fornecedor</mat-label>
+          <input matInput [(ngModel)]="novoFornecedorNome" placeholder="Nome do fornecedor" (keyup.enter)="criarFornecedorRapido()">
+          <mat-icon matSuffix>add_business</mat-icon>
+        </mat-form-field>
+        <button mat-stroked-button color="primary" (click)="criarFornecedorRapido()" [disabled]="!novoFornecedorNome.trim() || criandoFornecedor">
+          <mat-icon>add</mat-icon> Criar
+        </button>
       </div>
 
       <!-- Preview de parcela -->

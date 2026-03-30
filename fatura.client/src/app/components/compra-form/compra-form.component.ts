@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CompraService } from '../../services/api.service';
-import { CriarCompraRequest, SimulacaoFaturaItem } from '../../models/models';
+import { CompraService, FornecedorService } from '../../services/api.service';
+import { CriarCompraRequest, SimulacaoFaturaItem, Fornecedor } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -9,14 +9,19 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: './compra-form.component.html',
   styleUrls: ['./compra-form.component.css']
 })
-export class CompraFormComponent {
+export class CompraFormComponent implements OnInit {
   nome = '';
   dataCompra = '';
   numeroParcelas = 1;
   valorTotal = 0;
+  fornecedorId: number | null = null;
   salvando = false;
   simulacao: SimulacaoFaturaItem[] = [];
   tentouSubmeter = false;
+
+  fornecedores: Fornecedor[] = [];
+  novoFornecedorNome = '';
+  criandoFornecedor = false;
 
   opcoesParcelamento = Array.from({ length: 24 }, (_, i) => i + 1);
 
@@ -27,9 +32,40 @@ export class CompraFormComponent {
 
   constructor(
     private compraService: CompraService,
+    private fornecedorService: FornecedorService,
     private router: Router,
     private snackBar: MatSnackBar
   ) { }
+
+  ngOnInit(): void {
+    this.carregarFornecedores();
+  }
+
+  carregarFornecedores(): void {
+    this.fornecedorService.listar().subscribe({
+      next: (dados) => this.fornecedores = dados,
+      error: () => { }
+    });
+  }
+
+  criarFornecedorRapido(): void {
+    if (!this.novoFornecedorNome.trim()) return;
+
+    this.criandoFornecedor = true;
+    this.fornecedorService.criar({ nome: this.novoFornecedorNome.trim() }).subscribe({
+      next: (novo) => {
+        this.fornecedores.push(novo);
+        this.fornecedorId = novo.id;
+        this.novoFornecedorNome = '';
+        this.criandoFornecedor = false;
+        this.snackBar.open('Fornecedor criado!', 'OK', { duration: 2000 });
+      },
+      error: () => {
+        this.criandoFornecedor = false;
+        this.snackBar.open('Erro ao criar fornecedor', 'OK', { duration: 3000 });
+      }
+    });
+  }
 
   get formularioValido(): boolean {
     return this.nome.trim().length > 0
@@ -82,7 +118,8 @@ export class CompraFormComponent {
       nome: this.nome.trim(),
       dataCompra: this.dataCompra,
       numeroParcelas: this.numeroParcelas,
-      valorTotal: this.valorTotal
+      valorTotal: this.valorTotal,
+      fornecedorId: this.fornecedorId
     };
   }
 }
