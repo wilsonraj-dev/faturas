@@ -1,0 +1,89 @@
+<div class="container">
+  <h2>Fornecedores</h2>
+
+  <!-- Formulário para novo fornecedor -->
+  <mat-card class="novo-fornecedor-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">add_business</mat-icon> Novo Fornecedor
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="novo-form">
+        <mat-form-field appearance="outline" class="nome-field">
+          <mat-label>Nome do Fornecedor</mat-label>
+          <input matInput [(ngModel)]="novoNome" placeholder="Ex: Amazon, Magazine Luiza..." (keyup.enter)="criar()">
+          <mat-icon matSuffix>store</mat-icon>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="criar()" [disabled]="!novoNome.trim()">
+          <mat-icon>add</mat-icon> Criar
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading -->
+  <div *ngIf="carregando" style="text-align: center; padding: 48px;">
+    <mat-spinner diameter="40" style="margin: 0 auto;"></mat-spinner>
+  </div>
+
+  <!-- Lista de fornecedores -->
+  <mat-card *ngIf="!carregando && fornecedores.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">list</mat-icon> Fornecedores Cadastrados ({{ fornecedores.length }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="fornecedores" class="fornecedores-table">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let f">{{ f.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Nome</th>
+          <td mat-cell *matCellDef="let f">
+            <span *ngIf="editandoId !== f.id">{{ f.nome }}</span>
+            <mat-form-field *ngIf="editandoId === f.id" appearance="outline" class="edit-field">
+              <input matInput [(ngModel)]="editandoNome" (keyup.enter)="salvarEdicao(f.id)">
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let f">
+            <ng-container *ngIf="editandoId !== f.id">
+              <button mat-icon-button color="primary" (click)="iniciarEdicao(f)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deletar(f.id)" matTooltip="Excluir">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-container>
+            <ng-container *ngIf="editandoId === f.id">
+              <button mat-icon-button color="primary" (click)="salvarEdicao(f.id)" matTooltip="Salvar">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button (click)="cancelarEdicao()" matTooltip="Cancelar">
+                <mat-icon>close</mat-icon>
+              </button>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Vazio -->
+  <mat-card *ngIf="!carregando && fornecedores.length === 0" class="empty-card">
+    <mat-card-content>
+      <mat-icon class="empty-icon">store</mat-icon>
+      <p>Nenhum fornecedor cadastrado.</p>
+    </mat-card-content>
+  </mat-card>
+</div>

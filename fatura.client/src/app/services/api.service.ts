@@ -6,7 +6,9 @@ import {
   CompraResponse,
   SimulacaoResponse,
   FaturaResumo,
-  FaturaDetalhe
+  FaturaDetalhe,
+  Fornecedor,
+  CriarFornecedorRequest,
 } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
@@ -57,6 +59,33 @@ export class FaturaService {
   exportarExcel(ano?: number): Observable<Blob> {
     const url = ano ? `${this.baseUrl}/exportar?ano=${ano}` : `${this.baseUrl}/exportar`;
     return this.http.get(url, { responseType: 'blob' });
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class FornecedorService {
+  private readonly baseUrl = '/api/fornecedores';
+
+  constructor(private http: HttpClient) { }
+
+  listar(): Observable<Fornecedor[]> {
+    return this.http.get<Fornecedor[]>(this.baseUrl);
+  }
+
+  obter(id: number): Observable<Fornecedor> {
+    return this.http.get<Fornecedor>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarFornecedorRequest): Observable<Fornecedor> {
+    return this.http.post<Fornecedor>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: CriarFornecedorRequest): Observable<Fornecedor> {
+    return this.http.put<Fornecedor>(`${this.baseUrl}/${id}`, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }
 }

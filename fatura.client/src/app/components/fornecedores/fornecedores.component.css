@@ -1,0 +1,53 @@
+.novo-fornecedor-card {
+  margin-bottom: 24px;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.title-icon {
+  vertical-align: middle;
+  margin-right: 6px;
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  color: #3f51b5;
+}
+
+.novo-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.nome-field {
+  flex: 1;
+}
+
+.fornecedores-table {
+  width: 100%;
+}
+
+.edit-field {
+  width: 100%;
+}
+
+.empty-card {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+  .empty-card mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px !important;
+    color: #90a4ae;
+  }
+
+.empty-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+}
