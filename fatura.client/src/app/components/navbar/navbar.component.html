@@ -11,4 +11,13 @@
   <button mat-button routerLink="/compras/nova">
     <mat-icon>add_shopping_cart</mat-icon> Nova Compra
   </button>
+  <button mat-button routerLink="/simulacoes">
+    <mat-icon>calculate</mat-icon> Simulações
+  </button>
+  <button mat-button routerLink="/fornecedores">
+    <mat-icon>store</mat-icon> Fornecedores
+  </button>
+  <button mat-icon-button (click)="themeService.toggleTheme()" matTooltip="Alternar tema">
+    <mat-icon>{{ themeService.isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
 </mat-toolbar>

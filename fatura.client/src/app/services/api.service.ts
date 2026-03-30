@@ -112,6 +112,9 @@ export class SimulacaoApiService {
 
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
-}
-}
+  }
+
+  converterEmCompra(id: number): Observable<CompraResponse> {
+    return this.http.post<CompraResponse>(`${this.baseUrl}/${id}/converter`, {});
+  }
 }

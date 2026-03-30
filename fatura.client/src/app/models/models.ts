@@ -3,6 +3,7 @@ export interface CriarCompraRequest {
   dataCompra: string;
   numeroParcelas: number;
   valorTotal: number;
+  fornecedorId?: number | null;
 }
 
 export interface CompraResponse {
@@ -11,6 +12,8 @@ export interface CompraResponse {
   dataCompra: string;
   numeroParcelas: number;
   valorTotal: number;
+  fornecedorId?: number | null;
+  fornecedorNome?: string | null;
   parcelas: ParcelaResponse[];
 }
 
@@ -21,6 +24,7 @@ export interface ParcelaResponse {
   totalParcelas: number;
   valor: number;
   dataVencimento: string;
+  fornecedorNome?: string | null;
 }
 
 export interface FaturaResumo {
@@ -51,4 +55,48 @@ export interface SimulacaoFaturaItem {
   mes: number;
   ano: number;
   valorParcela: number;
+}
+
+// Fornecedor
+export interface Fornecedor {
+  id: number;
+  nome: string;
+}
+
+export interface CriarFornecedorRequest {
+  nome: string;
+}
+
+// Simulação persistida
+export interface SimulacaoResumo {
+  id: number;
+  nome?: string;
+  dataSimulacao: string;
+  numeroParcelas: number;
+  valorTotal: number;
+}
+
+export interface SimulacaoDetalhe {
+  id: number;
+  nome?: string;
+  dataSimulacao: string;
+  numeroParcelas: number;
+  valorTotal: number;
+  parcelas: SimulacaoParcelaResponse[];
+}
+
+export interface SimulacaoParcelaResponse {
+  id: number;
+  numeroParcela: number;
+  valor: number;
+  dataVencimento: string;
+  mes: number;
+  ano: number;
+}
+
+export interface CriarSimulacaoRequest {
+  nome?: string;
+  dataSimulacao: string;
+  numeroParcelas: number;
+  valorTotal: number;
 }

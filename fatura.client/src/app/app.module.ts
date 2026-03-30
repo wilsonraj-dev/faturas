@@ -13,6 +13,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FaturasComponent } from './components/faturas/faturas.component';
 import { CompraFormComponent } from './components/compra-form/compra-form.component';
 import { SimulacaoResultadoComponent } from './components/simulacao-resultado/simulacao-resultado.component';
+import { FornecedoresComponent } from './components/fornecedores/fornecedores.component';
+import { SimulacoesComponent } from './components/simulacoes/simulacoes.component';
+import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simulacao-detalhe.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,10 @@ import { SimulacaoResultadoComponent } from './components/simulacao-resultado/si
     DashboardComponent,
     FaturasComponent,
     CompraFormComponent,
-    SimulacaoResultadoComponent
+    SimulacaoResultadoComponent,
+    FornecedoresComponent,
+    SimulacoesComponent,
+    SimulacaoDetalheComponent
   ],
   imports: [
     BrowserModule,
