@@ -10,6 +10,9 @@ public class AppDbContext : DbContext
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<Parcela> Parcelas => Set<Parcela>();
     public DbSet<FaturaEntity> Faturas => Set<FaturaEntity>();
+    public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
+    public DbSet<Simulacao> Simulacoes => Set<Simulacao>();
+    public DbSet<SimulacaoParcela> SimulacaoParcelas => Set<SimulacaoParcela>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,6 +24,11 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
             entity.Property(e => e.ValorTotal).HasPrecision(18, 2);
+
+            entity.HasOne(e => e.Fornecedor)
+                  .WithMany(f => f.Compras)
+                  .HasForeignKey(e => e.FornecedorId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Parcela
@@ -48,6 +56,33 @@ public class AppDbContext : DbContext
 
             // Índice único para evitar faturas duplicadas no mesmo mês/ano
             entity.HasIndex(e => new { e.Mes, e.Ano }).IsUnique();
+        });
+
+        // Fornecedor
+        modelBuilder.Entity<Fornecedor>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
+        });
+
+        // Simulacao
+        modelBuilder.Entity<Simulacao>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).HasMaxLength(200);
+            entity.Property(e => e.ValorTotal).HasPrecision(18, 2);
+        });
+
+        // SimulacaoParcela
+        modelBuilder.Entity<SimulacaoParcela>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Valor).HasPrecision(18, 2);
+
+            entity.HasOne(e => e.Simulacao)
+                  .WithMany(s => s.Parcelas)
+                  .HasForeignKey(e => e.SimulacaoId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

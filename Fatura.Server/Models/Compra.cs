@@ -10,7 +10,9 @@ public class Compra
     public DateTime DataCompra { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int? FornecedorId { get; set; }
 
     // Navegação: parcelas geradas automaticamente ao cadastrar a compra
     public List<Parcela> Parcelas { get; set; } = [];
+    public Fornecedor? Fornecedor { get; set; }
 }
