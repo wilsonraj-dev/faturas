@@ -1,5 +1,6 @@
 using Fatura.Server.Data;
 using Fatura.Server.DTOs;
+using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fatura.Server.Services;
@@ -42,6 +43,7 @@ public class FaturaService : IFaturaService
         var fatura = await _db.Faturas
             .Include(f => f.Parcelas)
                 .ThenInclude(p => p.Compra)
+                    .ThenInclude(c => c.Fornecedor)
             .FirstOrDefaultAsync(f => f.Id == id);
 
         if (fatura is null) return null;
@@ -64,7 +66,8 @@ public class FaturaService : IFaturaService
                     NumeroParcela = p.NumeroParcela,
                     TotalParcelas = p.Compra.NumeroParcelas,
                     Valor = p.Valor,
-                    DataVencimento = p.DataVencimento
+                    DataVencimento = p.DataVencimento,
+                    FornecedorNome = p.Compra.Fornecedor != null ? p.Compra.Fornecedor.Nome : null
                 }).ToList()
         };
     }
@@ -114,5 +117,69 @@ public class FaturaService : IFaturaService
     public async Task<List<FaturaResumoResponse>> ObterDashboardAsync(int ano)
     {
         return await ListarFaturasAsync(ano);
+    }
+
+    /// <summary>
+    /// Exporta as faturas para um arquivo Excel (.xlsx).
+    /// </summary>
+    public async Task<byte[]> ExportarExcelAsync(int? ano)
+    {
+        var query = _db.Parcelas
+            .Include(p => p.Compra)
+                .ThenInclude(c => c.Fornecedor)
+            .Include(p => p.Fatura)
+            .AsQueryable();
+
+        if (ano.HasValue)
+        {
+            query = query.Where(p => p.Fatura != null && p.Fatura.Ano == ano.Value);
+        }
+
+        var parcelas = await query
+            .OrderBy(p => p.Fatura!.Ano)
+            .ThenBy(p => p.Fatura!.Mes)
+            .ThenBy(p => p.Compra.Nome)
+            .ThenBy(p => p.NumeroParcela)
+            .ToListAsync();
+
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Faturas");
+
+        // Cabeçalhos
+        worksheet.Cell(1, 1).Value = "Mês/Ano";
+        worksheet.Cell(1, 2).Value = "Compra";
+        worksheet.Cell(1, 3).Value = "Parcela";
+        worksheet.Cell(1, 4).Value = "Valor (R$)";
+        worksheet.Cell(1, 5).Value = "Fornecedor";
+        worksheet.Cell(1, 6).Value = "Status Fatura";
+
+        var headerRange = worksheet.Range(1, 1, 1, 6);
+        headerRange.Style.Font.Bold = true;
+        headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#3f51b5");
+        headerRange.Style.Font.FontColor = XLColor.White;
+
+        // Dados
+        var row = 2;
+        foreach (var parcela in parcelas)
+        {
+            var mesAno = parcela.Fatura != null
+                ? $"{parcela.Fatura.Mes:D2}/{parcela.Fatura.Ano}"
+                : parcela.DataVencimento.ToString("MM/yyyy");
+
+            worksheet.Cell(row, 1).Value = mesAno;
+            worksheet.Cell(row, 2).Value = parcela.Compra.Nome;
+            worksheet.Cell(row, 3).Value = $"{parcela.NumeroParcela}/{parcela.Compra.NumeroParcelas}";
+            worksheet.Cell(row, 4).Value = parcela.Valor;
+            worksheet.Cell(row, 4).Style.NumberFormat.Format = "#,##0.00";
+            worksheet.Cell(row, 5).Value = parcela.Compra.Fornecedor?.Nome ?? "";
+            worksheet.Cell(row, 6).Value = parcela.Fatura?.Quitada == true ? "Quitada" : "Em aberto";
+            row++;
+        }
+
+        worksheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return stream.ToArray();
     }
 }

@@ -10,4 +10,5 @@ public interface IFaturaService
     Task<bool> ReabrirFaturaAsync(int id);
     Task<bool> AtualizarOrcamentoAsync(int id, double orcamento);
     Task<List<FaturaResumoResponse>> ObterDashboardAsync(int ano);
+    Task<byte[]> ExportarExcelAsync(int? ano);
 }

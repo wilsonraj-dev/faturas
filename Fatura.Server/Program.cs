@@ -12,6 +12,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registra os serviços da aplicação
 builder.Services.AddScoped<ICompraService, CompraService>();
 builder.Services.AddScoped<IFaturaService, FaturaService>();
+builder.Services.AddScoped<IFornecedorService, FornecedorService>();
+builder.Services.AddScoped<ISimulacaoService, SimulacaoService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

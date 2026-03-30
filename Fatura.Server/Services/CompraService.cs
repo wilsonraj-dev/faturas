@@ -31,7 +31,8 @@ public class CompraService : ICompraService
             Nome = request.Nome,
             DataCompra = request.DataCompra,
             NumeroParcelas = request.NumeroParcelas,
-            ValorTotal = request.ValorTotal
+            ValorTotal = request.ValorTotal,
+            FornecedorId = request.FornecedorId
         };
 
         _db.Compras.Add(compra);
@@ -69,6 +70,14 @@ public class CompraService : ICompraService
             .OrderBy(p => p.NumeroParcela)
             .ToListAsync();
 
+        // Carrega fornecedor se existir
+        string? fornecedorNome = null;
+        if (compra.FornecedorId.HasValue)
+        {
+            var fornecedor = await _db.Fornecedores.FindAsync(compra.FornecedorId.Value);
+            fornecedorNome = fornecedor?.Nome;
+        }
+
         return new CompraResponse
         {
             Id = compra.Id,
@@ -76,6 +85,8 @@ public class CompraService : ICompraService
             DataCompra = compra.DataCompra,
             NumeroParcelas = compra.NumeroParcelas,
             ValorTotal = compra.ValorTotal,
+            FornecedorId = compra.FornecedorId,
+            FornecedorNome = fornecedorNome,
             Parcelas = parcelas.Select(p => new ParcelaResponse
             {
                 Id = p.Id,
@@ -83,7 +94,8 @@ public class CompraService : ICompraService
                 NumeroParcela = p.NumeroParcela,
                 TotalParcelas = compra.NumeroParcelas,
                 Valor = p.Valor,
-                DataVencimento = p.DataVencimento
+                DataVencimento = p.DataVencimento,
+                FornecedorNome = fornecedorNome
             }).ToList()
         };
     }
