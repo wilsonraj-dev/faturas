@@ -9,6 +9,7 @@ public class CriarCompraRequest
     public DateTime DataCompra { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int? FornecedorId { get; set; }
 }
 
 /// <summary>
@@ -21,6 +22,8 @@ public class CompraResponse
     public DateTime DataCompra { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int? FornecedorId { get; set; }
+    public string? FornecedorNome { get; set; }
     public List<ParcelaResponse> Parcelas { get; set; } = [];
 }
 
@@ -35,4 +38,5 @@ public class ParcelaResponse
     public int TotalParcelas { get; set; }
     public decimal Valor { get; set; }
     public DateTime DataVencimento { get; set; }
+    public string? FornecedorNome { get; set; }
 }
