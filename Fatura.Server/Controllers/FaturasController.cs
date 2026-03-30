@@ -104,4 +104,16 @@ public class FaturasController : ControllerBase
         var dados = await _faturaService.ObterDashboardAsync(ano);
         return Ok(dados);
     }
+
+    /// <summary>
+    /// Exporta as faturas para um arquivo Excel (.xlsx).
+    /// </summary>
+    [HttpGet("exportar")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> ExportarExcel([FromQuery] int? ano)
+    {
+        var bytes = await _faturaService.ExportarExcelAsync(ano);
+        var nomeArquivo = ano.HasValue ? $"faturas_{ano}.xlsx" : "faturas.xlsx";
+        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", nomeArquivo);
+    }
 }

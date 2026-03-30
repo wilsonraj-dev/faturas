@@ -9,7 +9,7 @@ namespace Fatura.Server.Controllers;
 public class ComprasController : ControllerBase
 {
     private readonly ICompraService _compraService;
-
+    
     public ComprasController(ICompraService compraService)
     {
         _compraService = compraService;
