@@ -9,6 +9,9 @@ import {
   FaturaDetalhe,
   Fornecedor,
   CriarFornecedorRequest,
+  SimulacaoResumo,
+  SimulacaoDetalhe,
+  CriarSimulacaoRequest
 } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
@@ -88,6 +91,27 @@ export class FornecedorService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }
+
+@Injectable({ providedIn: 'root' })
+export class SimulacaoApiService {
+  private readonly baseUrl = '/api/simulacoes';
+
+  constructor(private http: HttpClient) { }
+
+  listar(): Observable<SimulacaoResumo[]> {
+    return this.http.get<SimulacaoResumo[]>(this.baseUrl);
+  }
+
+  obter(id: number): Observable<SimulacaoDetalhe> {
+    return this.http.get<SimulacaoDetalhe>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarSimulacaoRequest): Observable<SimulacaoDetalhe> {
+    return this.http.post<SimulacaoDetalhe>(this.baseUrl, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
 }
 }
 }
