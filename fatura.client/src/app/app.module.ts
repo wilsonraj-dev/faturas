@@ -16,6 +16,7 @@ import { SimulacaoResultadoComponent } from './components/simulacao-resultado/si
 import { FornecedoresComponent } from './components/fornecedores/fornecedores.component';
 import { SimulacoesComponent } from './components/simulacoes/simulacoes.component';
 import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simulacao-detalhe.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simula
     SimulacaoResultadoComponent,
     FornecedoresComponent,
     SimulacoesComponent,
-    SimulacaoDetalheComponent
+    SimulacaoDetalheComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

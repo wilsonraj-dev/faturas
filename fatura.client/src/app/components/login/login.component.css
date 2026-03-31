@@ -1,0 +1,38 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+}
+
+.login-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-btn {
+  margin-top: 8px;
+  height: 48px;
+  font-size: 16px;
+}
+
+.spinner-inline {
+  display: inline-block;
+}
+
+mat-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

@@ -6,8 +6,10 @@ import { CompraFormComponent } from './components/compra-form/compra-form.compon
 import { FornecedoresComponent } from './components/fornecedores/fornecedores.component';
 import { SimulacoesComponent } from './components/simulacoes/simulacoes.component';
 import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simulacao-detalhe.component';
+import { LoginComponent } from './components/login/login.component';
 
 const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'faturas', component: FaturasComponent },
