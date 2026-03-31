@@ -10,7 +10,9 @@ public class Simulacao
     public DateTime DataSimulacao { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int UserId { get; set; }
 
     // Navegação: parcelas da simulação
     public List<SimulacaoParcela> Parcelas { get; set; } = [];
+    public User User { get; set; } = null!;
 }

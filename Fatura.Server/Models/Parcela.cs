@@ -12,6 +12,7 @@ public class Parcela
     public decimal Valor { get; set; }
     public DateTime DataVencimento { get; set; }
     public int? FaturaId { get; set; }
+    public int UserId { get; set; }
 
     // Navegação
     public Compra Compra { get; set; } = null!;

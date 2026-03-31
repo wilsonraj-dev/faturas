@@ -17,10 +17,10 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Lista todas as faturas de um determinado ano, ordenadas por mês.
     /// </summary>
-    public async Task<List<FaturaResumoResponse>> ListarFaturasAsync(int ano)
+    public async Task<List<FaturaResumoResponse>> ListarFaturasAsync(int ano, int userId)
     {
         return await _db.Faturas
-            .Where(f => f.Ano == ano)
+            .Where(f => f.Ano == ano && f.UserId == userId)
             .OrderBy(f => f.Mes)
             .Select(f => new FaturaResumoResponse
             {
@@ -38,13 +38,13 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Obtém os detalhes de uma fatura com todas as suas parcelas.
     /// </summary>
-    public async Task<FaturaDetalheResponse?> ObterFaturaAsync(int id)
+    public async Task<FaturaDetalheResponse?> ObterFaturaAsync(int id, int userId)
     {
         var fatura = await _db.Faturas
             .Include(f => f.Parcelas)
                 .ThenInclude(p => p.Compra)
                     .ThenInclude(c => c.Fornecedor)
-            .FirstOrDefaultAsync(f => f.Id == id);
+            .FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
 
         if (fatura is null) return null;
 
@@ -75,9 +75,9 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Marca uma fatura como quitada.
     /// </summary>
-    public async Task<bool> QuitarFaturaAsync(int id)
+    public async Task<bool> QuitarFaturaAsync(int id, int userId)
     {
-        var fatura = await _db.Faturas.FindAsync(id);
+        var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
         if (fatura is null) return false;
 
         fatura.Quitada = true;
@@ -88,9 +88,9 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Reabre uma fatura previamente quitada.
     /// </summary>
-    public async Task<bool> ReabrirFaturaAsync(int id)
+    public async Task<bool> ReabrirFaturaAsync(int id, int userId)
     {
-        var fatura = await _db.Faturas.FindAsync(id);
+        var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
         if (fatura is null) return false;
 
         fatura.Quitada = false;
@@ -101,9 +101,9 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Atualiza o orçamento de uma fatura.
     /// </summary>
-    public async Task<bool> AtualizarOrcamentoAsync(int id, double orcamento)
+    public async Task<bool> AtualizarOrcamentoAsync(int id, double orcamento, int userId)
     {
-        var fatura = await _db.Faturas.FindAsync(id);
+        var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
         if (fatura is null) return false;
 
         fatura.Orcamento = orcamento;
@@ -114,17 +114,18 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Retorna dados para o dashboard: faturas do ano com totais.
     /// </summary>
-    public async Task<List<FaturaResumoResponse>> ObterDashboardAsync(int ano)
+    public async Task<List<FaturaResumoResponse>> ObterDashboardAsync(int ano, int userId)
     {
-        return await ListarFaturasAsync(ano);
+        return await ListarFaturasAsync(ano, userId);
     }
 
     /// <summary>
     /// Exporta as faturas para um arquivo Excel (.xlsx).
     /// </summary>
-    public async Task<byte[]> ExportarExcelAsync(int? ano)
+    public async Task<byte[]> ExportarExcelAsync(int? ano, int userId)
     {
         var query = _db.Parcelas
+            .Where(p => p.UserId == userId)
             .Include(p => p.Compra)
                 .ThenInclude(c => c.Fornecedor)
             .Include(p => p.Fatura)

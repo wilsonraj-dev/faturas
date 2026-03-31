@@ -16,9 +16,10 @@ public class SimulacaoService : ISimulacaoService
         _compraService = compraService;
     }
 
-    public async Task<List<SimulacaoResumoResponse>> ListarAsync()
+    public async Task<List<SimulacaoResumoResponse>> ListarAsync(int userId)
     {
         return await _db.Simulacoes
+            .Where(s => s.UserId == userId)
             .OrderByDescending(s => s.DataSimulacao)
             .Select(s => new SimulacaoResumoResponse
             {
@@ -31,18 +32,18 @@ public class SimulacaoService : ISimulacaoService
             .ToListAsync();
     }
 
-    public async Task<SimulacaoDetalheResponse?> ObterAsync(int id)
+    public async Task<SimulacaoDetalheResponse?> ObterAsync(int id, int userId)
     {
         var simulacao = await _db.Simulacoes
             .Include(s => s.Parcelas)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
 
         if (simulacao is null) return null;
 
         return MapToResponse(simulacao);
     }
 
-    public async Task<SimulacaoDetalheResponse> CriarAsync(CriarSimulacaoRequest request)
+    public async Task<SimulacaoDetalheResponse> CriarAsync(CriarSimulacaoRequest request, int userId)
     {
         var valorParcela = Math.Round(request.ValorTotal / request.NumeroParcelas, 2);
         var valorUltimaParcela = request.ValorTotal - (valorParcela * (request.NumeroParcelas - 1));
@@ -52,7 +53,8 @@ public class SimulacaoService : ISimulacaoService
             Nome = request.Nome,
             DataSimulacao = request.DataSimulacao,
             NumeroParcelas = request.NumeroParcelas,
-            ValorTotal = request.ValorTotal
+            ValorTotal = request.ValorTotal,
+            UserId = userId
         };
 
         _db.Simulacoes.Add(simulacao);
@@ -84,9 +86,9 @@ public class SimulacaoService : ISimulacaoService
         return MapToResponse(result);
     }
 
-    public async Task<bool> DeletarAsync(int id)
+    public async Task<bool> DeletarAsync(int id, int userId)
     {
-        var simulacao = await _db.Simulacoes.FindAsync(id);
+        var simulacao = await _db.Simulacoes.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
         if (simulacao is null) return false;
 
         _db.Simulacoes.Remove(simulacao);
@@ -97,9 +99,9 @@ public class SimulacaoService : ISimulacaoService
     /// <summary>
     /// Converte uma simulação em compra real.
     /// </summary>
-    public async Task<CompraResponse?> ConverterEmCompraAsync(int simulacaoId)
+    public async Task<CompraResponse?> ConverterEmCompraAsync(int simulacaoId, int userId)
     {
-        var simulacao = await _db.Simulacoes.FindAsync(simulacaoId);
+        var simulacao = await _db.Simulacoes.FirstOrDefaultAsync(s => s.Id == simulacaoId && s.UserId == userId);
         if (simulacao is null) return null;
 
         var request = new CriarCompraRequest
@@ -110,7 +112,7 @@ public class SimulacaoService : ISimulacaoService
             ValorTotal = simulacao.ValorTotal
         };
 
-        var compra = await _compraService.CriarCompraAsync(request);
+        var compra = await _compraService.CriarCompraAsync(request, userId);
 
         // Remove a simulação após converter
         _db.Simulacoes.Remove(simulacao);

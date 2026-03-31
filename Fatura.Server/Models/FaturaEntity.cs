@@ -16,7 +16,9 @@ public class FaturaEntity
     public decimal ValorTotal { get; set; }
     public bool Quitada { get; set; }
     public double Orcamento { get; set; }
+    public int UserId { get; set; }
 
     // Navegação: parcelas vinculadas a esta fatura
     public List<Parcela> Parcelas { get; set; } = [];
+    public User User { get; set; } = null!;
 }

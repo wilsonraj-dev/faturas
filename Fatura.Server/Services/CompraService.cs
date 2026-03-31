@@ -18,7 +18,7 @@ public class CompraService : ICompraService
     /// Cria uma compra e gera automaticamente as parcelas,
     /// vinculando cada uma à fatura correspondente (mês/ano).
     /// </summary>
-    public async Task<CompraResponse> CriarCompraAsync(CriarCompraRequest request)
+    public async Task<CompraResponse> CriarCompraAsync(CriarCompraRequest request, int userId)
     {
         // Calcula o valor de cada parcela (divisão igualitária)
         var valorParcela = Math.Round(request.ValorTotal / request.NumeroParcelas, 2);
@@ -32,7 +32,8 @@ public class CompraService : ICompraService
             DataCompra = request.DataCompra,
             NumeroParcelas = request.NumeroParcelas,
             ValorTotal = request.ValorTotal,
-            FornecedorId = request.FornecedorId
+            FornecedorId = request.FornecedorId,
+            UserId = userId
         };
 
         _db.Compras.Add(compra);
@@ -45,7 +46,7 @@ public class CompraService : ICompraService
             var valor = (i == request.NumeroParcelas - 1) ? valorUltimaParcela : valorParcela;
 
             // Busca ou cria a fatura do mês/ano correspondente
-            var fatura = await ObterOuCriarFaturaAsync(dataVencimento.Month, dataVencimento.Year);
+            var fatura = await ObterOuCriarFaturaAsync(dataVencimento.Month, dataVencimento.Year, userId);
 
             var parcela = new Parcela
             {
@@ -53,7 +54,8 @@ public class CompraService : ICompraService
                 NumeroParcela = i + 1,
                 Valor = valor,
                 DataVencimento = dataVencimento,
-                FaturaId = fatura.Id
+                FaturaId = fatura.Id,
+                UserId = userId
             };
 
             _db.Parcelas.Add(parcela);
@@ -127,9 +129,9 @@ public class CompraService : ICompraService
     /// <summary>
     /// Busca uma fatura existente para o mês/ano ou cria uma nova.
     /// </summary>
-    private async Task<FaturaEntity> ObterOuCriarFaturaAsync(int mes, int ano)
+    private async Task<FaturaEntity> ObterOuCriarFaturaAsync(int mes, int ano, int userId)
     {
-        var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Mes == mes && f.Ano == ano);
+        var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Mes == mes && f.Ano == ano && f.UserId == userId);
 
         if (fatura is null)
         {
@@ -138,7 +140,8 @@ public class CompraService : ICompraService
                 Mes = mes,
                 Ano = ano,
                 ValorTotal = 0,
-                Quitada = false
+                Quitada = false,
+                UserId = userId
             };
             _db.Faturas.Add(fatura);
             await _db.SaveChangesAsync();

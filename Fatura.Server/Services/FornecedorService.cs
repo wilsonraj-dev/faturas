@@ -14,9 +14,10 @@ public class FornecedorService : IFornecedorService
         _db = db;
     }
 
-    public async Task<List<FornecedorResponse>> ListarAsync()
+    public async Task<List<FornecedorResponse>> ListarAsync(int userId)
     {
         return await _db.Fornecedores
+            .Where(f => f.UserId == userId)
             .OrderBy(f => f.Nome)
             .Select(f => new FornecedorResponse
             {
@@ -26,9 +27,9 @@ public class FornecedorService : IFornecedorService
             .ToListAsync();
     }
 
-    public async Task<FornecedorResponse?> ObterAsync(int id)
+    public async Task<FornecedorResponse?> ObterAsync(int id, int userId)
     {
-        var fornecedor = await _db.Fornecedores.FindAsync(id);
+        var fornecedor = await _db.Fornecedores.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
         if (fornecedor is null) return null;
 
         return new FornecedorResponse
@@ -38,11 +39,12 @@ public class FornecedorService : IFornecedorService
         };
     }
 
-    public async Task<FornecedorResponse> CriarAsync(CriarFornecedorRequest request)
+    public async Task<FornecedorResponse> CriarAsync(CriarFornecedorRequest request, int userId)
     {
         var fornecedor = new Fornecedor
         {
-            Nome = request.Nome
+            Nome = request.Nome,
+            UserId = userId
         };
 
         _db.Fornecedores.Add(fornecedor);
@@ -55,9 +57,9 @@ public class FornecedorService : IFornecedorService
         };
     }
 
-    public async Task<FornecedorResponse?> AtualizarAsync(int id, CriarFornecedorRequest request)
+    public async Task<FornecedorResponse?> AtualizarAsync(int id, CriarFornecedorRequest request, int userId)
     {
-        var fornecedor = await _db.Fornecedores.FindAsync(id);
+        var fornecedor = await _db.Fornecedores.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
         if (fornecedor is null) return null;
 
         fornecedor.Nome = request.Nome;
@@ -70,9 +72,9 @@ public class FornecedorService : IFornecedorService
         };
     }
 
-    public async Task<bool> DeletarAsync(int id)
+    public async Task<bool> DeletarAsync(int id, int userId)
     {
-        var fornecedor = await _db.Fornecedores.FindAsync(id);
+        var fornecedor = await _db.Fornecedores.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
         if (fornecedor is null) return false;
 
         _db.Fornecedores.Remove(fornecedor);

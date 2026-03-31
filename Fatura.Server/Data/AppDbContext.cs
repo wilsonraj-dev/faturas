@@ -7,6 +7,7 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+    public DbSet<User> Users => Set<User>();
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<Parcela> Parcelas => Set<Parcela>();
     public DbSet<FaturaEntity> Faturas => Set<FaturaEntity>();
@@ -17,6 +18,16 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // User
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
+            entity.HasIndex(e => e.Email).IsUnique();
+            entity.Property(e => e.PasswordHash).IsRequired();
+        });
 
         // Compra
         modelBuilder.Entity<Compra>(entity =>
@@ -29,6 +40,11 @@ public class AppDbContext : DbContext
                   .WithMany(f => f.Compras)
                   .HasForeignKey(e => e.FornecedorId)
                   .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Compras)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Parcela
@@ -54,8 +70,13 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ValorTotal).HasPrecision(18, 2);
 
-            // Índice único para evitar faturas duplicadas no mesmo mês/ano
-            entity.HasIndex(e => new { e.Mes, e.Ano }).IsUnique();
+            // Índice único por mês/ano/usuário
+            entity.HasIndex(e => new { e.Mes, e.Ano, e.UserId }).IsUnique();
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Faturas)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Fornecedor
@@ -63,6 +84,11 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Fornecedores)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Simulacao
@@ -71,6 +97,11 @@ public class AppDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Nome).HasMaxLength(200);
             entity.Property(e => e.ValorTotal).HasPrecision(18, 2);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Simulacoes)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         // SimulacaoParcela
