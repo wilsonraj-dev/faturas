@@ -100,3 +100,21 @@ export interface CriarSimulacaoRequest {
   numeroParcelas: number;
   valorTotal: number;
 }
+
+// Auth
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  nome: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  nome: string;
+  email: string;
+}

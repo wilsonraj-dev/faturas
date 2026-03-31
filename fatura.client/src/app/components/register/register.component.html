@@ -1,0 +1,50 @@
+<div class="register-container">
+  <mat-card class="register-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="register-icon">person_add</mat-icon>
+      <mat-card-title>Criar Conta</mat-card-title>
+      <mat-card-subtitle>Preencha seus dados</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome</mat-label>
+          <input matInput type="text" [(ngModel)]="nome" name="nome" required>
+          <mat-icon matPrefix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" [(ngModel)]="email" name="email" required>
+          <mat-icon matPrefix>email</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" name="password" required>
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirmar Senha</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+          <mat-icon matPrefix>vpn_key</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width register-btn" [disabled]="loading">
+          <mat-spinner *ngIf="loading" diameter="20" class="spinner-inline"></mat-spinner>
+          <span *ngIf="!loading">Cadastrar</span>
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <span>Já tem conta?</span>
+      <a mat-button color="accent" routerLink="/login">Entrar</a>
+    </mat-card-actions>
+  </mat-card>
+</div>
