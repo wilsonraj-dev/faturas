@@ -1,19 +1,24 @@
 using Fatura.Server.DTOs;
 using Fatura.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fatura.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ComprasController : ControllerBase
 {
     private readonly ICompraService _compraService;
-    
+
     public ComprasController(ICompraService compraService)
     {
         _compraService = compraService;
     }
+
+    private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     /// <summary>
     /// Cria uma nova compra parcelada e gera as parcelas automaticamente.
@@ -32,7 +37,7 @@ public class ComprasController : ControllerBase
         if (request.ValorTotal <= 0)
             return BadRequest("O valor total deve ser maior que zero.");
 
-        var resultado = await _compraService.CriarCompraAsync(request);
+        var resultado = await _compraService.CriarCompraAsync(request, GetUserId());
         return CreatedAtAction(nameof(CriarCompra), new { id = resultado.Id }, resultado);
     }
 

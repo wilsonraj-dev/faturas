@@ -1,11 +1,14 @@
 using Fatura.Server.DTOs;
 using Fatura.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fatura.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class SimulacoesController : ControllerBase
 {
     private readonly ISimulacaoService _simulacaoService;
@@ -15,11 +18,13 @@ public class SimulacoesController : ControllerBase
         _simulacaoService = simulacaoService;
     }
 
+    private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
     [HttpGet]
     [ProducesResponseType(typeof(List<SimulacaoResumoResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<SimulacaoResumoResponse>>> Listar()
     {
-        var simulacoes = await _simulacaoService.ListarAsync();
+        var simulacoes = await _simulacaoService.ListarAsync(GetUserId());
         return Ok(simulacoes);
     }
 
@@ -28,7 +33,7 @@ public class SimulacoesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SimulacaoDetalheResponse>> Obter(int id)
     {
-        var simulacao = await _simulacaoService.ObterAsync(id);
+        var simulacao = await _simulacaoService.ObterAsync(id, GetUserId());
         if (simulacao is null)
             return NotFound("Simulação não encontrada.");
 
@@ -46,7 +51,7 @@ public class SimulacoesController : ControllerBase
         if (request.ValorTotal <= 0)
             return BadRequest("O valor total deve ser maior que zero.");
 
-        var resultado = await _simulacaoService.CriarAsync(request);
+        var resultado = await _simulacaoService.CriarAsync(request, GetUserId());
         return CreatedAtAction(nameof(Obter), new { id = resultado.Id }, resultado);
     }
 
@@ -55,7 +60,7 @@ public class SimulacoesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Deletar(int id)
     {
-        var sucesso = await _simulacaoService.DeletarAsync(id);
+        var sucesso = await _simulacaoService.DeletarAsync(id, GetUserId());
         if (!sucesso)
             return NotFound("Simulação não encontrada.");
 
@@ -67,7 +72,7 @@ public class SimulacoesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CompraResponse>> ConverterEmCompra(int id)
     {
-        var resultado = await _simulacaoService.ConverterEmCompraAsync(id);
+        var resultado = await _simulacaoService.ConverterEmCompraAsync(id, GetUserId());
         if (resultado is null)
             return NotFound("Simulação não encontrada.");
 

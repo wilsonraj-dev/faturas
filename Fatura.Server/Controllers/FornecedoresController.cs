@@ -1,11 +1,14 @@
 using Fatura.Server.DTOs;
 using Fatura.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fatura.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class FornecedoresController : ControllerBase
 {
     private readonly IFornecedorService _fornecedorService;
@@ -15,11 +18,13 @@ public class FornecedoresController : ControllerBase
         _fornecedorService = fornecedorService;
     }
 
+    private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
     [HttpGet]
     [ProducesResponseType(typeof(List<FornecedorResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<FornecedorResponse>>> Listar()
     {
-        var fornecedores = await _fornecedorService.ListarAsync();
+        var fornecedores = await _fornecedorService.ListarAsync(GetUserId());
         return Ok(fornecedores);
     }
 
@@ -28,7 +33,7 @@ public class FornecedoresController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FornecedorResponse>> Obter(int id)
     {
-        var fornecedor = await _fornecedorService.ObterAsync(id);
+        var fornecedor = await _fornecedorService.ObterAsync(id, GetUserId());
         if (fornecedor is null)
             return NotFound("Fornecedor não encontrado.");
 
@@ -43,7 +48,7 @@ public class FornecedoresController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Nome))
             return BadRequest("O nome do fornecedor é obrigatório.");
 
-        var resultado = await _fornecedorService.CriarAsync(request);
+        var resultado = await _fornecedorService.CriarAsync(request, GetUserId());
         return CreatedAtAction(nameof(Obter), new { id = resultado.Id }, resultado);
     }
 
@@ -56,7 +61,7 @@ public class FornecedoresController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Nome))
             return BadRequest("O nome do fornecedor é obrigatório.");
 
-        var resultado = await _fornecedorService.AtualizarAsync(id, request);
+        var resultado = await _fornecedorService.AtualizarAsync(id, request, GetUserId());
         if (resultado is null)
             return NotFound("Fornecedor não encontrado.");
 
@@ -68,7 +73,7 @@ public class FornecedoresController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Deletar(int id)
     {
-        var sucesso = await _fornecedorService.DeletarAsync(id);
+        var sucesso = await _fornecedorService.DeletarAsync(id, GetUserId());
         if (!sucesso)
             return NotFound("Fornecedor não encontrado.");
 
