@@ -118,3 +118,15 @@ export interface AuthResponse {
   nome: string;
   email: string;
 }
+
+export interface UserProfile {
+  nome: string;
+  email: string;
+}
+
+export interface UpdateProfileRequest {
+  nome: string;
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+}

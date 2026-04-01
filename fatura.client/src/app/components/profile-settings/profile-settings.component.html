@@ -1,0 +1,71 @@
+<div class="settings-container">
+  <mat-card class="settings-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="settings-icon">settings</mat-icon>
+      <mat-card-title>Configurações da Conta</mat-card-title>
+      <mat-card-subtitle>Atualize seus dados de acesso</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="36"></mat-spinner>
+      </div>
+
+      <form *ngIf="!loading" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome</mat-label>
+          <input matInput type="text" formControlName="nome">
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="hasError(nome, 'required')">Informe seu nome.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email">
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="hasError(email, 'required')">Informe seu e-mail.</mat-error>
+          <mat-error *ngIf="hasError(email, 'email')">Informe um e-mail válido.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha atual</mat-label>
+          <input matInput [type]="hideCurrentPassword ? 'password' : 'text'" formControlName="currentPassword">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hideCurrentPassword = !hideCurrentPassword">
+            <mat-icon>{{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="profileForm.hasError('currentPasswordRequired') && (currentPassword?.touched || currentPassword?.dirty || newPassword?.touched || newPassword?.dirty)">
+            Informe a senha atual para alterar a senha.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nova senha</mat-label>
+          <input matInput [type]="hideNewPassword ? 'password' : 'text'" formControlName="newPassword">
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hideNewPassword = !hideNewPassword">
+            <mat-icon>{{ hideNewPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="hasError(newPassword, 'pattern')">A nova senha deve ter pelo menos 6 caracteres, uma letra maiúscula e um número.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirmar nova senha</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmNewPassword">
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="profileForm.hasError('passwordsMismatch') && (confirmNewPassword?.touched || confirmNewPassword?.dirty)">
+            As novas senhas não conferem.
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width save-btn" [disabled]="saving || profileForm.invalid">
+          <mat-spinner *ngIf="saving" diameter="20" class="spinner-inline"></mat-spinner>
+          <span *ngIf="!saving">Salvar alterações</span>
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

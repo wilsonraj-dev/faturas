@@ -8,6 +8,7 @@ import { SimulacoesComponent } from './components/simulacoes/simulacoes.componen
 import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simulacao-detalhe.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { ProfileSettingsComponent } from './components/profile-settings/profile-settings.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -19,7 +20,8 @@ const routes: Routes = [
   { path: 'compras/nova', component: CompraFormComponent, canActivate: [AuthGuard] },
   { path: 'fornecedores', component: FornecedoresComponent, canActivate: [AuthGuard] },
   { path: 'simulacoes', component: SimulacoesComponent, canActivate: [AuthGuard] },
-  { path: 'simulacoes/:id', component: SimulacaoDetalheComponent, canActivate: [AuthGuard] }
+  { path: 'simulacoes/:id', component: SimulacaoDetalheComponent, canActivate: [AuthGuard] },
+  { path: 'configuracoes', component: ProfileSettingsComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

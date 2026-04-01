@@ -7,35 +7,44 @@
     </mat-card-header>
 
     <mat-card-content>
-      <form (ngSubmit)="onSubmit()">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nome</mat-label>
-          <input matInput type="text" [(ngModel)]="nome" name="nome" required>
+          <input matInput type="text" formControlName="nome">
           <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="hasError(nome, 'required')">Informe seu nome.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>E-mail</mat-label>
-          <input matInput type="email" [(ngModel)]="email" name="email" required>
+          <input matInput type="email" formControlName="email">
           <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="hasError(email, 'required')">Informe seu e-mail.</mat-error>
+          <mat-error *ngIf="hasError(email, 'email')">Informe um e-mail válido.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Senha</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="password" name="password" required>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
           <mat-icon matPrefix>vpn_key</mat-icon>
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
+          <mat-error *ngIf="hasError(password, 'required')">Informe sua senha.</mat-error>
+          <mat-error *ngIf="hasError(password, 'pattern')">A senha deve ter pelo menos 6 caracteres, uma letra maiúscula e um número.</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Confirmar Senha</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="confirmPassword">
           <mat-icon matPrefix>vpn_key</mat-icon>
+          <mat-error *ngIf="hasError(confirmPassword, 'required')">Confirme sua senha.</mat-error>
+          <mat-error *ngIf="registerForm.hasError('passwordsMismatch') && (confirmPassword?.touched || confirmPassword?.dirty)">
+            As senhas não conferem.
+          </mat-error>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit" class="full-width register-btn" [disabled]="loading">
+        <button mat-raised-button color="primary" type="submit" class="full-width register-btn" [disabled]="loading || registerForm.invalid">
           <mat-spinner *ngIf="loading" diameter="20" class="spinner-inline"></mat-spinner>
           <span *ngIf="!loading">Cadastrar</span>
         </button>

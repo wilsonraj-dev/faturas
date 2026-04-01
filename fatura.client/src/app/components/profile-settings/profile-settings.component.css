@@ -1,0 +1,37 @@
+.settings-container {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.settings-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 24px;
+}
+
+.settings-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.save-btn {
+  margin-top: 8px;
+  height: 48px;
+  font-size: 16px;
+}
+
+.spinner-inline {
+  display: inline-block;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}

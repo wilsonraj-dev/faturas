@@ -1,6 +1,8 @@
 using Fatura.Server.DTOs;
 using Fatura.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fatura.Server.Controllers;
 
@@ -14,6 +16,8 @@ public class AuthController : ControllerBase
     {
         _authService = authService;
     }
+
+    private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     /// <summary>
     /// Registra um novo usuário.
@@ -52,5 +56,49 @@ public class AuthController : ControllerBase
             return Unauthorized("E-mail ou senha inválidos.");
 
         return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("profile")]
+    [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UserProfileResponse>> GetProfile()
+    {
+        var result = await _authService.GetProfileAsync(GetUserId());
+        if (result is null)
+            return NotFound("Usuário não encontrado.");
+
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("profile")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<AuthResponse>> UpdateProfile([FromBody] UpdateProfileRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Nome))
+            return BadRequest("O nome é obrigatório.");
+
+        if (string.IsNullOrWhiteSpace(request.Email))
+            return BadRequest("O e-mail é obrigatório.");
+
+        if (!string.IsNullOrWhiteSpace(request.NewPassword) && string.IsNullOrWhiteSpace(request.CurrentPassword))
+            return BadRequest("Informe a senha atual para alterar a senha.");
+
+        if (!string.IsNullOrWhiteSpace(request.NewPassword) && request.NewPassword.Length < 6)
+            return BadRequest("A nova senha deve ter pelo menos 6 caracteres.");
+
+        var result = await _authService.UpdateProfileAsync(GetUserId(), request);
+        if (!result.Success)
+        {
+            if (result.ErrorMessage == "Usuário não encontrado.")
+                return NotFound(result.ErrorMessage);
+
+            return BadRequest(result.ErrorMessage);
+        }
+
+        return Ok(result.Response);
     }
 }

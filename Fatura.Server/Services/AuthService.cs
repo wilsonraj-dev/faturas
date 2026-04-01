@@ -67,6 +67,70 @@ public class AuthService : IAuthService
         };
     }
 
+    public async Task<UserProfileResponse?> GetProfileAsync(int userId)
+    {
+        return await _db.Users
+            .Where(u => u.Id == userId)
+            .Select(u => new UserProfileResponse
+            {
+                Nome = u.Nome,
+                Email = u.Email
+            }).FirstOrDefaultAsync();
+    }
+
+    public async Task<UpdateProfileResult> UpdateProfileAsync(int userId, UpdateProfileRequest request)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user is null)
+        {
+            return new UpdateProfileResult
+            {
+                ErrorMessage = "Usuário não encontrado."
+            };
+        }
+
+        var nome = request.Nome.Trim();
+        var email = request.Email.Trim();
+
+        var emailEmUso = await _db.Users.AnyAsync(u => u.Email == email && u.Id != userId);
+        if (emailEmUso)
+        {
+            return new UpdateProfileResult
+            {
+                ErrorMessage = "Já existe um usuário com este e-mail."
+            };
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+            {
+                return new UpdateProfileResult
+                {
+                    ErrorMessage = "A senha atual informada é inválida."
+                };
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        }
+
+        user.Nome = nome;
+        user.Email = email;
+
+        await _db.SaveChangesAsync();
+
+        return new UpdateProfileResult
+        {
+            Success = true,
+            Response = new AuthResponse
+            {
+                Token = GenerateToken(user),
+                Nome = user.Nome,
+                Email = user.Email
+            }
+        };
+    }
+
     /// <summary>
     /// Gera um token JWT com claims do usuário.
     /// </summary>
