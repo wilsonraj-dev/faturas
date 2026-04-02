@@ -156,7 +156,7 @@
                         <mat-icon>list_alt</mat-icon> Parcelas
                       </h3>
 
-                      <table mat-table [dataSource]="detalhe.parcelas" class="parcelas-table"
+                      <table mat-table [dataSource]="getParcelasPaginadas(fatura.id, detalhe.parcelas)" class="parcelas-table"
                              *ngIf="detalhe.parcelas.length > 0">
                         <ng-container matColumnDef="nomeCompra">
                           <th mat-header-cell *matHeaderCellDef>Compra</th>
@@ -196,6 +196,15 @@
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                       </table>
+
+                      <mat-paginator *ngIf="detalhe.parcelas.length > 0"
+                                     [length]="detalhe.parcelas.length"
+                                     [pageIndex]="getDetalhePaginacao(fatura.id).pageIndex"
+                                     [pageSize]="getDetalhePaginacao(fatura.id).pageSize"
+                                     [pageSizeOptions]="pageSizeOptions"
+                                     (page)="onDetalhePageChange(fatura.id, $event)"
+                                     showFirstLastButtons>
+                      </mat-paginator>
 
                       <div *ngIf="detalhe.parcelas.length === 0" class="sem-parcelas">
                         <mat-icon>info_outline</mat-icon>

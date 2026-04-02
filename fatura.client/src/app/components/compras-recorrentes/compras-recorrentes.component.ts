@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CompraRecorrente, CompraRecorrenteRequest } from '../../models/models';
 import { CompraRecorrenteService } from '../../services/api.service';
@@ -17,6 +18,9 @@ export class ComprasRecorrentesComponent implements OnInit {
   salvando = false;
   editandoId: number | null = null;
   displayedColumns = ['nome', 'valorMensal', 'diaCobranca', 'status', 'acoes'];
+  readonly pageSizeOptions = [10, 15, 20, 25];
+  pageSize = 10;
+  pageIndex = 0;
 
   readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.maxLength(200)]],
@@ -46,6 +50,11 @@ export class ComprasRecorrentesComponent implements OnInit {
     return this.editandoId !== null;
   }
 
+  get comprasRecorrentesPaginadas(): CompraRecorrente[] {
+    const inicio = this.pageIndex * this.pageSize;
+    return this.comprasRecorrentes.slice(inicio, inicio + this.pageSize);
+  }
+
   ngOnInit(): void {
     this.carregar();
   }
@@ -55,6 +64,7 @@ export class ComprasRecorrentesComponent implements OnInit {
     this.compraRecorrenteService.listar().subscribe({
       next: (dados) => {
         this.comprasRecorrentes = dados;
+        this.pageIndex = 0;
         this.carregando = false;
       },
       error: () => {
@@ -132,5 +142,10 @@ export class ComprasRecorrentesComponent implements OnInit {
       },
       error: () => this.snackBar.open('Erro ao desativar compra recorrente', 'OK', { duration: 3000 })
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 }

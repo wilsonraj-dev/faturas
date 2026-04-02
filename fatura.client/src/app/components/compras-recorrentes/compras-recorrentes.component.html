@@ -65,7 +65,7 @@
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <table mat-table [dataSource]="comprasRecorrentes" class="recorrentes-table">
+      <table mat-table [dataSource]="comprasRecorrentesPaginadas" class="recorrentes-table">
         <ng-container matColumnDef="nome">
           <th mat-header-cell *matHeaderCellDef>Nome</th>
           <td mat-cell *matCellDef="let item">{{ item.nome }}</td>
@@ -105,6 +105,15 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+
+      <mat-paginator
+        [length]="comprasRecorrentes.length"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
     </mat-card-content>
   </mat-card>
 

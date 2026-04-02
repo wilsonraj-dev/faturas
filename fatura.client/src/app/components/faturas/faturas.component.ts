@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { FaturaService } from '../../services/api.service';
 import { FaturaResumo, FaturaDetalhe, ParcelaResponse } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -27,7 +28,10 @@ export class FaturasComponent implements OnInit {
   // Detail (inline)
   detalhesCache: { [faturaId: number]: FaturaDetalhe } = {};
   carregandoDetalhe: { [faturaId: number]: boolean } = {};
+  detalhesPaginacao: { [faturaId: number]: { pageIndex: number, pageSize: number } } = {};
   displayedColumns = ['nomeCompra', 'tipo', 'fornecedor', 'parcela', 'valor', 'dataVencimento'];
+  readonly pageSizeOptions = [10, 15, 20, 25];
+  readonly defaultPageSize = 10;
 
   constructor(
     private faturaService: FaturaService,
@@ -43,6 +47,7 @@ export class FaturasComponent implements OnInit {
   carregarFaturas(): void {
     this.carregando = true;
     this.detalhesCache = {};
+    this.detalhesPaginacao = {};
     this.faturaService.listarFaturas(this.anoSelecionado).subscribe({
       next: (faturas) => {
         this.faturas = faturas;
@@ -158,6 +163,27 @@ export class FaturasComponent implements OnInit {
 
   getDetalhe(faturaId: number): FaturaDetalhe | undefined {
     return this.detalhesCache[faturaId];
+  }
+
+  getDetalhePaginacao(faturaId: number): { pageIndex: number, pageSize: number } {
+    if (!this.detalhesPaginacao[faturaId]) {
+      this.detalhesPaginacao[faturaId] = { pageIndex: 0, pageSize: this.defaultPageSize };
+    }
+
+    return this.detalhesPaginacao[faturaId];
+  }
+
+  getParcelasPaginadas(faturaId: number, parcelas: ParcelaResponse[]): ParcelaResponse[] {
+    const paginacao = this.getDetalhePaginacao(faturaId);
+    const inicio = paginacao.pageIndex * paginacao.pageSize;
+    return parcelas.slice(inicio, inicio + paginacao.pageSize);
+  }
+
+  onDetalhePageChange(faturaId: number, event: PageEvent): void {
+    this.detalhesPaginacao[faturaId] = {
+      pageIndex: event.pageIndex,
+      pageSize: event.pageSize
+    };
   }
 
   isCarregandoDetalhe(faturaId: number): boolean {
