@@ -17,14 +17,33 @@ export interface CompraResponse {
   parcelas: ParcelaResponse[];
 }
 
+export type ParcelaTipo = 'Normal' | 'Recorrente';
+
 export interface ParcelaResponse {
   id: number;
   nomeCompra: string;
+  tipo: ParcelaTipo;
+  compraRecorrenteId?: number | null;
   numeroParcela: number;
   totalParcelas: number;
   valor: number;
   dataVencimento: string;
   fornecedorNome?: string | null;
+}
+
+export interface CompraRecorrenteRequest {
+  nome: string;
+  valorMensal: number;
+  diaCobranca: number;
+  ativo: boolean;
+}
+
+export interface CompraRecorrente {
+  id: number;
+  nome: string;
+  valorMensal: number;
+  diaCobranca: number;
+  ativo: boolean;
 }
 
 export interface FaturaResumo {

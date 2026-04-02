@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class FaturaDetalheComponent implements OnInit {
   fatura: FaturaDetalhe | null = null;
   carregando = false;
-  displayedColumns = ['nomeCompra', 'parcela', 'valor', 'dataVencimento'];
+  displayedColumns = ['nomeCompra', 'tipo', 'parcela', 'valor', 'dataVencimento'];
 
   meses = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -83,5 +83,13 @@ export class FaturaDetalheComponent implements OnInit {
 
   formatarData(data: string): string {
     return new Date(data).toLocaleDateString('pt-BR');
+  }
+
+  getTipoIcon(parcela: ParcelaResponse): string {
+    return parcela.tipo === 'Recorrente' ? 'autorenew' : 'shopping_cart';
+  }
+
+  getTipoLabel(parcela: ParcelaResponse): string {
+    return parcela.tipo === 'Recorrente' ? 'Recorrente' : 'Normal';
   }
 }

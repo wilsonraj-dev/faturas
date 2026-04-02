@@ -51,6 +51,7 @@ public class CompraService : ICompraService
             var parcela = new Parcela
             {
                 CompraId = compra.Id,
+                Tipo = ParcelaTipo.Normal,
                 NumeroParcela = i + 1,
                 Valor = valor,
                 DataVencimento = dataVencimento,
@@ -93,6 +94,8 @@ public class CompraService : ICompraService
             {
                 Id = p.Id,
                 NomeCompra = compra.Nome,
+                Tipo = p.Tipo,
+                CompraRecorrenteId = p.CompraRecorrenteId,
                 NumeroParcela = p.NumeroParcela,
                 TotalParcelas = compra.NumeroParcelas,
                 Valor = p.Valor,

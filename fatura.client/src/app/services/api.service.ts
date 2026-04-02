@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import {
   CriarCompraRequest,
   CompraResponse,
+  CompraRecorrente,
+  CompraRecorrenteRequest,
   SimulacaoResponse,
   FaturaResumo,
   FaturaDetalhe,
@@ -26,6 +28,29 @@ export class CompraService {
 
   simularCompra(request: CriarCompraRequest): Observable<SimulacaoResponse> {
     return this.http.post<SimulacaoResponse>(`${this.baseUrl}/simular`, request);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class CompraRecorrenteService {
+  private readonly baseUrl = '/api/compras-recorrentes';
+
+  constructor(private http: HttpClient) { }
+
+  listar(): Observable<CompraRecorrente[]> {
+    return this.http.get<CompraRecorrente[]>(this.baseUrl);
+  }
+
+  criar(request: CompraRecorrenteRequest): Observable<CompraRecorrente> {
+    return this.http.post<CompraRecorrente>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: CompraRecorrenteRequest): Observable<CompraRecorrente> {
+    return this.http.put<CompraRecorrente>(`${this.baseUrl}/${id}`, request);
+  }
+
+  desativar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }
 

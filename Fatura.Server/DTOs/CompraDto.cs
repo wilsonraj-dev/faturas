@@ -1,5 +1,7 @@
 namespace Fatura.Server.DTOs;
 
+using Fatura.Server.Models;
+
 /// <summary>
 /// DTO para criação de uma nova compra parcelada.
 /// </summary>
@@ -34,6 +36,8 @@ public class ParcelaResponse
 {
     public int Id { get; set; }
     public string NomeCompra { get; set; } = string.Empty;
+    public ParcelaTipo Tipo { get; set; }
+    public int? CompraRecorrenteId { get; set; }
     public int NumeroParcela { get; set; }
     public int TotalParcelas { get; set; }
     public decimal Valor { get; set; }

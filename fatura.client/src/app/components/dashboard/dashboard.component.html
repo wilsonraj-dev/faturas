@@ -48,6 +48,18 @@
       </mat-card-content>
     </mat-card>
 
+    <mat-card class="resumo-card card-recorrente">
+      <mat-card-content>
+        <div class="card-icon-wrap bg-teal">
+          <mat-icon>autorenew</mat-icon>
+        </div>
+        <div class="card-info">
+          <span class="card-label">Gastos Recorrentes Mensais</span>
+          <span class="card-valor">R$ {{ totalGastosRecorrentesMensais | number:'1.2-2' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- Maior fatura -->
     <mat-card class="resumo-card card-maior" *ngIf="maiorFatura">
       <mat-card-content>

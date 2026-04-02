@@ -12,6 +12,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FaturasComponent } from './components/faturas/faturas.component';
 import { CompraFormComponent } from './components/compra-form/compra-form.component';
+import { ComprasRecorrentesComponent } from './components/compras-recorrentes/compras-recorrentes.component';
 import { SimulacaoResultadoComponent } from './components/simulacao-resultado/simulacao-resultado.component';
 import { FornecedoresComponent } from './components/fornecedores/fornecedores.component';
 import { SimulacoesComponent } from './components/simulacoes/simulacoes.component';
@@ -28,6 +29,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     DashboardComponent,
     FaturasComponent,
     CompraFormComponent,
+    ComprasRecorrentesComponent,
     SimulacaoResultadoComponent,
     FornecedoresComponent,
     SimulacoesComponent,

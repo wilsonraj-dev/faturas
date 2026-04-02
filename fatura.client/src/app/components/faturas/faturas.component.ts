@@ -27,7 +27,7 @@ export class FaturasComponent implements OnInit {
   // Detail (inline)
   detalhesCache: { [faturaId: number]: FaturaDetalhe } = {};
   carregandoDetalhe: { [faturaId: number]: boolean } = {};
-  displayedColumns = ['nomeCompra', 'fornecedor', 'parcela', 'valor', 'dataVencimento'];
+  displayedColumns = ['nomeCompra', 'tipo', 'fornecedor', 'parcela', 'valor', 'dataVencimento'];
 
   constructor(
     private faturaService: FaturaService,
@@ -194,6 +194,14 @@ export class FaturasComponent implements OnInit {
 
   formatarData(data: string): string {
     return new Date(data).toLocaleDateString('pt-BR');
+  }
+
+  getTipoIcon(parcela: ParcelaResponse): string {
+    return parcela.tipo === 'Recorrente' ? 'autorenew' : 'shopping_cart';
+  }
+
+  getTipoLabel(parcela: ParcelaResponse): string {
+    return parcela.tipo === 'Recorrente' ? 'Recorrente' : 'Normal';
   }
 
   exportarExcel(): void {

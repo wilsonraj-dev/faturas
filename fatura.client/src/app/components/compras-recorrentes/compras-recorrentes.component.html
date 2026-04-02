@@ -1,0 +1,117 @@
+<div class="container">
+  <h2>Compras Recorrentes</h2>
+
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">autorenew</mat-icon>
+        {{ emEdicao ? 'Editar compra recorrente' : 'Nova compra recorrente' }}
+      </mat-card-title>
+      <mat-card-subtitle>Cadastre lançamentos mensais automáticos sem duplicação.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" class="recorrente-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Ex: Netflix, Academia">
+          <mat-icon matSuffix>shopping_bag</mat-icon>
+          <mat-error *ngIf="nomeControl.hasError('required')">Informe o nome.</mat-error>
+          <mat-error *ngIf="nomeControl.hasError('maxlength')">Máximo de 200 caracteres.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Valor mensal</mat-label>
+          <input matInput type="number" formControlName="valorMensal" min="0.01" step="0.01">
+          <span matTextPrefix>R$&nbsp;</span>
+          <mat-error *ngIf="valorMensalControl.hasError('required')">Informe o valor mensal.</mat-error>
+          <mat-error *ngIf="valorMensalControl.hasError('min')">O valor deve ser maior que zero.</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dia de cobrança</mat-label>
+          <input matInput type="number" formControlName="diaCobranca" min="1" max="31" step="1">
+          <mat-icon matSuffix>event</mat-icon>
+          <mat-error *ngIf="diaCobrancaControl.hasError('required')">Informe o dia de cobrança.</mat-error>
+          <mat-error *ngIf="diaCobrancaControl.hasError('min') || diaCobrancaControl.hasError('max')">Use um valor entre 1 e 31.</mat-error>
+        </mat-form-field>
+
+        <div class="toggle-field">
+          <mat-slide-toggle formControlName="ativo">Ativo</mat-slide-toggle>
+        </div>
+      </form>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" (click)="salvar()" [disabled]="salvando">
+          <mat-icon>{{ emEdicao ? 'save' : 'add' }}</mat-icon>
+          {{ salvando ? 'Salvando...' : (emEdicao ? 'Salvar alterações' : 'Criar recorrente') }}
+        </button>
+        <button mat-button type="button" *ngIf="emEdicao" (click)="cancelarEdicao()">
+          <mat-icon>close</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="carregando" class="loading-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <mat-card *ngIf="!carregando && comprasRecorrentes.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">list</mat-icon>
+        Compras cadastradas ({{ comprasRecorrentes.length }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="comprasRecorrentes" class="recorrentes-table">
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Nome</th>
+          <td mat-cell *matCellDef="let item">{{ item.nome }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="valorMensal">
+          <th mat-header-cell *matHeaderCellDef>Valor mensal</th>
+          <td mat-cell *matCellDef="let item">R$ {{ item.valorMensal | number:'1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="diaCobranca">
+          <th mat-header-cell *matHeaderCellDef>Dia de cobrança</th>
+          <td mat-cell *matCellDef="let item">Dia {{ item.diaCobranca }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="status-chip" [class.inativo]="!item.ativo">
+              {{ item.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let item">
+            <button mat-icon-button color="primary" (click)="editar(item)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="desativar(item)" [disabled]="!item.ativo" matTooltip="Desativar">
+              <mat-icon>pause_circle</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!carregando && comprasRecorrentes.length === 0" class="empty-card">
+    <mat-card-content>
+      <mat-icon class="empty-icon">autorenew</mat-icon>
+      <p>Nenhuma compra recorrente cadastrada.</p>
+    </mat-card-content>
+  </mat-card>
+</div>

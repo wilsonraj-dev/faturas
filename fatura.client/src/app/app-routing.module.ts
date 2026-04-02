@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FaturasComponent } from './components/faturas/faturas.component';
 import { CompraFormComponent } from './components/compra-form/compra-form.component';
+import { ComprasRecorrentesComponent } from './components/compras-recorrentes/compras-recorrentes.component';
 import { FornecedoresComponent } from './components/fornecedores/fornecedores.component';
 import { SimulacoesComponent } from './components/simulacoes/simulacoes.component';
 import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simulacao-detalhe.component';
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'faturas', component: FaturasComponent, canActivate: [AuthGuard] },
   { path: 'compras/nova', component: CompraFormComponent, canActivate: [AuthGuard] },
+  { path: 'compras-recorrentes', component: ComprasRecorrentesComponent, canActivate: [AuthGuard] },
   { path: 'fornecedores', component: FornecedoresComponent, canActivate: [AuthGuard] },
   { path: 'simulacoes', component: SimulacoesComponent, canActivate: [AuthGuard] },
   { path: 'simulacoes/:id', component: SimulacaoDetalheComponent, canActivate: [AuthGuard] },

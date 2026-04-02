@@ -73,6 +73,7 @@
 
 .bg-blue { background: linear-gradient(135deg, #3f51b5, #5c6bc0); }
 .bg-purple { background: linear-gradient(135deg, #7b1fa2, #ab47bc); }
+.bg-teal { background: linear-gradient(135deg, #00897b, #26a69a); }
 .bg-red { background: linear-gradient(135deg, #e53935, #ef5350); }
 .bg-green { background: linear-gradient(135deg, #2e7d32, #66bb6a); }
 

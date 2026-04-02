@@ -12,6 +12,7 @@ public class User
 
     // Navegação
     public List<Compra> Compras { get; set; } = [];
+    public List<CompraRecorrente> ComprasRecorrentes { get; set; } = [];
     public List<FaturaEntity> Faturas { get; set; } = [];
     public List<Fornecedor> Fornecedores { get; set; } = [];
     public List<Simulacao> Simulacoes { get; set; } = [];

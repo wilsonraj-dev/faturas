@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Compra> Compras => Set<Compra>();
+    public DbSet<CompraRecorrente> ComprasRecorrentes => Set<CompraRecorrente>();
     public DbSet<Parcela> Parcelas => Set<Parcela>();
     public DbSet<FaturaEntity> Faturas => Set<FaturaEntity>();
     public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
@@ -47,6 +48,18 @@ public class AppDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<CompraRecorrente>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.ValorMensal).HasPrecision(18, 2);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.ComprasRecorrentes)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
         // Parcela
         modelBuilder.Entity<Parcela>(entity =>
         {
@@ -56,6 +69,11 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.Compra)
                   .WithMany(c => c.Parcelas)
                   .HasForeignKey(e => e.CompraId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.CompraRecorrente)
+                  .WithMany(c => c.Parcelas)
+                  .HasForeignKey(e => e.CompraRecorrenteId)
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(e => e.Fatura)

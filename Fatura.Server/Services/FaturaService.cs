@@ -8,10 +8,12 @@ namespace Fatura.Server.Services;
 public class FaturaService : IFaturaService
 {
     private readonly AppDbContext _db;
+    private readonly ICompraRecorrenteService _compraRecorrenteService;
 
-    public FaturaService(AppDbContext db)
+    public FaturaService(AppDbContext db, ICompraRecorrenteService compraRecorrenteService)
     {
         _db = db;
+        _compraRecorrenteService = compraRecorrenteService;
     }
 
     /// <summary>
@@ -19,6 +21,8 @@ public class FaturaService : IFaturaService
     /// </summary>
     public async Task<List<FaturaResumoResponse>> ListarFaturasAsync(int ano, int userId)
     {
+        await _compraRecorrenteService.SincronizarComprasRecorrentesAsync(userId);
+
         return await _db.Faturas
             .Where(f => f.Ano == ano && f.UserId == userId)
             .OrderBy(f => f.Mes)
@@ -40,10 +44,14 @@ public class FaturaService : IFaturaService
     /// </summary>
     public async Task<FaturaDetalheResponse?> ObterFaturaAsync(int id, int userId)
     {
+        await _compraRecorrenteService.SincronizarComprasRecorrentesAsync(userId);
+
         var fatura = await _db.Faturas
             .Include(f => f.Parcelas)
-                .ThenInclude(p => p.Compra)
+                .ThenInclude(p => p.Compra!)
                     .ThenInclude(c => c.Fornecedor)
+            .Include(f => f.Parcelas)
+                .ThenInclude(p => p.CompraRecorrente)
             .FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
 
         if (fatura is null) return null;
@@ -57,17 +65,19 @@ public class FaturaService : IFaturaService
             Quitada = fatura.Quitada,
             Orcamento = fatura.Orcamento,
             Parcelas = fatura.Parcelas
-                .OrderBy(p => p.Compra.Nome)
+                .OrderBy(p => p.Compra?.Nome ?? p.CompraRecorrente?.Nome ?? string.Empty)
                 .ThenBy(p => p.NumeroParcela)
                 .Select(p => new ParcelaResponse
                 {
                     Id = p.Id,
-                    NomeCompra = p.Compra.Nome,
+                    NomeCompra = p.Compra?.Nome ?? p.CompraRecorrente?.Nome ?? string.Empty,
+                    Tipo = p.Tipo,
+                    CompraRecorrenteId = p.CompraRecorrenteId,
                     NumeroParcela = p.NumeroParcela,
-                    TotalParcelas = p.Compra.NumeroParcelas,
+                    TotalParcelas = p.Tipo == Models.ParcelaTipo.Recorrente ? 1 : p.Compra?.NumeroParcelas ?? 1,
                     Valor = p.Valor,
                     DataVencimento = p.DataVencimento,
-                    FornecedorNome = p.Compra.Fornecedor != null ? p.Compra.Fornecedor.Nome : null
+                    FornecedorNome = p.Compra?.Fornecedor != null ? p.Compra.Fornecedor.Nome : null
                 }).ToList()
         };
     }
@@ -124,10 +134,13 @@ public class FaturaService : IFaturaService
     /// </summary>
     public async Task<byte[]> ExportarExcelAsync(int? ano, int userId)
     {
+        await _compraRecorrenteService.SincronizarComprasRecorrentesAsync(userId);
+
         var query = _db.Parcelas
             .Where(p => p.UserId == userId)
-            .Include(p => p.Compra)
+            .Include(p => p.Compra!)
                 .ThenInclude(c => c.Fornecedor)
+            .Include(p => p.CompraRecorrente)
             .Include(p => p.Fatura)
             .AsQueryable();
 
@@ -139,7 +152,7 @@ public class FaturaService : IFaturaService
         var parcelas = await query
             .OrderBy(p => p.Fatura!.Ano)
             .ThenBy(p => p.Fatura!.Mes)
-            .ThenBy(p => p.Compra.Nome)
+            .ThenBy(p => p.Compra != null ? p.Compra.Nome : p.CompraRecorrente!.Nome)
             .ThenBy(p => p.NumeroParcela)
             .ToListAsync();
 
@@ -166,13 +179,15 @@ public class FaturaService : IFaturaService
             var mesAno = parcela.Fatura != null
                 ? $"{parcela.Fatura.Mes:D2}/{parcela.Fatura.Ano}"
                 : parcela.DataVencimento.ToString("MM/yyyy");
+            var nomeCompra = parcela.Compra?.Nome ?? parcela.CompraRecorrente?.Nome ?? string.Empty;
+            var totalParcelas = parcela.Tipo == Models.ParcelaTipo.Recorrente ? 1 : parcela.Compra?.NumeroParcelas ?? 1;
 
             worksheet.Cell(row, 1).Value = mesAno;
-            worksheet.Cell(row, 2).Value = parcela.Compra.Nome;
-            worksheet.Cell(row, 3).Value = $"{parcela.NumeroParcela}/{parcela.Compra.NumeroParcelas}";
+            worksheet.Cell(row, 2).Value = nomeCompra;
+            worksheet.Cell(row, 3).Value = $"{parcela.NumeroParcela}/{totalParcelas}";
             worksheet.Cell(row, 4).Value = parcela.Valor;
             worksheet.Cell(row, 4).Style.NumberFormat.Format = "#,##0.00";
-            worksheet.Cell(row, 5).Value = parcela.Compra.Fornecedor?.Nome ?? "";
+            worksheet.Cell(row, 5).Value = parcela.Compra?.Fornecedor?.Nome ?? "";
             worksheet.Cell(row, 6).Value = parcela.Fatura?.Quitada == true ? "Quitada" : "Em aberto";
             row++;
         }

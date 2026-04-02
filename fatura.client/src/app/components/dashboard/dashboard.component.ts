@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FaturaService, CompraService } from '../../services/api.service';
+import { FaturaService, CompraRecorrenteService, CompraService } from '../../services/api.service';
 import { FaturaResumo, CriarCompraRequest, SimulacaoFaturaItem } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit {
 
   // Indicadores
   totalComprometido = 0;
+  totalGastosRecorrentesMensais = 0;
   mediaMensal = 0;
   maiorFatura: FaturaResumo | null = null;
   menorFatura: FaturaResumo | null = null;
@@ -45,6 +46,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private faturaService: FaturaService,
+    private compraRecorrenteService: CompraRecorrenteService,
     private compraService: CompraService,
     private snackBar: MatSnackBar
   ) { }
@@ -66,6 +68,17 @@ export class DashboardComponent implements OnInit {
         this.calcularIndicadores();
       },
       error: () => this.snackBar.open('Erro ao carregar dashboard', 'OK', { duration: 3000 })
+    });
+
+    this.compraRecorrenteService.listar().subscribe({
+      next: (dados) => {
+        this.totalGastosRecorrentesMensais = dados
+          .filter(item => item.ativo)
+          .reduce((total, item) => total + item.valorMensal, 0);
+      },
+      error: () => {
+        this.totalGastosRecorrentesMensais = 0;
+      }
     });
   }
 

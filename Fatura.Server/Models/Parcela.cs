@@ -7,7 +7,9 @@ namespace Fatura.Server.Models;
 public class Parcela
 {
     public int Id { get; set; }
-    public int CompraId { get; set; }
+    public int? CompraId { get; set; }
+    public ParcelaTipo Tipo { get; set; } = ParcelaTipo.Normal;
+    public int? CompraRecorrenteId { get; set; }
     public int NumeroParcela { get; set; }
     public decimal Valor { get; set; }
     public DateTime DataVencimento { get; set; }
@@ -15,6 +17,7 @@ public class Parcela
     public int UserId { get; set; }
 
     // Navegação
-    public Compra Compra { get; set; } = null!;
+    public Compra? Compra { get; set; }
+    public CompraRecorrente? CompraRecorrente { get; set; }
     public FaturaEntity? Fatura { get; set; }
 }
