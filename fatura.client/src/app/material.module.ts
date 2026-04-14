@@ -22,6 +22,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 const modules = [
   MatToolbarModule,
@@ -46,7 +47,8 @@ const modules = [
   MatProgressBarModule,
   MatSlideToggleModule,
   MatMenuModule,
-  MatPaginatorModule
+  MatPaginatorModule,
+  MatSidenavModule
 ];
 
 @NgModule({

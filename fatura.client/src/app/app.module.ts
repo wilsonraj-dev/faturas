@@ -21,6 +21,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ProfileSettingsComponent } from './components/profile-settings/profile-settings.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { SideMenuComponent } from './components/side-menu/side-menu.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     SimulacaoDetalheComponent,
     LoginComponent,
     RegisterComponent,
-    ProfileSettingsComponent
+    ProfileSettingsComponent,
+    SideMenuComponent
   ],
   imports: [
     BrowserModule,

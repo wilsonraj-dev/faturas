@@ -16,12 +16,42 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'faturas', component: FaturasComponent, canActivate: [AuthGuard] },
-  { path: 'compras/nova', component: CompraFormComponent, canActivate: [AuthGuard] },
-  { path: 'compras-recorrentes', component: ComprasRecorrentesComponent, canActivate: [AuthGuard] },
-  { path: 'fornecedores', component: FornecedoresComponent, canActivate: [AuthGuard] },
-  { path: 'simulacoes', component: SimulacoesComponent, canActivate: [AuthGuard] },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Dashboard', icon: 'dashboard', exact: true }
+  },
+  {
+    path: 'faturas',
+    component: FaturasComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Faturas', icon: 'receipt_long', exact: true }
+  },
+  {
+    path: 'compras/nova',
+    component: CompraFormComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Nova Compra', icon: 'add_shopping_cart', exact: true }
+  },
+  {
+    path: 'compras-recorrentes',
+    component: ComprasRecorrentesComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Recorrentes', icon: 'autorenew', exact: true }
+  },
+  {
+    path: 'fornecedores',
+    component: FornecedoresComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Fornecedores', icon: 'store', exact: true }
+  },
+  {
+    path: 'simulacoes',
+    component: SimulacoesComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Simulações', icon: 'calculate', exact: false }
+  },
   { path: 'simulacoes/:id', component: SimulacaoDetalheComponent, canActivate: [AuthGuard] },
   { path: 'configuracoes', component: ProfileSettingsComponent, canActivate: [AuthGuard] }
 ];
