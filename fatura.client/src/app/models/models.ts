@@ -21,6 +21,7 @@ export type ParcelaTipo = 'Normal' | 'Recorrente';
 
 export interface ParcelaResponse {
   id: number;
+  compraId?: number | null;
   nomeCompra: string;
   tipo: ParcelaTipo;
   compraRecorrenteId?: number | null;

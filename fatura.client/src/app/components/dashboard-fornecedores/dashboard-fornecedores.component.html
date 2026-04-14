@@ -1,0 +1,162 @@
+<section class="fornecedor-dashboard-section">
+  <div class="section-header">
+    <div>
+      <h3>Dashboard de Fornecedores</h3>
+      <p>Acompanhe compras e valores consolidados por fornecedor no período selecionado.</p>
+    </div>
+
+    <form class="filtros-form" [formGroup]="filtroForm">
+      <mat-form-field appearance="outline" class="filtro-field">
+        <mat-label>Período</mat-label>
+        <mat-select formControlName="periodo">
+          <mat-option value="ano">Ano</mat-option>
+          <mat-option value="mes">Mês</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-field">
+        <mat-label>Ano</mat-label>
+        <mat-select formControlName="ano">
+          <mat-option *ngFor="let ano of anos" [value]="ano">{{ ano }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filtro-field">
+        <mat-label>Mês</mat-label>
+        <mat-select formControlName="mes">
+          <mat-option *ngFor="let mes of meses; let index = index" [value]="index + 1">{{ mes }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <mat-card class="fornecedor-card" *ngIf="carregando">
+    <mat-card-content class="loading-state">
+      <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+      <span>Carregando informações dos fornecedores...</span>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-container *ngIf="!carregando && estatisticasFornecedores.length > 0">
+    <div class="resumo-grid">
+      <mat-card class="resumo-card">
+        <mat-card-content>
+          <span class="resumo-label">Fornecedores no período</span>
+          <strong class="resumo-value">{{ totalFornecedores }}</strong>
+          <span class="resumo-helper">Baseado em {{ periodoDescricao }}</span>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="resumo-card">
+        <mat-card-content>
+          <span class="resumo-label">Compras registradas</span>
+          <strong class="resumo-value">{{ totalComprasPeriodo }}</strong>
+          <span class="resumo-helper">Quantidade consolidada por fornecedor</span>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="resumo-card destaque-card" *ngIf="fornecedorDestaquePorCompras as fornecedor">
+        <mat-card-content>
+          <span class="resumo-label">Líder em compras</span>
+          <strong class="resumo-value resumo-value-sm">{{ fornecedor.nome }}</strong>
+          <span class="resumo-helper">{{ fornecedor.totalCompras }} compras</span>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="resumo-card destaque-card" *ngIf="fornecedorDestaquePorValor as fornecedor">
+        <mat-card-content>
+          <span class="resumo-label">Maior valor acumulado</span>
+          <strong class="resumo-value resumo-value-sm">{{ fornecedor.nome }}</strong>
+          <span class="resumo-helper">R$ {{ fornecedor.valorTotal | number:'1.2-2' }}</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="content-grid">
+      <mat-card class="fornecedor-card tabela-card">
+        <mat-card-header>
+          <mat-card-title>Compras por fornecedor</mat-card-title>
+          <mat-card-subtitle>Período: {{ periodoDescricao }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="dataSource" class="fornecedor-table">
+            <ng-container matColumnDef="nome">
+              <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+              <td mat-cell *matCellDef="let fornecedor">{{ fornecedor.nome }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="totalCompras">
+              <th mat-header-cell *matHeaderCellDef>Compras</th>
+              <td mat-cell *matCellDef="let fornecedor">{{ fornecedor.totalCompras }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="valorTotal">
+              <th mat-header-cell *matHeaderCellDef>Valor gasto</th>
+              <td mat-cell *matCellDef="let fornecedor">R$ {{ fornecedor.valorTotal | number:'1.2-2' }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+          <mat-paginator class="fornecedor-paginator"
+                         [pageSize]="5"
+                         [pageSizeOptions]="pageSizeOptions"
+                         showFirstLastButtons>
+          </mat-paginator>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="ranking-column">
+        <mat-card class="fornecedor-card ranking-card">
+          <mat-card-header>
+            <mat-card-title>Rank por quantidade de compras</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ranking-list">
+              <div class="ranking-item" *ngFor="let fornecedor of topFornecedoresPorCompras; let index = index">
+                <span class="ranking-posicao">{{ index + 1 }}º</span>
+                <div class="ranking-info">
+                  <strong>{{ fornecedor.nome }}</strong>
+                  <span>{{ fornecedor.totalCompras }} compras</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="fornecedor-card ranking-card">
+          <mat-card-header>
+            <mat-card-title>Rank por valor gasto</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="ranking-list">
+              <div class="ranking-item" *ngFor="let fornecedor of topFornecedoresPorValor; let index = index">
+                <span class="ranking-posicao">{{ index + 1 }}º</span>
+                <div class="ranking-info">
+                  <strong>{{ fornecedor.nome }}</strong>
+                  <span>R$ {{ fornecedor.valorTotal | number:'1.2-2' }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="fornecedor-card total-card">
+          <mat-card-content>
+            <span class="total-label">Valor total movimentado</span>
+            <strong class="total-value">R$ {{ valorTotalPeriodo | number:'1.2-2' }}</strong>
+            <span class="total-helper">Somatório das compras atribuídas a fornecedores em {{ periodoDescricao }}</span>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </ng-container>
+
+  <mat-card class="fornecedor-card empty-card" *ngIf="!carregando && estatisticasFornecedores.length === 0">
+    <mat-card-content>
+      <mat-icon>storefront</mat-icon>
+      <p>Nenhuma compra vinculada a fornecedor foi encontrada para {{ periodoDescricao }}.</p>
+    </mat-card-content>
+  </mat-card>
+</section>

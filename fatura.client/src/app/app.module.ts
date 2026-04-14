@@ -19,6 +19,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { ProfileSettingsComponent } from './components/profile-settings/profile-settings.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
+import { DashboardFornecedoresComponent } from './components/dashboard-fornecedores/dashboard-fornecedores.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
     LoginComponent,
     RegisterComponent,
     ProfileSettingsComponent,
-    SideMenuComponent
+    SideMenuComponent,
+    DashboardFornecedoresComponent
   ],
   imports: [
     BrowserModule,
