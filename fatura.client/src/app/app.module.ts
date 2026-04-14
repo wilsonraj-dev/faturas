@@ -6,7 +6,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material.module';
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FaturasComponent } from './components/faturas/faturas.component';
 import { CompraFormComponent } from './components/compra-form/compra-form.component';
@@ -24,7 +23,6 @@ import { SideMenuComponent } from './components/side-menu/side-menu.component';
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent,
     DashboardComponent,
     FaturasComponent,
     CompraFormComponent,
