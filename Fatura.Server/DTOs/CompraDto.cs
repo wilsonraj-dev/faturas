@@ -35,6 +35,7 @@ public class CompraResponse
 public class ParcelaResponse
 {
     public int Id { get; set; }
+    public int? CompraId { get; set; }
     public string NomeCompra { get; set; } = string.Empty;
     public ParcelaTipo Tipo { get; set; }
     public int? CompraRecorrenteId { get; set; }

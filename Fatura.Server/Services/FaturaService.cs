@@ -70,6 +70,7 @@ public class FaturaService : IFaturaService
                 .Select(p => new ParcelaResponse
                 {
                     Id = p.Id,
+                    CompraId = p.CompraId,
                     NomeCompra = p.Compra?.Nome ?? p.CompraRecorrente?.Nome ?? string.Empty,
                     Tipo = p.Tipo,
                     CompraRecorrenteId = p.CompraRecorrenteId,

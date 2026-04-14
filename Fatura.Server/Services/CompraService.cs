@@ -93,6 +93,7 @@ public class CompraService : ICompraService
             Parcelas = parcelas.Select(p => new ParcelaResponse
             {
                 Id = p.Id,
+                CompraId = p.CompraId,
                 NomeCompra = compra.Nome,
                 Tipo = p.Tipo,
                 CompraRecorrenteId = p.CompraRecorrenteId,
