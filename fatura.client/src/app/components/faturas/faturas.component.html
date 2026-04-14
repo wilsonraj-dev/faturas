@@ -197,7 +197,8 @@
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                       </table>
 
-                      <mat-paginator *ngIf="detalhe.parcelas.length > 0"
+                      <mat-paginator class="faturas-paginator"
+                                     *ngIf="detalhe.parcelas.length > 0"
                                      [length]="detalhe.parcelas.length"
                                      [pageIndex]="getDetalhePaginacao(fatura.id).pageIndex"
                                      [pageSize]="getDetalhePaginacao(fatura.id).pageSize"

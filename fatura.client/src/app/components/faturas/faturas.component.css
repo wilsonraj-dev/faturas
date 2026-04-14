@@ -227,6 +227,34 @@
     font-weight: 600;
   }
 
+  .parcelas-table td,
+  .parcelas-table th {
+    padding-right: 12px;
+  }
+
+  .parcelas-table .mat-mdc-header-row {
+    background: #3f51b5;
+    color: #FFFFFF;
+  }
+
+.faturas-paginator {
+  background: #3f51b5;
+  color: #fff;
+}
+
+  .faturas-paginator ::ng-deep .mat-mdc-paginator-container,
+  .faturas-paginator ::ng-deep .mat-mdc-select-value,
+  .faturas-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .faturas-paginator ::ng-deep .mat-mdc-icon-button,
+  .faturas-paginator ::ng-deep .mat-mdc-select-arrow,
+  .faturas-paginator ::ng-deep .mdc-text-field {
+    color: #fff;
+  }
+
+  .faturas-paginator ::ng-deep .mdc-text-field {
+    background: transparent;
+  }
+
 .tipo-chip {
   display: inline-flex;
   align-items: center;
@@ -239,16 +267,16 @@
   font-weight: 500;
 }
 
-.tipo-chip.recorrente {
-  background: #e0f2f1;
-  color: #00695c;
-}
+  .tipo-chip.recorrente {
+    background: #e0f2f1;
+    color: #00695c;
+  }
 
-.tipo-chip mat-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-}
+  .tipo-chip mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
 
 .sem-parcelas {
   display: flex;
