@@ -56,25 +56,39 @@
   text-decoration: none;
   color: #fff;
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+  /* garante que o conteúdo não quebre verticalmente */
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.navigation-item:hover {
-  background-color: rgba(255, 255, 255, 0.12);
-}
+  .navigation-item:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
 
+/* container do ícone com tamanho fixo para alinhamento consistente */
 .navigation-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; /* largura fixa do "slot" do ícone */
+  min-width: 36px;
+  height: 36px;
+  font-size: 20px;
   margin: 0;
-  font-size: 1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  flex-shrink: 0;
 }
 
+/* label ocupa o espaço restante e com ellipsis se ultrapassar */
 .navigation-label {
   font-size: 1.05rem;
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1 1 auto;
 }
 
+/* quando o menu está colapsado, centraliza apenas o ícone */
 .sidebar-collapsed .navigation-item {
   justify-content: center;
   padding: 0;

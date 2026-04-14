@@ -1,10 +1,9 @@
 <mat-sidenav-container class="layout-container" autosize>
-  <mat-sidenav
-    mode="side"
-    [opened]="true"
-    [disableClose]="true"
-    class="sidebar"
-    [class.sidebar-collapsed]="isCollapsed">
+  <mat-sidenav mode="side"
+               [opened]="true"
+               [disableClose]="true"
+               class="sidebar"
+               [class.sidebar-collapsed]="isCollapsed">
     <div class="sidebar-header">
       <mat-icon>credit_card</mat-icon>
       <span *ngIf="!isCollapsed">Controle de Faturas</span>
@@ -13,15 +12,14 @@
     <mat-divider></mat-divider>
 
     <nav class="navigation" aria-label="Formulários do sistema">
-      <a
-        mat-list-item
-        *ngFor="let item of navigationItems; trackBy: trackByRoute"
-        [routerLink]="item.route"
-        routerLinkActive="active-link"
-        [routerLinkActiveOptions]="{ exact: item.exact }"
-        [matTooltip]="isCollapsed ? item.label : ''"
-        matTooltipPosition="right"
-        class="navigation-item">
+      <a mat-list-item
+         *ngFor="let item of navigationItems; trackBy: trackByRoute"
+         [routerLink]="item.route"
+         routerLinkActive="active-link"
+         [routerLinkActiveOptions]="{ exact: item.exact }"
+         [matTooltip]="isCollapsed ? item.label : ''"
+         matTooltipPosition="right"
+         class="navigation-item">
         <mat-icon class="navigation-icon">{{ item.icon }}</mat-icon>
         <span *ngIf="!isCollapsed" class="navigation-label">{{ item.label }}</span>
       </a>
@@ -30,12 +28,11 @@
 
   <mat-sidenav-content class="layout-content">
     <mat-toolbar color="primary" class="topbar">
-      <button
-        mat-icon-button
-        type="button"
-        (click)="toggleMenu()"
-        [attr.aria-label]="isCollapsed ? 'Expandir menu lateral' : 'Contrair menu lateral'"
-        [matTooltip]="isCollapsed ? 'Expandir menu' : 'Contrair menu'">
+      <button mat-icon-button
+              type="button"
+              (click)="toggleMenu()"
+              [attr.aria-label]="isCollapsed ? 'Expandir menu lateral' : 'Contrair menu lateral'"
+              [matTooltip]="isCollapsed ? 'Expandir menu' : 'Contrair menu'">
         <mat-icon>{{ isCollapsed ? 'menu' : 'menu_open' }}</mat-icon>
       </button>
 
