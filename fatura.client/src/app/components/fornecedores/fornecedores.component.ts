@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { FornecedorService } from '../../services/api.service';
 import { Fornecedor } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,6 +17,9 @@ export class FornecedoresComponent implements OnInit {
   editandoNome = '';
 
   displayedColumns = ['id', 'nome', 'acoes'];
+  readonly pageSizeOptions = [10, 15, 20, 25];
+  pageSize = 10;
+  pageIndex = 0;
 
   constructor(
     private fornecedorService: FornecedorService,
@@ -26,11 +30,17 @@ export class FornecedoresComponent implements OnInit {
     this.carregar();
   }
 
+  get fornecedoresPaginados(): Fornecedor[] {
+    const inicio = this.pageIndex * this.pageSize;
+    return this.fornecedores.slice(inicio, inicio + this.pageSize);
+  }
+
   carregar(): void {
     this.carregando = true;
     this.fornecedorService.listar().subscribe({
       next: (dados) => {
         this.fornecedores = dados;
+        this.pageIndex = 0;
         this.carregando = false;
       },
       error: () => {
@@ -85,5 +95,10 @@ export class FornecedoresComponent implements OnInit {
       },
       error: () => this.snackBar.open('Erro ao excluir fornecedor', 'OK', { duration: 3000 })
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 }
