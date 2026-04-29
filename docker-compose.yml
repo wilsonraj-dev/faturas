@@ -1,0 +1,65 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: fatura-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fatura_db
+      MYSQL_USER: fatura_user
+      MYSQL_PASSWORD: fatura_password
+      MYSQL_ROOT_PASSWORD: fatura_root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - fatura-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pfatura_root_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: Fatura.Server/Dockerfile
+    container_name: fatura-api
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      UseHttpsRedirection: "false"
+      ConnectionStrings__DefaultConnection: Server=mysql;Port=3306;Database=fatura_db;Uid=fatura_user;Pwd=fatura_password;
+      Jwt__Key: "ChaveSecretaSuperSeguraParaJWT_FaturaApp_2025!@#$%"
+      Jwt__Issuer: FaturaApp
+      Jwt__Audience: FaturaApp
+      Jwt__ExpireHours: "8"
+    ports:
+      - "5000:8080"
+    networks:
+      - fatura-network
+
+  frontend:
+    build:
+      context: ./fatura.client
+      dockerfile: Dockerfile
+    container_name: fatura-frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+    networks:
+      - fatura-network
+
+networks:
+  fatura-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

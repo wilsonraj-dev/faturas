@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path=".dockerignore" />
+  </Folder>
   <Project Path="fatura.client/fatura.client.esproj">
     <Build />
     <Deploy />
