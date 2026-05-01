@@ -8,6 +8,8 @@ RUN npm ci
 COPY fatura.client/. .
 RUN npm run build -- --configuration production
 
+RUN find /app/dist -type f | head -30
+
 # ── Etapa 2: Build do .NET ───────────────────────────────
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS backend-build
 WORKDIR /src
