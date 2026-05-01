@@ -37,7 +37,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseDefaultFiles();
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
