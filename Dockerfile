@@ -31,7 +31,7 @@ COPY --from=backend-build /app/publish .
 
 # Copia o build do Angular para onde o .NET serve os estáticos
 # Ajuste o caminho após o "dist/" conforme o nome do seu app no angular.json
-COPY --from=frontend-build /app/dist/fatura.client/browser ./wwwroot
+COPY --from=frontend-build /app/dist/fatura.client ./wwwroot
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://+:8080
