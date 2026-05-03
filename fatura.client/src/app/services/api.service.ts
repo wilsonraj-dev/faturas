@@ -15,10 +15,11 @@ import {
   SimulacaoDetalhe,
   CriarSimulacaoRequest
 } from '../models/models';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CompraService {
-  private readonly baseUrl = '/api/compras';
+  private readonly baseUrl = `${environment.apiUrl}/compras`;
 
   constructor(private http: HttpClient) { }
 
@@ -33,7 +34,7 @@ export class CompraService {
 
 @Injectable({ providedIn: 'root' })
 export class CompraRecorrenteService {
-  private readonly baseUrl = '/api/compras-recorrentes';
+  private readonly baseUrl = `${environment.apiUrl}/compras-recorrentes`;
 
   constructor(private http: HttpClient) { }
 
@@ -56,7 +57,7 @@ export class CompraRecorrenteService {
 
 @Injectable({ providedIn: 'root' })
 export class FaturaService {
-  private readonly baseUrl = '/api/faturas';
+  private readonly baseUrl = `${environment.apiUrl}/faturas`;
 
   constructor(private http: HttpClient) { }
 
@@ -92,7 +93,7 @@ export class FaturaService {
 
 @Injectable({ providedIn: 'root' })
 export class FornecedorService {
-  private readonly baseUrl = '/api/fornecedores';
+  private readonly baseUrl = `${environment.apiUrl}/fornecedores`;
 
   constructor(private http: HttpClient) { }
 
@@ -119,7 +120,7 @@ export class FornecedorService {
 
 @Injectable({ providedIn: 'root' })
 export class SimulacaoApiService {
-  private readonly baseUrl = '/api/simulacoes';
+  private readonly baseUrl = `${environment.apiUrl}/simulacoes`;
 
   constructor(private http: HttpClient) { }
 
