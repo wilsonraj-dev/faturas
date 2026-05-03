@@ -4,4 +4,6 @@
 
 ### Frontend Angular
 - Preferir validações em tempo real usando Reactive Forms com FormBuilder e Validators.
-- Aplicar paginação somente no mat-table de resultados do componente de Simulações; nunca aplicar paginação na grid de cards.
+
+### Backend
+- Não colocar regras de negócio em controllers; implementá-las em interfaces e classes de serviço e registrá-las no contêiner de injeção de dependência (DependencyInjectionServices).
