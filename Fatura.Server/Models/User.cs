@@ -16,4 +16,9 @@ public class User
     public List<FaturaEntity> Faturas { get; set; } = [];
     public List<Fornecedor> Fornecedores { get; set; } = [];
     public List<Simulacao> Simulacoes { get; set; } = [];
+    public List<InstituicaoFinanceira> InstituicoesFinanceiras { get; set; } = [];
+    public List<ContaFinanceira> ContasFinanceiras { get; set; } = [];
+    public List<Categoria> Categorias { get; set; } = [];
+    public List<Subcategoria> Subcategorias { get; set; } = [];
+    public List<LancamentoFinanceiro> LancamentosFinanceiros { get; set; } = [];
 }
