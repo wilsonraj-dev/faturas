@@ -15,6 +15,11 @@ public class AppDbContext : DbContext
     public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
     public DbSet<Simulacao> Simulacoes => Set<Simulacao>();
     public DbSet<SimulacaoParcela> SimulacaoParcelas => Set<SimulacaoParcela>();
+    public DbSet<InstituicaoFinanceira> InstituicoesFinanceiras => Set<InstituicaoFinanceira>();
+    public DbSet<ContaFinanceira> ContasFinanceiras => Set<ContaFinanceira>();
+    public DbSet<Categoria> Categorias => Set<Categoria>();
+    public DbSet<Subcategoria> Subcategorias => Set<Subcategoria>();
+    public DbSet<LancamentoFinanceiro> LancamentosFinanceiros => Set<LancamentoFinanceiro>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -105,6 +110,97 @@ public class AppDbContext : DbContext
 
             entity.HasOne(e => e.User)
                   .WithMany(u => u.Fornecedores)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<InstituicaoFinanceira>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
+            entity.HasIndex(e => new { e.UserId, e.Nome }).IsUnique();
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.InstituicoesFinanceiras)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ContaFinanceira>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Tipo).IsRequired();
+            entity.HasIndex(e => new { e.UserId, e.InstituicaoId, e.Nome }).IsUnique();
+
+            entity.HasOne(e => e.Instituicao)
+                  .WithMany(i => i.Contas)
+                  .HasForeignKey(e => e.InstituicaoId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.ContasFinanceiras)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Categoria>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(150);
+            entity.Property(e => e.Tipo).IsRequired();
+            entity.HasIndex(e => new { e.UserId, e.Tipo, e.Nome }).IsUnique();
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Categorias)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Subcategoria>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Nome).IsRequired().HasMaxLength(150);
+            entity.HasIndex(e => new { e.UserId, e.CategoriaId, e.Nome }).IsUnique();
+
+            entity.HasOne(e => e.Categoria)
+                  .WithMany(c => c.Subcategorias)
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Subcategorias)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LancamentoFinanceiro>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Valor).HasPrecision(18, 2);
+            entity.Property(e => e.Descricao).HasMaxLength(500);
+            entity.Property(e => e.Tipo).IsRequired();
+            entity.Property(e => e.Origem).IsRequired();
+            entity.HasIndex(e => new { e.Origem, e.OrigemId }).IsUnique().HasDatabaseName("UX_Lancamento_Origem");
+            entity.HasIndex(e => new { e.UserId, e.Data, e.Tipo });
+
+            entity.HasOne(e => e.Categoria)
+                  .WithMany(c => c.Lancamentos)
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Subcategoria)
+                  .WithMany(s => s.Lancamentos)
+                  .HasForeignKey(e => e.SubcategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.ContaFinanceira)
+                  .WithMany(c => c.Lancamentos)
+                  .HasForeignKey(e => e.ContaFinanceiraId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.LancamentosFinanceiros)
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
