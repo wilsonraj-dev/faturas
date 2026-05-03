@@ -12,6 +12,11 @@ namespace Fatura.Server.IoC
             services.AddScoped<IFornecedorService, FornecedorService>();
             services.AddScoped<ISimulacaoService, SimulacaoService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IInstituicaoFinanceiraService, InstituicaoFinanceiraService>();
+            services.AddScoped<IContaFinanceiraService, ContaFinanceiraService>();
+            services.AddScoped<ICategoriaService, CategoriaService>();
+            services.AddScoped<ISubcategoriaService, SubcategoriaService>();
+            services.AddScoped<ILancamentoFinanceiroService, LancamentoFinanceiroService>();
 
             return services;
         }
