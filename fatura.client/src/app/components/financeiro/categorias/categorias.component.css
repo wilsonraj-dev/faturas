@@ -1,0 +1,72 @@
+.categorias-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+  .categorias-container h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #263238;
+  }
+
+.tab-content {
+  padding-top: 24px;
+}
+
+.header-actions {
+  margin-bottom: 24px;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+}
+
+  .loading mat-spinner {
+    margin: 0 auto;
+  }
+
+.table-card {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.full-table {
+  width: 100%;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-receita {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.badge-despesa {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.empty-card {
+  border-radius: 12px !important;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: #888;
+}
+
+  .empty-state mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+  }

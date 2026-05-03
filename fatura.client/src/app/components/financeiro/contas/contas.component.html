@@ -1,0 +1,70 @@
+<div class="container">
+  <h2>Contas Financeiras</h2>
+
+  <div class="header-actions">
+    <button mat-raised-button color="primary" (click)="abrirDialog()">
+      <mat-icon>add</mat-icon> Nova Conta
+    </button>
+  </div>
+
+  <div *ngIf="carregando" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <mat-card *ngIf="!carregando && contas.length > 0" class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">credit_card</mat-icon> Contas Cadastradas ({{ contas.length }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="contasPaginadas" class="full-table">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let c">{{ c.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Nome</th>
+          <td mat-cell *matCellDef="let c">{{ c.nome }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let c">{{ getTipoLabel(c.tipo) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="instituicaoNome">
+          <th mat-header-cell *matHeaderCellDef>Instituição</th>
+          <td mat-cell *matCellDef="let c">{{ c.instituicaoNome }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let c">
+            <button mat-icon-button color="primary" (click)="abrirDialog(c)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deletar(c)" matTooltip="Excluir">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [length]="contas.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                     [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!carregando && contas.length === 0" class="empty-card">
+    <mat-card-content class="empty-state">
+      <mat-icon>credit_card</mat-icon>
+      <p>Nenhuma conta cadastrada</p>
+    </mat-card-content>
+  </mat-card>
+</div>

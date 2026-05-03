@@ -11,6 +11,10 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ProfileSettingsComponent } from './components/profile-settings/profile-settings.component';
 import { AuthGuard } from './guards/auth.guard';
+import { InstituicoesComponent } from './components/financeiro/instituicoes/instituicoes.component';
+import { ContasComponent } from './components/financeiro/contas/contas.component';
+import { CategoriasFinanceiroComponent } from './components/financeiro/categorias/categorias.component';
+import { LancamentosComponent } from './components/financeiro/lancamentos/lancamentos.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -53,6 +57,30 @@ const routes: Routes = [
     data: { showInMenu: true, label: 'Simulações', icon: 'calculate', exact: false }
   },
   { path: 'simulacoes/:id', component: SimulacaoDetalheComponent, canActivate: [AuthGuard] },
+  {
+    path: 'financeiro/instituicoes',
+    component: InstituicoesComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Instituições', icon: 'account_balance', exact: true, group: 'Financeiro' }
+  },
+  {
+    path: 'financeiro/contas',
+    component: ContasComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Contas', icon: 'credit_card', exact: true, group: 'Financeiro' }
+  },
+  {
+    path: 'financeiro/categorias',
+    component: CategoriasFinanceiroComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Categorias', icon: 'category', exact: true, group: 'Financeiro' }
+  },
+  {
+    path: 'financeiro/lancamentos',
+    component: LancamentosComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Lançamentos', icon: 'payments', exact: true, group: 'Financeiro' }
+  },
   { path: 'configuracoes', component: ProfileSettingsComponent, canActivate: [AuthGuard] }
 ];
 

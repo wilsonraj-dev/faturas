@@ -13,7 +13,23 @@ import {
   CriarFornecedorRequest,
   SimulacaoResumo,
   SimulacaoDetalhe,
-  CriarSimulacaoRequest
+  CriarSimulacaoRequest,
+  InstituicaoFinanceira,
+  CriarInstituicaoFinanceiraRequest,
+  AtualizarInstituicaoFinanceiraRequest,
+  ContaFinanceira,
+  CriarContaFinanceiraRequest,
+  AtualizarContaFinanceiraRequest,
+  Categoria,
+  CriarCategoriaRequest,
+  AtualizarCategoriaRequest,
+  Subcategoria,
+  CriarSubcategoriaRequest,
+  AtualizarSubcategoriaRequest,
+  LancamentoFinanceiro,
+  CriarLancamentoFinanceiroRequest,
+  AtualizarLancamentoFinanceiroRequest,
+  TipoCategoria
 } from '../models/models';
 import { environment } from '../../environments/environment';
 
@@ -142,5 +158,148 @@ export class SimulacaoApiService {
 
   converterEmCompra(id: number): Observable<CompraResponse> {
     return this.http.post<CompraResponse>(`${this.baseUrl}/${id}/converter`, {});
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class InstituicaoFinanceiraService {
+  private readonly baseUrl = `${environment.apiUrl}/instituicoesFinanceiras`;
+
+  constructor(private http: HttpClient) { }
+
+  listar(): Observable<InstituicaoFinanceira[]> {
+    return this.http.get<InstituicaoFinanceira[]>(this.baseUrl);
+  }
+
+  obter(id: number): Observable<InstituicaoFinanceira> {
+    return this.http.get<InstituicaoFinanceira>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarInstituicaoFinanceiraRequest): Observable<InstituicaoFinanceira> {
+    return this.http.post<InstituicaoFinanceira>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: AtualizarInstituicaoFinanceiraRequest): Observable<InstituicaoFinanceira> {
+    return this.http.put<InstituicaoFinanceira>(`${this.baseUrl}/${id}`, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class ContaFinanceiraService {
+  private readonly baseUrl = `${environment.apiUrl}/contasFinanceiras`;
+
+  constructor(private http: HttpClient) { }
+
+  listar(instituicaoId?: number): Observable<ContaFinanceira[]> {
+    const params = instituicaoId ? `?instituicaoId=${instituicaoId}` : '';
+    return this.http.get<ContaFinanceira[]>(`${this.baseUrl}${params}`);
+  }
+
+  obter(id: number): Observable<ContaFinanceira> {
+    return this.http.get<ContaFinanceira>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarContaFinanceiraRequest): Observable<ContaFinanceira> {
+    return this.http.post<ContaFinanceira>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: AtualizarContaFinanceiraRequest): Observable<ContaFinanceira> {
+    return this.http.put<ContaFinanceira>(`${this.baseUrl}/${id}`, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class CategoriaService {
+  private readonly baseUrl = `${environment.apiUrl}/categorias`;
+
+  constructor(private http: HttpClient) { }
+
+  listar(tipo?: TipoCategoria): Observable<Categoria[]> {
+    const params = tipo ? `?tipo=${tipo}` : '';
+    return this.http.get<Categoria[]>(`${this.baseUrl}${params}`);
+  }
+
+  obter(id: number): Observable<Categoria> {
+    return this.http.get<Categoria>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarCategoriaRequest): Observable<Categoria> {
+    return this.http.post<Categoria>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: AtualizarCategoriaRequest): Observable<Categoria> {
+    return this.http.put<Categoria>(`${this.baseUrl}/${id}`, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class SubcategoriaService {
+  private readonly baseUrl = `${environment.apiUrl}/subcategorias`;
+
+  constructor(private http: HttpClient) { }
+
+  listar(categoriaId?: number): Observable<Subcategoria[]> {
+    const params = categoriaId ? `?categoriaId=${categoriaId}` : '';
+    return this.http.get<Subcategoria[]>(`${this.baseUrl}${params}`);
+  }
+
+  obter(id: number): Observable<Subcategoria> {
+    return this.http.get<Subcategoria>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarSubcategoriaRequest): Observable<Subcategoria> {
+    return this.http.post<Subcategoria>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: AtualizarSubcategoriaRequest): Observable<Subcategoria> {
+    return this.http.put<Subcategoria>(`${this.baseUrl}/${id}`, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class LancamentoFinanceiroService {
+  private readonly baseUrl = `${environment.apiUrl}/lancamentosFinanceiros`;
+
+  constructor(private http: HttpClient) { }
+
+  listar(dataInicial?: string, dataFinal?: string, tipo?: TipoCategoria): Observable<LancamentoFinanceiro[]> {
+    const params = new URLSearchParams();
+    if (dataInicial) params.set('dataInicial', dataInicial);
+    if (dataFinal) params.set('dataFinal', dataFinal);
+    if (tipo) params.set('tipo', tipo.toString());
+    const query = params.toString();
+    return this.http.get<LancamentoFinanceiro[]>(`${this.baseUrl}${query ? '?' + query : ''}`);
+  }
+
+  obter(id: number): Observable<LancamentoFinanceiro> {
+    return this.http.get<LancamentoFinanceiro>(`${this.baseUrl}/${id}`);
+  }
+
+  criar(request: CriarLancamentoFinanceiroRequest): Observable<LancamentoFinanceiro> {
+    return this.http.post<LancamentoFinanceiro>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: AtualizarLancamentoFinanceiroRequest): Observable<LancamentoFinanceiro> {
+    return this.http.put<LancamentoFinanceiro>(`${this.baseUrl}/${id}`, request);
+  }
+
+  deletar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }

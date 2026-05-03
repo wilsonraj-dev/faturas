@@ -150,3 +150,132 @@ export interface UpdateProfileRequest {
   currentPassword: string;
   newPassword: string;
 }
+
+// Enums Financeiros
+export enum TipoCategoria {
+  Receita = 1,
+  Despesa = 2
+}
+
+export enum TipoContaFinanceira {
+  CartaoCredito = 1,
+  ContaCorrente = 2,
+  Carteira = 3
+}
+
+export enum OrigemLancamento {
+  Manual = 1,
+  Fatura = 2,
+  Recorrente = 3
+}
+
+// Instituição Financeira
+export interface InstituicaoFinanceira {
+  id: number;
+  nome: string;
+  quantidadeContas: number;
+}
+
+export interface CriarInstituicaoFinanceiraRequest {
+  nome: string;
+}
+
+export interface AtualizarInstituicaoFinanceiraRequest {
+  nome: string;
+}
+
+// Conta Financeira
+export interface ContaFinanceira {
+  id: number;
+  nome: string;
+  tipo: TipoContaFinanceira;
+  instituicaoId: number;
+  instituicaoNome: string;
+}
+
+export interface CriarContaFinanceiraRequest {
+  nome: string;
+  tipo: TipoContaFinanceira;
+  instituicaoId: number;
+}
+
+export interface AtualizarContaFinanceiraRequest {
+  nome: string;
+  tipo: TipoContaFinanceira;
+  instituicaoId: number;
+}
+
+// Categoria
+export interface Categoria {
+  id: number;
+  nome: string;
+  tipo: TipoCategoria;
+  quantidadeSubcategorias: number;
+}
+
+export interface CriarCategoriaRequest {
+  nome: string;
+  tipo: TipoCategoria;
+}
+
+export interface AtualizarCategoriaRequest {
+  nome: string;
+  tipo: TipoCategoria;
+}
+
+// Subcategoria
+export interface Subcategoria {
+  id: number;
+  nome: string;
+  categoriaId: number;
+  categoriaNome: string;
+}
+
+export interface CriarSubcategoriaRequest {
+  nome: string;
+  categoriaId: number;
+}
+
+export interface AtualizarSubcategoriaRequest {
+  nome: string;
+  categoriaId: number;
+}
+
+// Lançamento Financeiro
+export interface LancamentoFinanceiro {
+  id: number;
+  tipo: TipoCategoria;
+  valor: number;
+  data: string;
+  descricao?: string;
+  categoriaId?: number;
+  categoriaNome?: string;
+  subcategoriaId?: number;
+  subcategoriaNome?: string;
+  contaFinanceiraId: number;
+  contaFinanceiraNome: string;
+  origem: OrigemLancamento;
+  origemId?: number;
+}
+
+export interface CriarLancamentoFinanceiroRequest {
+  tipo: TipoCategoria;
+  valor: number;
+  data: string;
+  descricao?: string;
+  categoriaId?: number;
+  subcategoriaId?: number;
+  contaFinanceiraId: number;
+  origem: OrigemLancamento;
+  origemId?: number;
+}
+
+export interface AtualizarLancamentoFinanceiroRequest {
+  tipo: TipoCategoria;
+  valor: number;
+  data: string;
+  descricao?: string;
+  categoriaId?: number;
+  subcategoriaId?: number;
+  contaFinanceiraId: number;
+}

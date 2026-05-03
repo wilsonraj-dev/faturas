@@ -1,0 +1,65 @@
+<div class="container">
+  <h2>Instituições Financeiras</h2>
+
+  <div class="header-actions">
+    <button mat-raised-button color="primary" (click)="abrirDialog()">
+      <mat-icon>add</mat-icon> Nova Instituição
+    </button>
+  </div>
+
+  <div *ngIf="carregando" class="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <mat-card *ngIf="!carregando && instituicoes.length > 0" class="table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="title-icon">account_balance</mat-icon> Instituições Cadastradas ({{ instituicoes.length }})
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="instituicoesPaginadas" class="full-table">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let i">{{ i.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Nome</th>
+          <td mat-cell *matCellDef="let i">{{ i.nome }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quantidadeContas">
+          <th mat-header-cell *matHeaderCellDef>Contas</th>
+          <td mat-cell *matCellDef="let i">{{ i.quantidadeContas }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let i">
+            <button mat-icon-button color="primary" (click)="abrirDialog(i)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deletar(i)" matTooltip="Excluir">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [length]="instituicoes.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+        [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="!carregando && instituicoes.length === 0" class="empty-card">
+    <mat-card-content class="empty-state">
+      <mat-icon>account_balance</mat-icon>
+      <p>Nenhuma instituição cadastrada</p>
+    </mat-card-content>
+  </mat-card>
+</div>

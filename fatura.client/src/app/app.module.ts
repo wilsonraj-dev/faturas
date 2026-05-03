@@ -20,6 +20,16 @@ import { ProfileSettingsComponent } from './components/profile-settings/profile-
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { SideMenuComponent } from './components/side-menu/side-menu.component';
 import { DashboardFornecedoresComponent } from './components/dashboard-fornecedores/dashboard-fornecedores.component';
+import { InstituicoesComponent } from './components/financeiro/instituicoes/instituicoes.component';
+import { ContasComponent } from './components/financeiro/contas/contas.component';
+import { CategoriasFinanceiroComponent } from './components/financeiro/categorias/categorias.component';
+import { LancamentosComponent } from './components/financeiro/lancamentos/lancamentos.component';
+import { ConfirmDialogComponent } from './components/financeiro/dialogs/confirm-dialog.component';
+import { InstituicaoFormDialogComponent } from './components/financeiro/dialogs/instituicao-form-dialog.component';
+import { ContaFormDialogComponent } from './components/financeiro/dialogs/conta-form-dialog.component';
+import { CategoriaFormDialogComponent } from './components/financeiro/dialogs/categoria-form-dialog.component';
+import { SubcategoriaFormDialogComponent } from './components/financeiro/dialogs/subcategoria-form-dialog.component';
+import { LancamentoFormDialogComponent } from './components/financeiro/dialogs/lancamento-form-dialog.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +46,17 @@ import { DashboardFornecedoresComponent } from './components/dashboard-fornecedo
     RegisterComponent,
     ProfileSettingsComponent,
     SideMenuComponent,
-    DashboardFornecedoresComponent
+    DashboardFornecedoresComponent,
+    InstituicoesComponent,
+    ContasComponent,
+    CategoriasFinanceiroComponent,
+    LancamentosComponent,
+    ConfirmDialogComponent,
+    InstituicaoFormDialogComponent,
+    ContaFormDialogComponent,
+    CategoriaFormDialogComponent,
+    SubcategoriaFormDialogComponent,
+    LancamentoFormDialogComponent
   ],
   imports: [
     BrowserModule,
