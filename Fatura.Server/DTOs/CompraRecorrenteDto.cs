@@ -6,6 +6,9 @@ public class CriarCompraRecorrenteRequest
     public decimal ValorMensal { get; set; }
     public int DiaCobranca { get; set; }
     public bool Ativo { get; set; } = true;
+    public int ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public int? SubcategoriaId { get; set; }
 }
 
 public class AtualizarCompraRecorrenteRequest
@@ -14,6 +17,9 @@ public class AtualizarCompraRecorrenteRequest
     public decimal ValorMensal { get; set; }
     public int DiaCobranca { get; set; }
     public bool Ativo { get; set; }
+    public int ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public int? SubcategoriaId { get; set; }
 }
 
 public class CompraRecorrenteResponse
@@ -23,4 +29,9 @@ public class CompraRecorrenteResponse
     public decimal ValorMensal { get; set; }
     public int DiaCobranca { get; set; }
     public bool Ativo { get; set; }
+    public int? ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public string? CategoriaNome { get; set; }
+    public int? SubcategoriaId { get; set; }
+    public string? SubcategoriaNome { get; set; }
 }

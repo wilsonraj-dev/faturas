@@ -1,5 +1,6 @@
 using Fatura.Server.Data;
 using Fatura.Server.DTOs;
+using Fatura.Server.Models;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 
@@ -88,8 +89,48 @@ public class FaturaService : IFaturaService
     /// </summary>
     public async Task<bool> QuitarFaturaAsync(int id, int userId)
     {
-        var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
+        var fatura = await _db.Faturas
+            .Include(f => f.Parcelas)
+                .ThenInclude(p => p.Compra)
+            .Include(f => f.Parcelas)
+                .ThenInclude(p => p.CompraRecorrente)
+            .FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
+
         if (fatura is null) return false;
+
+        if (!fatura.Quitada)
+        {
+            var origemIds = fatura.Parcelas.Select(p => p.Id).ToList();
+            var lancamentosExistentes = await _db.LancamentosFinanceiros
+                .Where(l => l.UserId == userId && l.Origem == OrigemLancamento.Fatura && l.OrigemId.HasValue && origemIds.Contains(l.OrigemId.Value))
+                .Select(l => l.OrigemId!.Value)
+                .ToListAsync();
+
+            foreach (var parcela in fatura.Parcelas.Where(p => !lancamentosExistentes.Contains(p.Id)))
+            {
+                var contaFinanceiraId = parcela.Compra?.ContaFinanceiraId ?? parcela.CompraRecorrente?.ContaFinanceiraId;
+                if (!contaFinanceiraId.HasValue)
+                {
+                    continue;
+                }
+
+                _db.LancamentosFinanceiros.Add(new LancamentoFinanceiro
+                {
+                    Tipo = TipoCategoria.Despesa,
+                    Valor = parcela.Valor,
+                    Data = DateTime.Today,
+                    Descricao = $"Quitação da fatura {fatura.Mes:D2}/{fatura.Ano} - {parcela.Compra?.Nome ?? parcela.CompraRecorrente?.Nome ?? "Parcela"}",
+                    ContaFinanceiraId = contaFinanceiraId.Value,
+                    CategoriaId = parcela.Compra?.CategoriaId ?? parcela.CompraRecorrente?.CategoriaId,
+                    SubcategoriaId = parcela.Compra?.SubcategoriaId ?? parcela.CompraRecorrente?.SubcategoriaId,
+                    Origem = OrigemLancamento.Fatura,
+                    OrigemId = parcela.Id,
+                    UserId = userId
+                });
+            }
+
+            await _db.SaveChangesAsync();
+        }
 
         fatura.Quitada = true;
         await _db.SaveChangesAsync();

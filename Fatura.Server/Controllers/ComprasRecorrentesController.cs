@@ -33,13 +33,23 @@ public class ComprasRecorrentesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CompraRecorrenteResponse>> Criar([FromBody] CriarCompraRecorrenteRequest request)
     {
-        var erroValidacao = Validar(request.Nome, request.ValorMensal, request.DiaCobranca);
+        var userId = GetUserId();
+        var erroValidacao = Validar(request.Nome, request.ValorMensal, request.DiaCobranca, request.ContaFinanceiraId);
         if (erroValidacao is not null)
         {
             return BadRequest(erroValidacao);
         }
 
-        var resultado = await _compraRecorrenteService.CriarAsync(request, GetUserId());
+        if (!await _compraRecorrenteService.ContaFinanceiraExisteAsync(request.ContaFinanceiraId, userId))
+            return BadRequest("Conta financeira não encontrada.");
+
+        if (request.CategoriaId.HasValue && !await _compraRecorrenteService.CategoriaExisteAsync(request.CategoriaId.Value, userId))
+            return BadRequest("Categoria não encontrada.");
+
+        if (request.SubcategoriaId.HasValue && !await _compraRecorrenteService.SubcategoriaExisteAsync(request.SubcategoriaId.Value, userId))
+            return BadRequest("Subcategoria não encontrada.");
+
+        var resultado = await _compraRecorrenteService.CriarAsync(request, userId);
         return StatusCode(StatusCodes.Status201Created, resultado);
     }
 
@@ -49,13 +59,23 @@ public class ComprasRecorrentesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CompraRecorrenteResponse>> Atualizar(int id, [FromBody] AtualizarCompraRecorrenteRequest request)
     {
-        var erroValidacao = Validar(request.Nome, request.ValorMensal, request.DiaCobranca);
+        var userId = GetUserId();
+        var erroValidacao = Validar(request.Nome, request.ValorMensal, request.DiaCobranca, request.ContaFinanceiraId);
         if (erroValidacao is not null)
         {
             return BadRequest(erroValidacao);
         }
 
-        var resultado = await _compraRecorrenteService.AtualizarAsync(id, request, GetUserId());
+        if (!await _compraRecorrenteService.ContaFinanceiraExisteAsync(request.ContaFinanceiraId, userId))
+            return BadRequest("Conta financeira não encontrada.");
+
+        if (request.CategoriaId.HasValue && !await _compraRecorrenteService.CategoriaExisteAsync(request.CategoriaId.Value, userId))
+            return BadRequest("Categoria não encontrada.");
+
+        if (request.SubcategoriaId.HasValue && !await _compraRecorrenteService.SubcategoriaExisteAsync(request.SubcategoriaId.Value, userId))
+            return BadRequest("Subcategoria não encontrada.");
+
+        var resultado = await _compraRecorrenteService.AtualizarAsync(id, request, userId);
         if (resultado is null)
         {
             return NotFound("Compra recorrente não encontrada.");
@@ -78,11 +98,16 @@ public class ComprasRecorrentesController : ControllerBase
         return NoContent();
     }
 
-    private static string? Validar(string nome, decimal valorMensal, int diaCobranca)
+    private static string? Validar(string nome, decimal valorMensal, int diaCobranca, int contaFinanceiraId)
     {
         if (string.IsNullOrWhiteSpace(nome))
         {
             return "O nome é obrigatório.";
+        }
+
+        if (contaFinanceiraId <= 0)
+        {
+            return "A conta financeira é obrigatória.";
         }
 
         if (valorMensal <= 0)

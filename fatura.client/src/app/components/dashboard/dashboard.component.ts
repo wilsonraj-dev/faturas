@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FaturaService, CompraRecorrenteService, CompraService } from '../../services/api.service';
-import { FaturaResumo, CriarCompraRequest, SimulacaoFaturaItem } from '../../models/models';
+import { FaturaService, CompraRecorrenteService, CompraService, ContaFinanceiraService } from '../../services/api.service';
+import { FaturaResumo, CriarCompraRequest, SimulacaoFaturaItem, ContaFinanceira } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 export type StatusFatura = 'saudavel' | 'atencao' | 'estourado';
@@ -37,7 +37,9 @@ export class DashboardComponent implements OnInit {
   simData = '';
   simParcelas = 1;
   simValor = 0;
+  simContaFinanceiraId: number | null = null;
   simTentouSubmeter = false;
+  contasFinanceiras: ContaFinanceira[] = [];
 
   meses = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -48,6 +50,7 @@ export class DashboardComponent implements OnInit {
     private faturaService: FaturaService,
     private compraRecorrenteService: CompraRecorrenteService,
     private compraService: CompraService,
+    private contaFinanceiraService: ContaFinanceiraService,
     private snackBar: MatSnackBar
   ) { }
 
@@ -58,7 +61,17 @@ export class DashboardComponent implements OnInit {
     }
     const anoAtual = new Date().getFullYear();
     this.anos = Array.from({ length: 5 }, (_, i) => anoAtual - 1 + i);
+    this.carregarContasFinanceiras();
     this.carregarDados();
+  }
+
+  carregarContasFinanceiras(): void {
+    this.contaFinanceiraService.listar().subscribe({
+      next: (dados) => this.contasFinanceiras = dados,
+      error: () => {
+        this.contasFinanceiras = [];
+      }
+    });
   }
 
   carregarDados(): void {
@@ -227,18 +240,27 @@ export class DashboardComponent implements OnInit {
 
   // --- Simulação ---
   get simFormularioValido(): boolean {
-    return !!this.simNome?.trim() && !!this.simData && this.simParcelas >= 1 && this.simValor > 0;
+    return !!this.simNome?.trim()
+      && !!this.simData
+      && this.simParcelas >= 1
+      && this.simValor > 0
+      && this.simContaFinanceiraId !== null
+      && this.simContaFinanceiraId > 0;
   }
 
   simular(): void {
     this.simTentouSubmeter = true;
     if (!this.simFormularioValido) return;
 
+    const contaFinanceiraId = this.simContaFinanceiraId;
+    if (contaFinanceiraId === null) return;
+
     const request: CriarCompraRequest = {
       nome: this.simNome,
       dataCompra: this.simData,
       numeroParcelas: this.simParcelas,
-      valorTotal: this.simValor
+      valorTotal: this.simValor,
+      contaFinanceiraId: contaFinanceiraId!
     };
 
     this.compraService.simularCompra(request).subscribe({
@@ -253,6 +275,7 @@ export class DashboardComponent implements OnInit {
     this.simData = '';
     this.simParcelas = 1;
     this.simValor = 0;
+    this.simContaFinanceiraId = null;
     this.simTentouSubmeter = false;
   }
 }

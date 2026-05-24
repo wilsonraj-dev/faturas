@@ -1,7 +1,3 @@
-.container {
-  padding: 24px;
-}
-
 .header-actions {
   margin-bottom: 24px;
 }
@@ -32,6 +28,33 @@
 .full-table {
   width: 100%;
 }
+
+.contas-table .mat-mdc-header-row {
+  background: #3f51b5;
+}
+
+.contas-table th {
+  color: #fff;
+  font-weight: 600;
+}
+
+.contas-paginator {
+  background: #3f51b5;
+  color: #fff;
+}
+
+  .contas-paginator ::ng-deep .mat-mdc-paginator-container,
+  .contas-paginator ::ng-deep .mat-mdc-select-value,
+  .contas-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .contas-paginator ::ng-deep .mat-mdc-icon-button,
+  .contas-paginator ::ng-deep .mat-mdc-select-arrow,
+  .contas-paginator ::ng-deep .mdc-text-field {
+    color: #fff;
+  }
+
+  .contas-paginator ::ng-deep .mdc-text-field {
+    background: transparent;
+  }
 
 .empty-card {
   border-radius: 12px !important;

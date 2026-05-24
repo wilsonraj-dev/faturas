@@ -1,15 +1,7 @@
 .categorias-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 16px;
 }
-
-  .categorias-container h2 {
-    font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #263238;
-  }
 
 .tab-content {
   padding-top: 24px;
@@ -17,6 +9,23 @@
 
 .header-actions {
   margin-bottom: 24px;
+}
+
+.subcategorias-actions {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.subcategorias-filtro-form {
+  display: flex;
+  align-items: flex-start;
+}
+
+.subcategorias-filtro-field {
+  min-width: 260px;
 }
 
 .loading {
@@ -36,6 +45,43 @@
 .full-table {
   width: 100%;
 }
+
+.categorias-table .mat-mdc-header-row,
+.subcategorias-table .mat-mdc-header-row {
+  background: #3f51b5;
+}
+
+.categorias-table th,
+.subcategorias-table th {
+  color: #fff;
+  font-weight: 600;
+}
+
+.categorias-paginator,
+.subcategorias-paginator {
+  background: #3f51b5;
+  color: #fff;
+}
+
+  .categorias-paginator ::ng-deep .mat-mdc-paginator-container,
+  .categorias-paginator ::ng-deep .mat-mdc-select-value,
+  .categorias-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .categorias-paginator ::ng-deep .mat-mdc-icon-button,
+  .categorias-paginator ::ng-deep .mat-mdc-select-arrow,
+  .categorias-paginator ::ng-deep .mdc-text-field,
+  .subcategorias-paginator ::ng-deep .mat-mdc-paginator-container,
+  .subcategorias-paginator ::ng-deep .mat-mdc-select-value,
+  .subcategorias-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .subcategorias-paginator ::ng-deep .mat-mdc-icon-button,
+  .subcategorias-paginator ::ng-deep .mat-mdc-select-arrow,
+  .subcategorias-paginator ::ng-deep .mdc-text-field {
+    color: #fff;
+  }
+
+  .categorias-paginator ::ng-deep .mdc-text-field,
+  .subcategorias-paginator ::ng-deep .mdc-text-field {
+    background: transparent;
+  }
 
 .badge {
   padding: 4px 12px;
@@ -70,3 +116,15 @@
     height: 48px;
     margin-bottom: 12px;
   }
+
+@media (max-width: 768px) {
+  .subcategorias-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .subcategorias-filtro-form,
+  .subcategorias-filtro-field {
+    width: 100%;
+  }
+}

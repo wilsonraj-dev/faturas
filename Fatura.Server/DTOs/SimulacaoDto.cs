@@ -9,6 +9,9 @@ public class CriarSimulacaoRequest
     public DateTime DataSimulacao { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public int? SubcategoriaId { get; set; }
 }
 
 /// <summary>
@@ -21,6 +24,11 @@ public class SimulacaoDetalheResponse
     public DateTime DataSimulacao { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int? ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public string? CategoriaNome { get; set; }
+    public int? SubcategoriaId { get; set; }
+    public string? SubcategoriaNome { get; set; }
     public List<SimulacaoParcelaResponse> Parcelas { get; set; } = [];
 }
 
@@ -47,4 +55,9 @@ public class SimulacaoResumoResponse
     public DateTime DataSimulacao { get; set; }
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
+    public int? ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public string? CategoriaNome { get; set; }
+    public int? SubcategoriaId { get; set; }
+    public string? SubcategoriaNome { get; set; }
 }

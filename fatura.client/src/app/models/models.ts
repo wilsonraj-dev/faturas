@@ -4,6 +4,9 @@ export interface CriarCompraRequest {
   numeroParcelas: number;
   valorTotal: number;
   fornecedorId?: number | null;
+  contaFinanceiraId: number;
+  categoriaId?: number | null;
+  subcategoriaId?: number | null;
 }
 
 export interface CompraResponse {
@@ -14,6 +17,11 @@ export interface CompraResponse {
   valorTotal: number;
   fornecedorId?: number | null;
   fornecedorNome?: string | null;
+  contaFinanceiraId?: number | null;
+  categoriaId?: number | null;
+  categoriaNome?: string | null;
+  subcategoriaId?: number | null;
+  subcategoriaNome?: string | null;
   parcelas: ParcelaResponse[];
 }
 
@@ -37,6 +45,9 @@ export interface CompraRecorrenteRequest {
   valorMensal: number;
   diaCobranca: number;
   ativo: boolean;
+  contaFinanceiraId: number;
+  categoriaId?: number | null;
+  subcategoriaId?: number | null;
 }
 
 export interface CompraRecorrente {
@@ -45,6 +56,11 @@ export interface CompraRecorrente {
   valorMensal: number;
   diaCobranca: number;
   ativo: boolean;
+  contaFinanceiraId?: number | null;
+  categoriaId?: number | null;
+  categoriaNome?: string | null;
+  subcategoriaId?: number | null;
+  subcategoriaNome?: string | null;
 }
 
 export interface FaturaResumo {
@@ -94,6 +110,11 @@ export interface SimulacaoResumo {
   dataSimulacao: string;
   numeroParcelas: number;
   valorTotal: number;
+  contaFinanceiraId?: number | null;
+  categoriaId?: number | null;
+  categoriaNome?: string | null;
+  subcategoriaId?: number | null;
+  subcategoriaNome?: string | null;
 }
 
 export interface SimulacaoDetalhe {
@@ -102,6 +123,11 @@ export interface SimulacaoDetalhe {
   dataSimulacao: string;
   numeroParcelas: number;
   valorTotal: number;
+  contaFinanceiraId?: number | null;
+  categoriaId?: number | null;
+  categoriaNome?: string | null;
+  subcategoriaId?: number | null;
+  subcategoriaNome?: string | null;
   parcelas: SimulacaoParcelaResponse[];
 }
 
@@ -119,6 +145,9 @@ export interface CriarSimulacaoRequest {
   dataSimulacao: string;
   numeroParcelas: number;
   valorTotal: number;
+  contaFinanceiraId: number;
+  categoriaId?: number | null;
+  subcategoriaId?: number | null;
 }
 
 // Auth

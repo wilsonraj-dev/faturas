@@ -31,11 +31,23 @@ public class ComprasController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Nome))
             return BadRequest("O nome da compra é obrigatório.");
 
+        if (request.ContaFinanceiraId <= 0)
+            return BadRequest("A conta financeira é obrigatória.");
+
         if (request.NumeroParcelas < 1)
             return BadRequest("O número de parcelas deve ser pelo menos 1.");
 
         if (request.ValorTotal <= 0)
             return BadRequest("O valor total deve ser maior que zero.");
+
+        if (!await _compraService.ContaFinanceiraExisteAsync(request.ContaFinanceiraId, GetUserId()))
+            return BadRequest("Conta financeira não encontrada.");
+
+        if (request.CategoriaId.HasValue && !await _compraService.CategoriaExisteAsync(request.CategoriaId.Value, GetUserId()))
+            return BadRequest("Categoria não encontrada.");
+
+        if (request.SubcategoriaId.HasValue && !await _compraService.SubcategoriaExisteAsync(request.SubcategoriaId.Value, GetUserId()))
+            return BadRequest("Subcategoria não encontrada.");
 
         var resultado = await _compraService.CriarCompraAsync(request, GetUserId());
         return CreatedAtAction(nameof(CriarCompra), new { id = resultado.Id }, resultado);
@@ -50,8 +62,20 @@ public class ComprasController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SimulacaoResponse>> SimularCompra([FromBody] CriarCompraRequest request)
     {
+        if (request.ContaFinanceiraId <= 0)
+            return BadRequest("A conta financeira é obrigatória.");
+
         if (request.NumeroParcelas < 1 || request.ValorTotal <= 0)
             return BadRequest("Dados inválidos para simulação.");
+
+        if (!await _compraService.ContaFinanceiraExisteAsync(request.ContaFinanceiraId, GetUserId()))
+            return BadRequest("Conta financeira não encontrada.");
+
+        if (request.CategoriaId.HasValue && !await _compraService.CategoriaExisteAsync(request.CategoriaId.Value, GetUserId()))
+            return BadRequest("Categoria não encontrada.");
+
+        if (request.SubcategoriaId.HasValue && !await _compraService.SubcategoriaExisteAsync(request.SubcategoriaId.Value, GetUserId()))
+            return BadRequest("Subcategoria não encontrada.");
 
         var resultado = await _compraService.SimularCompraAsync(request);
         return Ok(resultado);

@@ -1,7 +1,3 @@
-.container {
-  padding: 24px;
-}
-
 .header-actions {
   margin-bottom: 24px;
 }
@@ -32,6 +28,33 @@
 .full-table {
   width: 100%;
 }
+
+.instituicoes-table .mat-mdc-header-row {
+  background: #3f51b5;
+}
+
+.instituicoes-table th {
+  color: #fff;
+  font-weight: 600;
+}
+
+.instituicoes-paginator {
+  background: #3f51b5;
+  color: #fff;
+}
+
+  .instituicoes-paginator ::ng-deep .mat-mdc-paginator-container,
+  .instituicoes-paginator ::ng-deep .mat-mdc-select-value,
+  .instituicoes-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .instituicoes-paginator ::ng-deep .mat-mdc-icon-button,
+  .instituicoes-paginator ::ng-deep .mat-mdc-select-arrow,
+  .instituicoes-paginator ::ng-deep .mdc-text-field {
+    color: #fff;
+  }
+
+  .instituicoes-paginator ::ng-deep .mdc-text-field {
+    background: transparent;
+  }
 
 .empty-card {
   border-radius: 12px !important;

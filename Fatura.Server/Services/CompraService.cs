@@ -33,6 +33,9 @@ public class CompraService : ICompraService
             NumeroParcelas = request.NumeroParcelas,
             ValorTotal = request.ValorTotal,
             FornecedorId = request.FornecedorId,
+            ContaFinanceiraId = request.ContaFinanceiraId,
+            CategoriaId = request.CategoriaId,
+            SubcategoriaId = request.SubcategoriaId,
             UserId = userId
         };
 
@@ -75,10 +78,25 @@ public class CompraService : ICompraService
 
         // Carrega fornecedor se existir
         string? fornecedorNome = null;
+        string? categoriaNome = null;
+        string? subcategoriaNome = null;
+
         if (compra.FornecedorId.HasValue)
         {
             var fornecedor = await _db.Fornecedores.FindAsync(compra.FornecedorId.Value);
             fornecedorNome = fornecedor?.Nome;
+        }
+
+        if (compra.CategoriaId.HasValue)
+        {
+            var categoria = await _db.Categorias.FindAsync(compra.CategoriaId.Value);
+            categoriaNome = categoria?.Nome;
+        }
+
+        if (compra.SubcategoriaId.HasValue)
+        {
+            var subcategoria = await _db.Subcategorias.FindAsync(compra.SubcategoriaId.Value);
+            subcategoriaNome = subcategoria?.Nome;
         }
 
         return new CompraResponse
@@ -90,6 +108,11 @@ public class CompraService : ICompraService
             ValorTotal = compra.ValorTotal,
             FornecedorId = compra.FornecedorId,
             FornecedorNome = fornecedorNome,
+            ContaFinanceiraId = compra.ContaFinanceiraId,
+            CategoriaId = compra.CategoriaId,
+            CategoriaNome = categoriaNome,
+            SubcategoriaId = compra.SubcategoriaId,
+            SubcategoriaNome = subcategoriaNome,
             Parcelas = parcelas.Select(p => new ParcelaResponse
             {
                 Id = p.Id,
@@ -129,6 +152,15 @@ public class CompraService : ICompraService
 
         return Task.FromResult(new SimulacaoResponse { Faturas = faturas });
     }
+
+    public Task<bool> ContaFinanceiraExisteAsync(int contaFinanceiraId, int userId)
+        => _db.ContasFinanceiras.AnyAsync(c => c.Id == contaFinanceiraId && c.UserId == userId);
+
+    public Task<bool> CategoriaExisteAsync(int categoriaId, int userId)
+        => _db.Categorias.AnyAsync(c => c.Id == categoriaId && c.UserId == userId);
+
+    public Task<bool> SubcategoriaExisteAsync(int subcategoriaId, int userId)
+        => _db.Subcategorias.AnyAsync(s => s.Id == subcategoriaId && s.UserId == userId);
 
     /// <summary>
     /// Busca uma fatura existente para o mês/ano ou cria uma nova.

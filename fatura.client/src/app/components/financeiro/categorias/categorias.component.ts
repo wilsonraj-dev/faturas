@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoriaService, SubcategoriaService } from '../../../services/api.service';
@@ -19,6 +20,7 @@ export class CategoriasFinanceiroComponent implements OnInit {
   carregandoCategorias = false;
   carregandoSubcategorias = false;
   tabIndex = 0;
+  filtroSubcategoriaForm!: FormGroup;
 
   categoriaCols = ['id', 'nome', 'tipo', 'quantidadeSubcategorias', 'acoes'];
   subcategoriaCols = ['id', 'nome', 'categoriaNome', 'acoes'];
@@ -30,6 +32,7 @@ export class CategoriasFinanceiroComponent implements OnInit {
   subPageIndex = 0;
 
   constructor(
+    private fb: FormBuilder,
     private categoriaService: CategoriaService,
     private subcategoriaService: SubcategoriaService,
     private snackBar: MatSnackBar,
@@ -37,6 +40,14 @@ export class CategoriasFinanceiroComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.filtroSubcategoriaForm = this.fb.group({
+      categoriaId: [null]
+    });
+
+    this.filtroSubcategoriaForm.get('categoriaId')?.valueChanges.subscribe(() => {
+      this.subPageIndex = 0;
+    });
+
     this.carregarCategorias();
     this.carregarSubcategorias();
   }
@@ -48,7 +59,17 @@ export class CategoriasFinanceiroComponent implements OnInit {
 
   get subcategoriasPaginadas(): Subcategoria[] {
     const inicio = this.subPageIndex * this.subPageSize;
-    return this.subcategorias.slice(inicio, inicio + this.subPageSize);
+    return this.subcategoriasFiltradas.slice(inicio, inicio + this.subPageSize);
+  }
+
+  get subcategoriasFiltradas(): Subcategoria[] {
+    const categoriaId = this.filtroSubcategoriaForm?.value?.categoriaId;
+
+    if (!categoriaId) {
+      return this.subcategorias;
+    }
+
+    return this.subcategorias.filter(subcategoria => subcategoria.categoriaId === categoriaId);
   }
 
   getTipoLabel(tipo: TipoCategoria): string {

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { CompraService, FornecedorService } from '../../services/api.service';
-import { CriarCompraRequest, SimulacaoFaturaItem, Fornecedor } from '../../models/models';
+import { CompraService, FornecedorService, ContaFinanceiraService, CategoriaService, SubcategoriaService } from '../../services/api.service';
+import { CriarCompraRequest, SimulacaoFaturaItem, Fornecedor, ContaFinanceira, Categoria, Subcategoria, TipoCategoria } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -15,13 +15,20 @@ export class CompraFormComponent implements OnInit {
   numeroParcelas = 1;
   valorTotal = 0;
   fornecedorId: number | null = null;
+  contaFinanceiraId: number | null = null;
+  categoriaId: number | null = null;
+  subcategoriaId: number | null = null;
   salvando = false;
   simulacao: SimulacaoFaturaItem[] = [];
   tentouSubmeter = false;
 
   fornecedores: Fornecedor[] = [];
+  contas: ContaFinanceira[] = [];
+  categorias: Categoria[] = [];
+  subcategorias: Subcategoria[] = [];
   novoFornecedorNome = '';
   criandoFornecedor = false;
+  readonly ultimaContaKey = 'compra_ultima_conta_financeira';
 
   opcoesParcelamento = Array.from({ length: 24 }, (_, i) => i + 1);
 
@@ -33,17 +40,56 @@ export class CompraFormComponent implements OnInit {
   constructor(
     private compraService: CompraService,
     private fornecedorService: FornecedorService,
+    private contaFinanceiraService: ContaFinanceiraService,
+    private categoriaService: CategoriaService,
+    private subcategoriaService: SubcategoriaService,
     private router: Router,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     this.carregarFornecedores();
+    this.carregarContas();
+    this.carregarCategorias();
   }
 
   carregarFornecedores(): void {
     this.fornecedorService.listar().subscribe({
       next: (dados) => this.fornecedores = dados,
+      error: () => { }
+    });
+  }
+
+  carregarContas(): void {
+    this.contaFinanceiraService.listar().subscribe({
+      next: (dados) => {
+        this.contas = dados;
+        const ultimaConta = Number(localStorage.getItem(this.ultimaContaKey));
+        if (!this.contaFinanceiraId && ultimaConta && this.contas.some(conta => conta.id === ultimaConta)) {
+          this.contaFinanceiraId = ultimaConta;
+        }
+      },
+      error: () => { }
+    });
+  }
+
+  carregarCategorias(): void {
+    this.categoriaService.listar(TipoCategoria.Despesa).subscribe({
+      next: (dados) => this.categorias = dados,
+      error: () => { }
+    });
+  }
+
+  onCategoriaChange(): void {
+    this.subcategoriaId = null;
+    this.subcategorias = [];
+
+    if (!this.categoriaId) {
+      return;
+    }
+
+    this.subcategoriaService.listar(this.categoriaId).subscribe({
+      next: (dados) => this.subcategorias = dados,
       error: () => { }
     });
   }
@@ -71,7 +117,8 @@ export class CompraFormComponent implements OnInit {
     return this.nome.trim().length > 0
       && !!this.dataCompra
       && this.numeroParcelas >= 1
-      && this.valorTotal > 0;
+      && this.valorTotal > 0
+      && !!this.contaFinanceiraId;
   }
 
   get valorParcela(): number {
@@ -88,6 +135,7 @@ export class CompraFormComponent implements OnInit {
 
     this.compraService.criarCompra(request).subscribe({
       next: () => {
+        localStorage.setItem(this.ultimaContaKey, String(this.contaFinanceiraId));
         this.snackBar.open('Compra cadastrada com sucesso!', 'OK', { duration: 3000 });
         this.router.navigate(['/faturas']);
       },
@@ -119,7 +167,10 @@ export class CompraFormComponent implements OnInit {
       dataCompra: this.dataCompra,
       numeroParcelas: this.numeroParcelas,
       valorTotal: this.valorTotal,
-      fornecedorId: this.fornecedorId
+      fornecedorId: this.fornecedorId,
+      contaFinanceiraId: this.contaFinanceiraId!,
+      categoriaId: this.categoriaId,
+      subcategoriaId: this.subcategoriaId
     };
   }
 }

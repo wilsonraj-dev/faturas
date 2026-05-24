@@ -45,11 +45,23 @@ public class SimulacoesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SimulacaoDetalheResponse>> Criar([FromBody] CriarSimulacaoRequest request)
     {
+        if (request.ContaFinanceiraId <= 0)
+            return BadRequest("A conta financeira é obrigatória.");
+
         if (request.NumeroParcelas < 1)
             return BadRequest("O número de parcelas deve ser pelo menos 1.");
 
         if (request.ValorTotal <= 0)
             return BadRequest("O valor total deve ser maior que zero.");
+
+        if (!await _simulacaoService.ContaFinanceiraExisteAsync(request.ContaFinanceiraId, GetUserId()))
+            return BadRequest("Conta financeira não encontrada.");
+
+        if (request.CategoriaId.HasValue && !await _simulacaoService.CategoriaExisteAsync(request.CategoriaId.Value, GetUserId()))
+            return BadRequest("Categoria não encontrada.");
+
+        if (request.SubcategoriaId.HasValue && !await _simulacaoService.SubcategoriaExisteAsync(request.SubcategoriaId.Value, GetUserId()))
+            return BadRequest("Subcategoria não encontrada.");
 
         var resultado = await _simulacaoService.CriarAsync(request, GetUserId());
         return CreatedAtAction(nameof(Obter), new { id = resultado.Id }, resultado);

@@ -5,8 +5,8 @@ import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { forkJoin, of } from 'rxjs';
-import { FaturaResumo, SimulacaoResumo } from '../../models/models';
-import { FaturaService, SimulacaoApiService } from '../../services/api.service';
+import { Categoria, ContaFinanceira, FaturaResumo, SimulacaoResumo, Subcategoria, TipoCategoria } from '../../models/models';
+import { CategoriaService, ContaFinanceiraService, FaturaService, SimulacaoApiService, SubcategoriaService } from '../../services/api.service';
 
 type ModoVisualizacao = 'individual' | 'selecionar' | 'todas';
 
@@ -48,6 +48,9 @@ export class SimulacoesComponent implements OnInit {
   idsSelecionados = new Set<number>();
   resultadoParcelas: ParcelaAgrupadaResultado[] = [];
   faturasMap: Record<string, FaturaResumo> = {};
+  contas: ContaFinanceira[] = [];
+  categorias: Categoria[] = [];
+  subcategorias: Subcategoria[] = [];
   readonly pageSizeOptions = [6, 12, 18, 24];
   pageSize = 6;
   pageIndex = 0;
@@ -76,6 +79,9 @@ export class SimulacoesComponent implements OnInit {
 
   constructor(
     private readonly fb: FormBuilder,
+    private readonly contaFinanceiraService: ContaFinanceiraService,
+    private readonly categoriaService: CategoriaService,
+    private readonly subcategoriaService: SubcategoriaService,
     private readonly faturaService: FaturaService,
     private readonly simulacaoService: SimulacaoApiService,
     private readonly router: Router,
@@ -85,7 +91,10 @@ export class SimulacoesComponent implements OnInit {
       nome: ['', [Validators.maxLength(200)]],
       dataSimulacao: ['', [Validators.required]],
       numeroParcelas: [1, [Validators.required, Validators.min(1)]],
-      valorTotal: [0, [Validators.required, Validators.min(0.01)]]
+      valorTotal: [0, [Validators.required, Validators.min(0.01)]],
+      contaFinanceiraId: [0, [Validators.required, Validators.min(1)]],
+      categoriaId: [null as number | null],
+      subcategoriaId: [null as number | null]
     });
   }
 
@@ -103,6 +112,10 @@ export class SimulacoesComponent implements OnInit {
 
   get valorTotalControl() {
     return this.form.controls.valorTotal;
+  }
+
+  get contaFinanceiraControl() {
+    return this.form.controls.contaFinanceiraId;
   }
 
   get formularioValido(): boolean {
@@ -132,7 +145,37 @@ export class SimulacoesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.carregarContas();
+    this.carregarCategorias();
     this.carregar();
+
+    this.form.controls.categoriaId.valueChanges.subscribe(categoriaId => {
+      this.form.patchValue({ subcategoriaId: null }, { emitEvent: false });
+      this.subcategorias = [];
+
+      if (!categoriaId) {
+        return;
+      }
+
+      this.subcategoriaService.listar(categoriaId).subscribe({
+        next: (dados: Subcategoria[]) => this.subcategorias = dados,
+        error: () => { }
+      });
+    });
+  }
+
+  carregarContas(): void {
+    this.contaFinanceiraService.listar().subscribe({
+      next: (dados: ContaFinanceira[]) => this.contas = dados,
+      error: () => { }
+    });
+  }
+
+  carregarCategorias(): void {
+    this.categoriaService.listar(TipoCategoria.Despesa).subscribe({
+      next: (dados: Categoria[]) => this.categorias = dados,
+      error: () => { }
+    });
   }
 
   carregar(): void {
@@ -162,7 +205,10 @@ export class SimulacoesComponent implements OnInit {
       nome: valores.nome.trim() || undefined,
       dataSimulacao: valores.dataSimulacao,
       numeroParcelas: valores.numeroParcelas,
-      valorTotal: valores.valorTotal
+      valorTotal: valores.valorTotal,
+      contaFinanceiraId: valores.contaFinanceiraId,
+      categoriaId: valores.categoriaId,
+      subcategoriaId: valores.subcategoriaId
     }).subscribe({
       next: () => {
         this.snackBar.open('Simulação criada!', 'OK', { duration: 2000 });
@@ -465,8 +511,12 @@ export class SimulacoesComponent implements OnInit {
       nome: '',
       dataSimulacao: '',
       numeroParcelas: 1,
-      valorTotal: 0
+      valorTotal: 0,
+      contaFinanceiraId: 0,
+      categoriaId: null,
+      subcategoriaId: null
     });
+    this.subcategorias = [];
   }
 
   private normalizarData(data: string): Date {

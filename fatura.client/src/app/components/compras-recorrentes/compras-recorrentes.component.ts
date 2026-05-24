@@ -2,8 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CompraRecorrente, CompraRecorrenteRequest } from '../../models/models';
-import { CompraRecorrenteService } from '../../services/api.service';
+import { CompraRecorrente, CompraRecorrenteRequest, ContaFinanceira, Categoria, Subcategoria, TipoCategoria } from '../../models/models';
+import { CategoriaService, CompraRecorrenteService, ContaFinanceiraService, SubcategoriaService } from '../../services/api.service';
 
 @Component({
   selector: 'app-compras-recorrentes',
@@ -14,6 +14,9 @@ export class ComprasRecorrentesComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   comprasRecorrentes: CompraRecorrente[] = [];
+  contas: ContaFinanceira[] = [];
+  categorias: Categoria[] = [];
+  subcategorias: Subcategoria[] = [];
   carregando = false;
   salvando = false;
   editandoId: number | null = null;
@@ -26,11 +29,17 @@ export class ComprasRecorrentesComponent implements OnInit {
     nome: ['', [Validators.required, Validators.maxLength(200)]],
     valorMensal: [0, [Validators.required, Validators.min(0.01)]],
     diaCobranca: [1, [Validators.required, Validators.min(1), Validators.max(31)]],
-    ativo: [true]
+    ativo: [true],
+    contaFinanceiraId: [0, [Validators.required, Validators.min(1)]],
+    categoriaId: [null as number | null],
+    subcategoriaId: [null as number | null]
   });
 
   constructor(
     private compraRecorrenteService: CompraRecorrenteService,
+    private contaFinanceiraService: ContaFinanceiraService,
+    private categoriaService: CategoriaService,
+    private subcategoriaService: SubcategoriaService,
     private snackBar: MatSnackBar
   ) { }
 
@@ -46,6 +55,10 @@ export class ComprasRecorrentesComponent implements OnInit {
     return this.form.controls.diaCobranca;
   }
 
+  get contaFinanceiraControl() {
+    return this.form.controls.contaFinanceiraId;
+  }
+
   get emEdicao(): boolean {
     return this.editandoId !== null;
   }
@@ -56,7 +69,37 @@ export class ComprasRecorrentesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.carregarContas();
+    this.carregarCategorias();
     this.carregar();
+
+    this.form.controls.categoriaId.valueChanges.subscribe(categoriaId => {
+      this.form.patchValue({ subcategoriaId: null }, { emitEvent: false });
+      this.subcategorias = [];
+
+      if (!categoriaId) {
+        return;
+      }
+
+      this.subcategoriaService.listar(categoriaId).subscribe({
+        next: (dados) => this.subcategorias = dados,
+        error: () => { }
+      });
+    });
+  }
+
+  carregarContas(): void {
+    this.contaFinanceiraService.listar().subscribe({
+      next: (dados) => this.contas = dados,
+      error: () => { }
+    });
+  }
+
+  carregarCategorias(): void {
+    this.categoriaService.listar(TipoCategoria.Despesa).subscribe({
+      next: (dados) => this.categorias = dados,
+      error: () => { }
+    });
   }
 
   carregar(): void {
@@ -86,7 +129,10 @@ export class ComprasRecorrentesComponent implements OnInit {
       nome: valores.nome.trim(),
       valorMensal: valores.valorMensal,
       diaCobranca: valores.diaCobranca,
-      ativo: valores.ativo
+      ativo: valores.ativo,
+      contaFinanceiraId: valores.contaFinanceiraId,
+      categoriaId: valores.categoriaId,
+      subcategoriaId: valores.subcategoriaId
     };
 
     const operacao = this.emEdicao
@@ -113,8 +159,18 @@ export class ComprasRecorrentesComponent implements OnInit {
       nome: compraRecorrente.nome,
       valorMensal: compraRecorrente.valorMensal,
       diaCobranca: compraRecorrente.diaCobranca,
-      ativo: compraRecorrente.ativo
+        ativo: compraRecorrente.ativo,
+        contaFinanceiraId: compraRecorrente.contaFinanceiraId ?? 0,
+        categoriaId: compraRecorrente.categoriaId ?? null,
+        subcategoriaId: compraRecorrente.subcategoriaId ?? null
     });
+
+    if (compraRecorrente.categoriaId) {
+      this.subcategoriaService.listar(compraRecorrente.categoriaId).subscribe({
+        next: (dados) => this.subcategorias = dados,
+        error: () => { }
+      });
+    }
   }
 
   cancelarEdicao(): void {
@@ -123,8 +179,12 @@ export class ComprasRecorrentesComponent implements OnInit {
       nome: '',
       valorMensal: 0,
       diaCobranca: 1,
-      ativo: true
+        ativo: true,
+        contaFinanceiraId: 0,
+        categoriaId: null,
+        subcategoriaId: null
     });
+    this.subcategorias = [];
   }
 
   desativar(compraRecorrente: CompraRecorrente): void {

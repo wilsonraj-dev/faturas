@@ -19,7 +19,7 @@
 
             <mat-card *ngIf="!carregandoCategorias && categorias.length > 0" class="table-card">
               <mat-card-content>
-                <table mat-table [dataSource]="categoriasPaginadas" class="full-table">
+                <table mat-table [dataSource]="categoriasPaginadas" class="full-table categorias-table">
                   <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef>ID</th>
                     <td mat-cell *matCellDef="let c">{{ c.id }}</td>
@@ -58,7 +58,7 @@
                   <tr mat-row *matRowDef="let row; columns: categoriaCols;"></tr>
                 </table>
 
-                <mat-paginator [length]="categorias.length" [pageSize]="catPageSize" [pageSizeOptions]="pageSizeOptions"
+                <mat-paginator class="categorias-paginator" [length]="categorias.length" [pageSize]="catPageSize" [pageSizeOptions]="pageSizeOptions"
                                [pageIndex]="catPageIndex" (page)="onCatPageChange($event)" showFirstLastButtons>
                 </mat-paginator>
               </mat-card-content>
@@ -76,19 +76,29 @@
         <!-- Tab Subcategorias -->
         <mat-tab label="Subcategorias">
           <div class="tab-content">
-            <div class="header-actions">
+            <div class="header-actions subcategorias-actions">
               <button mat-raised-button color="primary" (click)="abrirSubcategoriaDialog()">
                 <mat-icon>add</mat-icon> Nova Subcategoria
               </button>
+
+              <form [formGroup]="filtroSubcategoriaForm" class="subcategorias-filtro-form">
+                <mat-form-field appearance="outline" class="subcategorias-filtro-field">
+                  <mat-label>Categoria</mat-label>
+                  <mat-select formControlName="categoriaId">
+                    <mat-option [value]="null">Todas</mat-option>
+                    <mat-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </form>
             </div>
 
             <div *ngIf="carregandoSubcategorias" class="loading">
               <mat-spinner diameter="40"></mat-spinner>
             </div>
 
-            <mat-card *ngIf="!carregandoSubcategorias && subcategorias.length > 0" class="table-card">
+            <mat-card *ngIf="!carregandoSubcategorias && subcategoriasFiltradas.length > 0" class="table-card">
               <mat-card-content>
-                <table mat-table [dataSource]="subcategoriasPaginadas" class="full-table">
+                <table mat-table [dataSource]="subcategoriasPaginadas" class="full-table subcategorias-table">
                   <ng-container matColumnDef="id">
                     <th mat-header-cell *matHeaderCellDef>ID</th>
                     <td mat-cell *matCellDef="let s">{{ s.id }}</td>
@@ -120,16 +130,16 @@
                   <tr mat-row *matRowDef="let row; columns: subcategoriaCols;"></tr>
                 </table>
 
-                <mat-paginator [length]="subcategorias.length" [pageSize]="subPageSize" [pageSizeOptions]="pageSizeOptions"
+                <mat-paginator class="subcategorias-paginator" [length]="subcategoriasFiltradas.length" [pageSize]="subPageSize" [pageSizeOptions]="pageSizeOptions"
                                [pageIndex]="subPageIndex" (page)="onSubPageChange($event)" showFirstLastButtons>
                 </mat-paginator>
               </mat-card-content>
             </mat-card>
 
-            <mat-card *ngIf="!carregandoSubcategorias && subcategorias.length === 0" class="empty-card">
+            <mat-card *ngIf="!carregandoSubcategorias && subcategoriasFiltradas.length === 0" class="empty-card">
               <mat-card-content class="empty-state">
                 <mat-icon>label</mat-icon>
-                <p>Nenhuma subcategoria cadastrada</p>
+                <p>Nenhuma subcategoria encontrada</p>
               </mat-card-content>
             </mat-card>
           </div>

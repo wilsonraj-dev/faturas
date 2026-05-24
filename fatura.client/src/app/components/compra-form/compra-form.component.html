@@ -42,6 +42,33 @@
           </mat-select>
           <mat-icon matSuffix>store</mat-icon>
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Conta Financeira</mat-label>
+          <mat-select [(value)]="contaFinanceiraId">
+            <mat-option *ngFor="let conta of contas" [value]="conta.id">{{ conta.nome }}</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>account_balance_wallet</mat-icon>
+          <mat-error *ngIf="!contaFinanceiraId && tentouSubmeter">Conta financeira é obrigatória</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria (opcional)</mat-label>
+          <mat-select [(value)]="categoriaId" (selectionChange)="onCategoriaChange()">
+            <mat-option [value]="null">Nenhuma</mat-option>
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nome }}</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Subcategoria (opcional)</mat-label>
+          <mat-select [(value)]="subcategoriaId" [disabled]="!categoriaId">
+            <mat-option [value]="null">Nenhuma</mat-option>
+            <mat-option *ngFor="let subcategoria of subcategorias" [value]="subcategoria.id">{{ subcategoria.nome }}</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>label</mat-icon>
+        </mat-form-field>
       </div>
 
       <!-- Criar novo fornecedor rapidamente -->

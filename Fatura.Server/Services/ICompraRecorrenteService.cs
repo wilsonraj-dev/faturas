@@ -9,4 +9,7 @@ public interface ICompraRecorrenteService
     Task<CompraRecorrenteResponse?> AtualizarAsync(int id, AtualizarCompraRecorrenteRequest request, int userId);
     Task<bool> DesativarAsync(int id, int userId);
     Task SincronizarComprasRecorrentesAsync(int userId);
+    Task<bool> ContaFinanceiraExisteAsync(int contaFinanceiraId, int userId);
+    Task<bool> CategoriaExisteAsync(int categoriaId, int userId);
+    Task<bool> SubcategoriaExisteAsync(int subcategoriaId, int userId);
 }

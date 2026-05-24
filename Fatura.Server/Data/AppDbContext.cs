@@ -51,6 +51,21 @@ public class AppDbContext : DbContext
                   .WithMany(u => u.Compras)
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.ContaFinanceira)
+                  .WithMany()
+                  .HasForeignKey(e => e.ContaFinanceiraId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Categoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Subcategoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.SubcategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<CompraRecorrente>(entity =>
@@ -63,6 +78,21 @@ public class AppDbContext : DbContext
                   .WithMany(u => u.ComprasRecorrentes)
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.ContaFinanceira)
+                  .WithMany()
+                  .HasForeignKey(e => e.ContaFinanceiraId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Categoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Subcategoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.SubcategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Parcela
@@ -216,6 +246,21 @@ public class AppDbContext : DbContext
                   .WithMany(u => u.Simulacoes)
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.ContaFinanceira)
+                  .WithMany()
+                  .HasForeignKey(e => e.ContaFinanceiraId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Categoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.Subcategoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.SubcategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
 
         // SimulacaoParcela

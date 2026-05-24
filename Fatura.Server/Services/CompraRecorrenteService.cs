@@ -27,7 +27,12 @@ public class CompraRecorrenteService : ICompraRecorrenteService
                 Nome = c.Nome,
                 ValorMensal = c.ValorMensal,
                 DiaCobranca = c.DiaCobranca,
-                Ativo = c.Ativo
+                Ativo = c.Ativo,
+                ContaFinanceiraId = c.ContaFinanceiraId,
+                CategoriaId = c.CategoriaId,
+                CategoriaNome = c.Categoria != null ? c.Categoria.Nome : null,
+                SubcategoriaId = c.SubcategoriaId,
+                SubcategoriaNome = c.Subcategoria != null ? c.Subcategoria.Nome : null
             })
             .ToListAsync();
     }
@@ -40,6 +45,9 @@ public class CompraRecorrenteService : ICompraRecorrenteService
             ValorMensal = request.ValorMensal,
             DiaCobranca = request.DiaCobranca,
             Ativo = request.Ativo,
+            ContaFinanceiraId = request.ContaFinanceiraId,
+            CategoriaId = request.CategoriaId,
+            SubcategoriaId = request.SubcategoriaId,
             UserId = userId
         };
 
@@ -68,6 +76,9 @@ public class CompraRecorrenteService : ICompraRecorrenteService
         compraRecorrente.ValorMensal = request.ValorMensal;
         compraRecorrente.DiaCobranca = request.DiaCobranca;
         compraRecorrente.Ativo = request.Ativo;
+        compraRecorrente.ContaFinanceiraId = request.ContaFinanceiraId;
+        compraRecorrente.CategoriaId = request.CategoriaId;
+        compraRecorrente.SubcategoriaId = request.SubcategoriaId;
 
         await _db.SaveChangesAsync();
 
@@ -211,7 +222,21 @@ public class CompraRecorrenteService : ICompraRecorrenteService
             Nome = compraRecorrente.Nome,
             ValorMensal = compraRecorrente.ValorMensal,
             DiaCobranca = compraRecorrente.DiaCobranca,
-            Ativo = compraRecorrente.Ativo
+            Ativo = compraRecorrente.Ativo,
+            ContaFinanceiraId = compraRecorrente.ContaFinanceiraId,
+            CategoriaId = compraRecorrente.CategoriaId,
+            CategoriaNome = compraRecorrente.Categoria?.Nome,
+            SubcategoriaId = compraRecorrente.SubcategoriaId,
+            SubcategoriaNome = compraRecorrente.Subcategoria?.Nome
         };
     }
+
+    public Task<bool> ContaFinanceiraExisteAsync(int contaFinanceiraId, int userId)
+        => _db.ContasFinanceiras.AnyAsync(c => c.Id == contaFinanceiraId && c.UserId == userId);
+
+    public Task<bool> CategoriaExisteAsync(int categoriaId, int userId)
+        => _db.Categorias.AnyAsync(c => c.Id == categoriaId && c.UserId == userId);
+
+    public Task<bool> SubcategoriaExisteAsync(int subcategoriaId, int userId)
+        => _db.Subcategorias.AnyAsync(s => s.Id == subcategoriaId && s.UserId == userId);
 }

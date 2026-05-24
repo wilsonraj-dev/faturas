@@ -12,6 +12,9 @@ public class CriarCompraRequest
     public int NumeroParcelas { get; set; }
     public decimal ValorTotal { get; set; }
     public int? FornecedorId { get; set; }
+    public int ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public int? SubcategoriaId { get; set; }
 }
 
 /// <summary>
@@ -26,6 +29,11 @@ public class CompraResponse
     public decimal ValorTotal { get; set; }
     public int? FornecedorId { get; set; }
     public string? FornecedorNome { get; set; }
+    public int? ContaFinanceiraId { get; set; }
+    public int? CategoriaId { get; set; }
+    public string? CategoriaNome { get; set; }
+    public int? SubcategoriaId { get; set; }
+    public string? SubcategoriaNome { get; set; }
     public List<ParcelaResponse> Parcelas { get; set; } = [];
 }
 

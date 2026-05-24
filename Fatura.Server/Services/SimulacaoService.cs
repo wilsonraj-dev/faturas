@@ -27,7 +27,12 @@ public class SimulacaoService : ISimulacaoService
                 Nome = s.Nome,
                 DataSimulacao = s.DataSimulacao,
                 NumeroParcelas = s.NumeroParcelas,
-                ValorTotal = s.ValorTotal
+                ValorTotal = s.ValorTotal,
+                ContaFinanceiraId = s.ContaFinanceiraId,
+                CategoriaId = s.CategoriaId,
+                CategoriaNome = s.Categoria != null ? s.Categoria.Nome : null,
+                SubcategoriaId = s.SubcategoriaId,
+                SubcategoriaNome = s.Subcategoria != null ? s.Subcategoria.Nome : null
             })
             .ToListAsync();
     }
@@ -54,6 +59,9 @@ public class SimulacaoService : ISimulacaoService
             DataSimulacao = request.DataSimulacao,
             NumeroParcelas = request.NumeroParcelas,
             ValorTotal = request.ValorTotal,
+            ContaFinanceiraId = request.ContaFinanceiraId,
+            CategoriaId = request.CategoriaId,
+            SubcategoriaId = request.SubcategoriaId,
             UserId = userId
         };
 
@@ -109,7 +117,10 @@ public class SimulacaoService : ISimulacaoService
             Nome = simulacao.Nome ?? "Compra (simulação)",
             DataCompra = simulacao.DataSimulacao,
             NumeroParcelas = simulacao.NumeroParcelas,
-            ValorTotal = simulacao.ValorTotal
+            ValorTotal = simulacao.ValorTotal,
+            ContaFinanceiraId = simulacao.ContaFinanceiraId ?? 0,
+            CategoriaId = simulacao.CategoriaId,
+            SubcategoriaId = simulacao.SubcategoriaId
         };
 
         var compra = await _compraService.CriarCompraAsync(request, userId);
@@ -130,6 +141,11 @@ public class SimulacaoService : ISimulacaoService
             DataSimulacao = simulacao.DataSimulacao,
             NumeroParcelas = simulacao.NumeroParcelas,
             ValorTotal = simulacao.ValorTotal,
+            ContaFinanceiraId = simulacao.ContaFinanceiraId,
+            CategoriaId = simulacao.CategoriaId,
+            CategoriaNome = simulacao.Categoria?.Nome,
+            SubcategoriaId = simulacao.SubcategoriaId,
+            SubcategoriaNome = simulacao.Subcategoria?.Nome,
             Parcelas = simulacao.Parcelas
                 .OrderBy(p => p.NumeroParcela)
                 .Select(p => new SimulacaoParcelaResponse
@@ -143,4 +159,13 @@ public class SimulacaoService : ISimulacaoService
                 }).ToList()
         };
     }
+
+    public Task<bool> ContaFinanceiraExisteAsync(int contaFinanceiraId, int userId)
+        => _db.ContasFinanceiras.AnyAsync(c => c.Id == contaFinanceiraId && c.UserId == userId);
+
+    public Task<bool> CategoriaExisteAsync(int categoriaId, int userId)
+        => _db.Categorias.AnyAsync(c => c.Id == categoriaId && c.UserId == userId);
+
+    public Task<bool> SubcategoriaExisteAsync(int subcategoriaId, int userId)
+        => _db.Subcategorias.AnyAsync(s => s.Id == subcategoriaId && s.UserId == userId);
 }
