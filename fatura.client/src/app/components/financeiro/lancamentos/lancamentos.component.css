@@ -1,5 +1,8 @@
-.container {
-  padding: 24px;
+.container h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #263238;
 }
 
 /* Resumo */
@@ -87,9 +90,31 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
 }
 
-.full-table {
+.lancamentos-table {
   width: 100%;
 }
+
+  .lancamentos-table .mat-mdc-header-cell,
+  .lancamentos-table .mat-mdc-cell {
+    font-size: 13px;
+  }
+
+  .lancamentos-table .mat-mdc-header-cell {
+    font-weight: 600;
+  }
+
+  .lancamentos-table .mat-mdc-header-cell,
+  .lancamentos-table .mat-mdc-cell,
+  .lancamentos-table .mdc-data-table__cell,
+  .lancamentos-table .mdc-data-table__header-cell {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .lancamentos-table .mat-mdc-header-row {
+    background: #3f51b5;
+    color: #fff;
+  }
 
 .badge {
   padding: 4px 12px;
@@ -116,6 +141,24 @@
   margin-left: 4px;
   color: #999;
 }
+
+.contas-paginator {
+  background: #3f51b5;
+  color: #fff;
+}
+
+  .contas-paginator ::ng-deep .mat-mdc-paginator-container,
+  .contas-paginator ::ng-deep .mat-mdc-select-value,
+  .contas-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .contas-paginator ::ng-deep .mat-mdc-icon-button,
+  .contas-paginator ::ng-deep .mat-mdc-select-arrow,
+  .contas-paginator ::ng-deep .mdc-text-field {
+    color: #fff;
+  }
+
+  .contas-paginator ::ng-deep .mdc-text-field {
+    background: transparent;
+  }
 
 /* Empty */
 .empty-card {

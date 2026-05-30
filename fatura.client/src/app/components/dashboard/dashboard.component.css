@@ -1,16 +1,10 @@
 /* ===== Layout Geral ===== */
-.dashboard-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
+.dashboard-container h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #263238;
 }
-
-  .dashboard-container h2 {
-    font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #263238;
-  }
 
 .dashboard-tabs {
   margin-top: 8px;

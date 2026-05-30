@@ -100,7 +100,7 @@
   <!-- Tabela -->
   <mat-card *ngIf="!carregando && lancamentosFiltrados.length > 0" class="table-card">
     <mat-card-content>
-      <table mat-table [dataSource]="lancamentosPaginados" class="full-table">
+      <table mat-table [dataSource]="lancamentosPaginados" class="lancamentos-table">
         <ng-container matColumnDef="data">
           <th mat-header-cell *matHeaderCellDef>Data</th>
           <td mat-cell *matCellDef="let l">{{ l.data | date:'dd/MM/yyyy' }}</td>
@@ -163,7 +163,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      <mat-paginator [length]="lancamentosFiltrados.length" [pageSize]="pageSize"
+      <mat-paginator class="contas-paginator" [length]="lancamentosFiltrados.length" [pageSize]="pageSize"
                      [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
                      showFirstLastButtons>
       </mat-paginator>

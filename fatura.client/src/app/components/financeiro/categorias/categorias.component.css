@@ -3,6 +3,13 @@
   margin: 0 auto;
 }
 
+  .categorias-container h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #263238;
+  }
+
 .tab-content {
   padding-top: 24px;
 }
