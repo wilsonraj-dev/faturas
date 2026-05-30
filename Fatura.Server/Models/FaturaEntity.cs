@@ -15,6 +15,7 @@ public class FaturaEntity
     public int Ano { get; set; }
     public decimal ValorTotal { get; set; }
     public bool Quitada { get; set; }
+    public DateTime? DataPagamento { get; set; }
     public double Orcamento { get; set; }
     public int UserId { get; set; }
 

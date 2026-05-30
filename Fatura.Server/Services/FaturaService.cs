@@ -34,6 +34,7 @@ public class FaturaService : IFaturaService
                 Ano = f.Ano,
                 ValorTotal = f.ValorTotal,
                 Quitada = f.Quitada,
+                DataPagamento = f.DataPagamento,
                 QuantidadeParcelas = f.Parcelas.Count,
                 Orcamento = f.Orcamento
             })
@@ -64,6 +65,7 @@ public class FaturaService : IFaturaService
             Ano = fatura.Ano,
             ValorTotal = fatura.ValorTotal,
             Quitada = fatura.Quitada,
+            DataPagamento = fatura.DataPagamento,
             Orcamento = fatura.Orcamento,
             Parcelas = fatura.Parcelas
                 .OrderBy(p => p.Compra?.Nome ?? p.CompraRecorrente?.Nome ?? string.Empty)
@@ -87,80 +89,177 @@ public class FaturaService : IFaturaService
     /// <summary>
     /// Marca uma fatura como quitada.
     /// </summary>
-    public async Task<bool> QuitarFaturaAsync(int id, int userId)
+    public async Task<ServiceResult> QuitarFaturaAsync(int id, int userId, DateTime? dataPagamento = null)
     {
         var fatura = await _db.Faturas
-            .Include(f => f.Parcelas)
-                .ThenInclude(p => p.Compra)
-            .Include(f => f.Parcelas)
-                .ThenInclude(p => p.CompraRecorrente)
             .FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
 
-        if (fatura is null) return false;
-
-        if (!fatura.Quitada)
+        if (fatura is null)
         {
-            var origemIds = fatura.Parcelas.Select(p => p.Id).ToList();
+            return ServiceResult.NotFoundResult("Fatura não encontrada.");
+        }
+
+        if (fatura.Quitada)
+        {
+            return ServiceResult.Invalid("A fatura já está quitada.");
+        }
+
+        var parcelas = await _db.Parcelas
+            .Include(p => p.Compra)
+            .Include(p => p.CompraRecorrente)
+            .Where(p => p.FaturaId == id && p.UserId == userId)
+            .ToListAsync();
+
+        var dataEfetivaPagamento = CalcularDataPagamento(fatura, dataPagamento);
+
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+
+        try
+        {
+            var origemIds = parcelas.Select(p => p.Id).ToList();
             var lancamentosExistentes = await _db.LancamentosFinanceiros
                 .Where(l => l.UserId == userId && l.Origem == OrigemLancamento.Fatura && l.OrigemId.HasValue && origemIds.Contains(l.OrigemId.Value))
                 .Select(l => l.OrigemId!.Value)
                 .ToListAsync();
 
-            foreach (var parcela in fatura.Parcelas.Where(p => !lancamentosExistentes.Contains(p.Id)))
+            foreach (var parcela in parcelas.Where(p => !lancamentosExistentes.Contains(p.Id)))
             {
                 var contaFinanceiraId = parcela.Compra?.ContaFinanceiraId ?? parcela.CompraRecorrente?.ContaFinanceiraId;
                 if (!contaFinanceiraId.HasValue)
                 {
-                    continue;
+                    await transaction.RollbackAsync();
+                    return ServiceResult.Invalid($"A parcela {parcela.Id} não possui conta financeira vinculada.");
                 }
+
+                var contaFinanceiraValida = await _db.ContasFinanceiras
+                    .AnyAsync(c => c.Id == contaFinanceiraId.Value && c.UserId == userId);
+
+                if (!contaFinanceiraValida)
+                {
+                    await transaction.RollbackAsync();
+                    return ServiceResult.Invalid($"A conta financeira da parcela {parcela.Id} não pertence ao usuário informado.");
+                }
+
+                var categoriaId = parcela.Compra?.CategoriaId ?? parcela.CompraRecorrente?.CategoriaId;
+                if (categoriaId.HasValue)
+                {
+                    var categoriaValida = await _db.Categorias
+                        .AnyAsync(c => c.Id == categoriaId.Value && (c.UserId == userId || c.UserId == 0) && c.Tipo == TipoCategoria.Despesa);
+
+                    if (!categoriaValida)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult.Invalid($"A categoria da parcela {parcela.Id} é inválida para o usuário informado.");
+                    }
+                }
+
+                var subcategoriaId = parcela.Compra?.SubcategoriaId ?? parcela.CompraRecorrente?.SubcategoriaId;
+                if (subcategoriaId.HasValue)
+                {
+                    var subcategoriaValida = await _db.Subcategorias
+                        .AnyAsync(s => s.Id == subcategoriaId.Value && s.UserId == userId && (!categoriaId.HasValue || s.CategoriaId == categoriaId.Value));
+
+                    if (!subcategoriaValida)
+                    {
+                        await transaction.RollbackAsync();
+                        return ServiceResult.Invalid($"A subcategoria da parcela {parcela.Id} é inválida para o usuário informado.");
+                    }
+                }
+
+                var descricao = parcela.Compra?.Nome ?? parcela.CompraRecorrente?.Nome ?? "Parcela";
 
                 _db.LancamentosFinanceiros.Add(new LancamentoFinanceiro
                 {
                     Tipo = TipoCategoria.Despesa,
                     Valor = parcela.Valor,
-                    Data = DateTime.Today,
-                    Descricao = $"Quitação da fatura {fatura.Mes:D2}/{fatura.Ano} - {parcela.Compra?.Nome ?? parcela.CompraRecorrente?.Nome ?? "Parcela"}",
+                    Data = dataEfetivaPagamento,
+                    Descricao = $"{descricao} - Parcela {parcela.NumeroParcela}",
                     ContaFinanceiraId = contaFinanceiraId.Value,
-                    CategoriaId = parcela.Compra?.CategoriaId ?? parcela.CompraRecorrente?.CategoriaId,
-                    SubcategoriaId = parcela.Compra?.SubcategoriaId ?? parcela.CompraRecorrente?.SubcategoriaId,
+                    CategoriaId = categoriaId,
+                    SubcategoriaId = subcategoriaId,
                     Origem = OrigemLancamento.Fatura,
                     OrigemId = parcela.Id,
                     UserId = userId
                 });
             }
 
-            await _db.SaveChangesAsync();
-        }
+            fatura.Quitada = true;
+            fatura.DataPagamento = dataEfetivaPagamento;
 
-        fatura.Quitada = true;
-        await _db.SaveChangesAsync();
-        return true;
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return ServiceResult.Ok();
+        }
+        catch (DbUpdateException)
+        {
+            await transaction.RollbackAsync();
+            return ServiceResult.Invalid("Não foi possível quitar a fatura porque já existem lançamentos financeiros para uma ou mais parcelas.");
+        }
     }
 
     /// <summary>
     /// Reabre uma fatura previamente quitada.
     /// </summary>
-    public async Task<bool> ReabrirFaturaAsync(int id, int userId)
+    public async Task<ServiceResult> ReabrirFaturaAsync(int id, int userId)
     {
         var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
-        if (fatura is null) return false;
+        if (fatura is null)
+        {
+            return ServiceResult.NotFoundResult("Fatura não encontrada.");
+        }
 
-        fatura.Quitada = false;
-        await _db.SaveChangesAsync();
-        return true;
+        if (!fatura.Quitada)
+        {
+            return ServiceResult.Invalid("A fatura já está em aberto.");
+        }
+
+        var parcelas = await _db.Parcelas
+            .Where(p => p.FaturaId == id && p.UserId == userId)
+            .ToListAsync();
+
+        var parcelaIds = parcelas.Select(p => p.Id).ToList();
+
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+
+        try
+        {
+            var lancamentos = await _db.LancamentosFinanceiros
+                .Where(l => l.UserId == userId
+                    && l.Origem == OrigemLancamento.Fatura
+                    && l.OrigemId.HasValue
+                    && parcelaIds.Contains(l.OrigemId.Value))
+                .ToListAsync();
+
+            _db.LancamentosFinanceiros.RemoveRange(lancamentos);
+
+            fatura.Quitada = false;
+            fatura.DataPagamento = null;
+
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return ServiceResult.Ok();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     /// <summary>
     /// Atualiza o orçamento de uma fatura.
     /// </summary>
-    public async Task<bool> AtualizarOrcamentoAsync(int id, double orcamento, int userId)
+    public async Task<ServiceResult> AtualizarOrcamentoAsync(int id, double orcamento, int userId)
     {
         var fatura = await _db.Faturas.FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
-        if (fatura is null) return false;
+        if (fatura is null)
+        {
+            return ServiceResult.NotFoundResult("Fatura não encontrada.");
+        }
 
         fatura.Orcamento = orcamento;
         await _db.SaveChangesAsync();
-        return true;
+        return ServiceResult.Ok();
     }
 
     /// <summary>
@@ -239,5 +338,23 @@ public class FaturaService : IFaturaService
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return stream.ToArray();
+    }
+
+    private static DateTime CalcularDataPagamento(FaturaEntity fatura, DateTime? dataPagamentoInformada)
+    {
+        var competenciaPagamento = new DateTime(fatura.Ano, fatura.Mes, 1).AddMonths(1);
+        var referencia = dataPagamentoInformada ?? DateTime.Now;
+        var dia = Math.Min(referencia.Day, DateTime.DaysInMonth(competenciaPagamento.Year, competenciaPagamento.Month));
+
+        var dataPagamento = new DateTime(
+            competenciaPagamento.Year,
+            competenciaPagamento.Month,
+            dia,
+            referencia.Hour,
+            referencia.Minute,
+            referencia.Second,
+            referencia.Millisecond);
+
+        return DateTime.SpecifyKind(dataPagamento, referencia.Kind);
     }
 }

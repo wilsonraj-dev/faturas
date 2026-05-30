@@ -55,8 +55,9 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-      <mat-paginator class="contas-paginator" [length]="contas.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
-                     [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+      <mat-paginator class="contas-paginator" [length]="contas.length" [pageSize]="pageSize"
+                     [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
+                     showFirstLastButtons>
       </mat-paginator>
     </mat-card-content>
   </mat-card>

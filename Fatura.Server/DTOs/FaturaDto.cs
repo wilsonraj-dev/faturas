@@ -10,6 +10,7 @@ public class FaturaResumoResponse
     public int Ano { get; set; }
     public decimal ValorTotal { get; set; }
     public bool Quitada { get; set; }
+    public DateTime? DataPagamento { get; set; }
     public int QuantidadeParcelas { get; set; }
     public double Orcamento { get; set; }
 }
@@ -24,8 +25,14 @@ public class FaturaDetalheResponse
     public int Ano { get; set; }
     public decimal ValorTotal { get; set; }
     public bool Quitada { get; set; }
+    public DateTime? DataPagamento { get; set; }
     public double Orcamento { get; set; }
     public List<ParcelaResponse> Parcelas { get; set; } = [];
+}
+
+public class QuitarFaturaRequest
+{
+    public DateTime? DataPagamento { get; set; }
 }
 
 /// <summary>

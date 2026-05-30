@@ -55,12 +55,20 @@ public class FaturasController : ControllerBase
     /// </summary>
     [HttpPut("{id}/quitar")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> QuitarFatura(int id)
+    public async Task<IActionResult> QuitarFatura(int id, [FromBody] QuitarFaturaRequest? request)
     {
-        var sucesso = await _faturaService.QuitarFaturaAsync(id, GetUserId());
-        if (!sucesso)
-            return NotFound("Fatura não encontrada.");
+        var resultado = await _faturaService.QuitarFaturaAsync(id, GetUserId(), request?.DataPagamento);
+        if (resultado.NotFound)
+        {
+            return NotFound(resultado.Error);
+        }
+
+        if (!resultado.Success)
+        {
+            return BadRequest(resultado.Error);
+        }
 
         return NoContent();
     }
@@ -70,12 +78,20 @@ public class FaturasController : ControllerBase
     /// </summary>
     [HttpPut("{id}/reabrir")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ReabrirFatura(int id)
     {
-        var sucesso = await _faturaService.ReabrirFaturaAsync(id, GetUserId());
-        if (!sucesso)
-            return NotFound("Fatura não encontrada.");
+        var resultado = await _faturaService.ReabrirFaturaAsync(id, GetUserId());
+        if (resultado.NotFound)
+        {
+            return NotFound(resultado.Error);
+        }
+
+        if (!resultado.Success)
+        {
+            return BadRequest(resultado.Error);
+        }
 
         return NoContent();
     }
@@ -85,12 +101,20 @@ public class FaturasController : ControllerBase
     /// </summary>
     [HttpPut("{id}/orcamento")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> AtualizarOrcamento(int id, [FromBody] AtualizarOrcamentoRequest request)
     {
-        var sucesso = await _faturaService.AtualizarOrcamentoAsync(id, request.Orcamento, GetUserId());
-        if (!sucesso)
-            return NotFound("Fatura não encontrada.");
+        var resultado = await _faturaService.AtualizarOrcamentoAsync(id, request.Orcamento, GetUserId());
+        if (resultado.NotFound)
+        {
+            return NotFound(resultado.Error);
+        }
+
+        if (!resultado.Success)
+        {
+            return BadRequest(resultado.Error);
+        }
 
         return NoContent();
     }
