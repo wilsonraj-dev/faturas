@@ -21,4 +21,5 @@ public class User
     public List<Categoria> Categorias { get; set; } = [];
     public List<Subcategoria> Subcategorias { get; set; } = [];
     public List<LancamentoFinanceiro> LancamentosFinanceiros { get; set; } = [];
+    public List<LembretePagamento> LembretesPagamento { get; set; } = [];
 }
