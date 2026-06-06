@@ -1,0 +1,94 @@
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.table-card {
+  overflow: hidden;
+}
+
+.lembretes-table {
+  width: 100%;
+}
+
+  .lembretes-table th {
+    font-weight: 600;
+  }
+
+  .lembretes-table td,
+  .lembretes-table th {
+    padding-right: 12px;
+  }
+
+  .lembretes-table .mat-mdc-header-row {
+    background: #3f51b5;
+    color: #FFFFFF;
+  }
+
+.title-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.status-chip {
+  background-color: rgba(56, 142, 60, 0.15);
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+  .status-chip.inativo {
+    background-color: rgba(117, 117, 117, 0.15);
+    color: #616161;
+  }
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.lembretes-paginator {
+  margin-top: 12px;
+}
+
+.empty-card {
+  margin-top: 16px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  color: #6b7280;
+}
+
+  .empty-state mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+.lembretes-paginator {
+  background: #3f51b5;
+  color: #fff;
+}
+
+  .lembretes-paginator ::ng-deep .mat-mdc-paginator-container,
+  .lembretes-paginator ::ng-deep .mat-mdc-select-value,
+  .lembretes-paginator ::ng-deep .mat-mdc-paginator-range-label,
+  .lembretes-paginator ::ng-deep .mat-mdc-icon-button,
+  .lembretes-paginator ::ng-deep .mat-mdc-select-arrow,
+  .lembretes-paginator ::ng-deep .mdc-text-field {
+    color: #fff;
+  }
+
+  .lembretes-paginator ::ng-deep .mdc-text-field {
+    background: transparent;
+  }

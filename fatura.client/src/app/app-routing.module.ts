@@ -15,6 +15,7 @@ import { InstituicoesComponent } from './components/financeiro/instituicoes/inst
 import { ContasComponent } from './components/financeiro/contas/contas.component';
 import { CategoriasFinanceiroComponent } from './components/financeiro/categorias/categorias.component';
 import { LancamentosComponent } from './components/financeiro/lancamentos/lancamentos.component';
+import { LembretesPagamentoComponent } from './components/lembretes-pagamento/lembretes-pagamento.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -43,6 +44,12 @@ const routes: Routes = [
     component: ComprasRecorrentesComponent,
     canActivate: [AuthGuard],
     data: { showInMenu: true, label: 'Recorrentes', icon: 'autorenew', exact: true }
+  },
+  {
+    path: 'lembretes-pagamento',
+    component: LembretesPagamentoComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Lembretes de Pagamento', icon: 'notifications_active', exact: true }
   },
   {
     path: 'fornecedores',

@@ -30,6 +30,13 @@ import { ContaFormDialogComponent } from './components/financeiro/dialogs/conta-
 import { CategoriaFormDialogComponent } from './components/financeiro/dialogs/categoria-form-dialog.component';
 import { SubcategoriaFormDialogComponent } from './components/financeiro/dialogs/subcategoria-form-dialog.component';
 import { LancamentoFormDialogComponent } from './components/financeiro/dialogs/lancamento-form-dialog.component';
+import { LembretesPagamentoComponent } from './components/lembretes-pagamento/lembretes-pagamento.component';
+import { LembretePagamentoFormDialogComponent } from './components/lembretes-pagamento/lembrete-pagamento-form-dialog.component';
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
+
+registerLocaleData(localePt);
 
 @NgModule({
   declarations: [
@@ -56,7 +63,9 @@ import { LancamentoFormDialogComponent } from './components/financeiro/dialogs/l
     ContaFormDialogComponent,
     CategoriaFormDialogComponent,
     SubcategoriaFormDialogComponent,
-    LancamentoFormDialogComponent
+    LancamentoFormDialogComponent,
+    LembretesPagamentoComponent,
+    LembretePagamentoFormDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -68,7 +77,8 @@ import { LancamentoFormDialogComponent } from './components/financeiro/dialogs/l
     MaterialModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: LOCALE_ID, useValue: 'pt-BR' }
   ],
   bootstrap: [AppComponent]
 })

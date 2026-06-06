@@ -63,6 +63,42 @@ export interface CompraRecorrente {
   subcategoriaNome?: string | null;
 }
 
+export enum TipoLembreteEnvio {
+  CincoDiasAntes = 1,
+  DoisDiasAntes = 2
+}
+
+export enum CanalNotificacao {
+  Email = 1,
+  WhatsApp = 2,
+  Push = 3
+}
+
+export interface LembretePagamentoRequest {
+  nomeConta: string;
+  valorConta: number;
+  diaVencimento: number;
+  ativo: boolean;
+}
+
+export interface LembretePagamento {
+  id: number;
+  nomeConta: string;
+  valorConta: number;
+  diaVencimento: number;
+  ativo: boolean;
+  dataCriacao: string;
+}
+
+export interface LembretePagamentoHistorico {
+  id: number;
+  lembretePagamentoId: number;
+  tipoEnvio: TipoLembreteEnvio;
+  canal: CanalNotificacao;
+  dataReferencia: string;
+  dataEnvio: string;
+}
+
 export interface FaturaResumo {
   id: number;
   mes: number;

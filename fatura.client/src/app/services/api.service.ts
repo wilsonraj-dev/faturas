@@ -6,6 +6,8 @@ import {
   CompraResponse,
   CompraRecorrente,
   CompraRecorrenteRequest,
+  LembretePagamento,
+  LembretePagamentoRequest,
   SimulacaoResponse,
   FaturaResumo,
   FaturaDetalhe,
@@ -68,6 +70,37 @@ export class CompraRecorrenteService {
 
   desativar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class LembretePagamentoService {
+  private readonly baseUrl = `${environment.apiUrl}/lembretes-pagamento`;
+
+  constructor(private http: HttpClient) { }
+
+  listar(): Observable<LembretePagamento[]> {
+    return this.http.get<LembretePagamento[]>(this.baseUrl);
+  }
+
+  criar(request: LembretePagamentoRequest): Observable<LembretePagamento> {
+    return this.http.post<LembretePagamento>(this.baseUrl, request);
+  }
+
+  atualizar(id: number, request: LembretePagamentoRequest): Observable<LembretePagamento> {
+    return this.http.put<LembretePagamento>(`${this.baseUrl}/${id}`, request);
+  }
+
+  excluir(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
+  ativar(id: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}/ativar`, {});
+  }
+
+  desativar(id: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}/desativar`, {});
   }
 }
 
