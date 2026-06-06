@@ -20,6 +20,8 @@ public class AppDbContext : DbContext
     public DbSet<Categoria> Categorias => Set<Categoria>();
     public DbSet<Subcategoria> Subcategorias => Set<Subcategoria>();
     public DbSet<LancamentoFinanceiro> LancamentosFinanceiros => Set<LancamentoFinanceiro>();
+    public DbSet<LembretePagamento> LembretesPagamento => Set<LembretePagamento>();
+    public DbSet<LembretePagamentoHistorico> LembretesPagamentoHistoricos => Set<LembretePagamentoHistorico>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -232,6 +234,37 @@ public class AppDbContext : DbContext
             entity.HasOne(e => e.User)
                   .WithMany(u => u.LancamentosFinanceiros)
                   .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LembretePagamento>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.NomeConta).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.ValorConta).HasPrecision(18, 2);
+            entity.Property(e => e.DataCriacao).IsRequired();
+            entity.HasIndex(e => e.UserId);
+
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.LembretesPagamento)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LembretePagamentoHistorico>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TipoEnvio).IsRequired();
+            entity.Property(e => e.Canal).IsRequired();
+            entity.Property(e => e.DataReferencia).IsRequired();
+            entity.Property(e => e.DataEnvio).IsRequired();
+            entity.HasIndex(e => e.LembretePagamentoId);
+            entity.HasIndex(e => new { e.LembretePagamentoId, e.DataReferencia, e.TipoEnvio, e.Canal })
+                  .IsUnique();
+
+            entity.HasOne(e => e.LembretePagamento)
+                  .WithMany(l => l.Historicos)
+                  .HasForeignKey(e => e.LembretePagamentoId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
