@@ -1,10 +1,7 @@
-using System.Text;
 using Fatura.Server.Data;
 using Fatura.Server.IoC;
-using Fatura.Server.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Fatura.Server.Workers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var useHttpsRedirection = builder.Configuration.GetValue("UseHttpsRedirection", builder.Environment.IsDevelopment());
@@ -16,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Registra os serviços da aplicação
 builder.Services.AddInfrastructureServices();
+builder.Services.AddHostedService<LembretePagamentoWorker>();
 builder.Services.AddInfrastructureJwt(builder.Configuration);
 builder.Services.AddAuthorization();
 
