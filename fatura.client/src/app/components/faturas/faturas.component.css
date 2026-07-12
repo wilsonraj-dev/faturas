@@ -230,6 +230,12 @@
   width: 100%;
 }
 
+.parcelas-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
   .parcelas-table th {
     font-weight: 600;
   }
@@ -293,4 +299,18 @@
   padding: 24px;
   color: var(--color-text-disabled);
   font-size: 14px;
+}
+
+@media (max-width: 699.98px) {
+  .parcelas-table {
+    min-width: 640px;
+  }
+
+  .detalhe-inline {
+    padding-inline: var(--space-2);
+  }
+
+  .faturas-paginator ::ng-deep .mat-mdc-paginator-page-size-label {
+    display: none;
+  }
 }

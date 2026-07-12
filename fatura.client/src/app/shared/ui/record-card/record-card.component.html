@@ -1,0 +1,12 @@
+<article class="record-card" [ngClass]="'tone-' + tone">
+  <header>
+    <div class="record-icon" aria-hidden="true"><mat-icon>{{ icon }}</mat-icon></div>
+    <div class="record-heading">
+      <span *ngIf="eyebrow" class="record-eyebrow">{{ eyebrow }}</span>
+      <strong>{{ title }}</strong>
+    </div>
+    <span *ngIf="value" class="record-value">{{ value }}</span>
+  </header>
+  <div class="record-details"><ng-content select="[record-details]"></ng-content></div>
+  <footer><ng-content select="[record-actions]"></ng-content></footer>
+</article>

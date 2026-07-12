@@ -10,6 +10,7 @@
   <app-feedback-state *ngIf="carregando" kind="loading" title="Carregando contas"></app-feedback-state>
 
   <app-table-shell *ngIf="!carregando && contas.length > 0"
+                   class="desktop-record-table"
                    title="Contas cadastradas"
                    icon="credit_card"
                    [count]="contas.length">
@@ -55,6 +56,28 @@
                    showFirstLastButtons>
     </mat-paginator>
   </app-table-shell>
+
+  <div *ngIf="!carregando && contas.length > 0" class="mobile-record-list">
+    <app-record-card *ngFor="let conta of contasPaginadas"
+                     [title]="conta.nome"
+                     [eyebrow]="getTipoLabel(conta.tipo)"
+                     [value]="conta.instituicaoNome"
+                     icon="credit_card">
+      <dl record-details class="record-detail-grid">
+        <div><dt>Identificador</dt><dd>#{{ conta.id }}</dd></div>
+        <div><dt>Instituição</dt><dd>{{ conta.instituicaoNome || 'Não informada' }}</dd></div>
+      </dl>
+      <div record-actions>
+        <button mat-icon-button color="primary" (click)="abrirDialog(conta)" aria-label="Editar conta"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="deletar(conta)" aria-label="Excluir conta"><mat-icon>delete</mat-icon></button>
+      </div>
+    </app-record-card>
+  </div>
+  <mat-paginator *ngIf="!carregando && contas.length > 0"
+                 class="mobile-record-paginator"
+                 [length]="contas.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                 [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+  </mat-paginator>
 
   <app-feedback-state *ngIf="!carregando && contas.length === 0"
                       kind="empty"

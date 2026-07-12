@@ -42,6 +42,7 @@ import { FeedbackStateComponent } from './shared/ui/feedback-state/feedback-stat
 import { StatCardComponent } from './shared/ui/stat-card/stat-card.component';
 import { TableShellComponent } from './shared/ui/table-shell/table-shell.component';
 import { StatusChipComponent } from './shared/ui/status-chip/status-chip.component';
+import { RecordCardComponent } from './shared/ui/record-card/record-card.component';
 
 registerLocaleData(localePt);
 
@@ -79,7 +80,8 @@ registerLocaleData(localePt);
     FeedbackStateComponent,
     StatCardComponent,
     TableShellComponent,
-    StatusChipComponent
+    StatusChipComponent,
+    RecordCardComponent
   ],
   imports: [
     BrowserModule,

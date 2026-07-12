@@ -10,6 +10,7 @@
   <app-feedback-state *ngIf="carregando" kind="loading" title="Carregando instituições"></app-feedback-state>
 
   <app-table-shell *ngIf="!carregando && instituicoes.length > 0"
+                   class="desktop-record-table"
                    title="Instituições cadastradas"
                    icon="account_balance"
                    [count]="instituicoes.length">
@@ -50,6 +51,28 @@
                    showFirstLastButtons>
     </mat-paginator>
   </app-table-shell>
+
+  <div *ngIf="!carregando && instituicoes.length > 0" class="mobile-record-list">
+    <app-record-card *ngFor="let instituicao of instituicoesPaginadas"
+                     [title]="instituicao.nome"
+                     eyebrow="Instituição financeira"
+                     [value]="instituicao.quantidadeContas + ' conta(s)'"
+                     icon="account_balance">
+      <dl record-details class="record-detail-grid">
+        <div><dt>Identificador</dt><dd>#{{ instituicao.id }}</dd></div>
+        <div><dt>Contas vinculadas</dt><dd>{{ instituicao.quantidadeContas }}</dd></div>
+      </dl>
+      <div record-actions>
+        <button mat-icon-button color="primary" (click)="abrirDialog(instituicao)" aria-label="Editar instituição"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="deletar(instituicao)" aria-label="Excluir instituição"><mat-icon>delete</mat-icon></button>
+      </div>
+    </app-record-card>
+  </div>
+  <mat-paginator *ngIf="!carregando && instituicoes.length > 0"
+                 class="mobile-record-paginator"
+                 [length]="instituicoes.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                 [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+  </mat-paginator>
 
   <app-feedback-state *ngIf="!carregando && instituicoes.length === 0"
                       kind="empty"

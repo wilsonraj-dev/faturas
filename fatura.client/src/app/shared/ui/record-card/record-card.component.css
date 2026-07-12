@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.record-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+header {
+  display: flex;
+  min-width: 0;
+  padding: var(--space-4);
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.record-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  color: var(--tone-color);
+  background: var(--tone-background);
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.record-heading {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+  .record-heading strong {
+    overflow: hidden;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+.record-eyebrow {
+  margin-bottom: 2px;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+.record-value {
+  color: var(--tone-color);
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.record-details {
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+  .record-details:empty,
+  footer:empty {
+    display: none;
+  }
+
+footer {
+  display: flex;
+  min-height: 52px;
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-divider);
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+  footer ::ng-deep button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+.tone-primary {
+  --tone-color: var(--color-primary);
+  --tone-background: var(--color-primary-subtle);
+}
+
+.tone-success {
+  --tone-color: var(--color-success);
+  --tone-background: var(--color-success-subtle);
+}
+
+.tone-danger {
+  --tone-color: var(--color-danger);
+  --tone-background: var(--color-danger-subtle);
+}
+
+.tone-warning {
+  --tone-color: var(--color-warning);
+  --tone-background: var(--color-warning-subtle);
+}
+
+.tone-neutral {
+  --tone-color: var(--color-neutral-strong);
+  --tone-background: var(--color-neutral-subtle);
+}

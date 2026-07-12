@@ -126,4 +126,14 @@
   .filtros-grid {
     grid-template-columns: 1fr;
   }
+
+  .filtros-actions {
+    grid-column: 1 / -1;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtros-actions button {
+    min-height: 44px;
+  }
 }

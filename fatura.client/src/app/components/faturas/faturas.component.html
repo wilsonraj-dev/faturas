@@ -156,8 +156,8 @@
                         <mat-icon>list_alt</mat-icon> Parcelas
                       </h3>
 
-                      <table mat-table [dataSource]="getParcelasPaginadas(fatura.id, detalhe.parcelas)" class="parcelas-table"
-                             *ngIf="detalhe.parcelas.length > 0">
+                      <div class="parcelas-table-scroll" *ngIf="detalhe.parcelas.length > 0">
+                        <table mat-table [dataSource]="getParcelasPaginadas(fatura.id, detalhe.parcelas)" class="parcelas-table">
                         <ng-container matColumnDef="nomeCompra">
                           <th mat-header-cell *matHeaderCellDef>Compra</th>
                           <td mat-cell *matCellDef="let parcela">{{ parcela.nomeCompra }}</td>
@@ -195,7 +195,8 @@
 
                         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                      </table>
+                        </table>
+                      </div>
 
                       <mat-paginator class="faturas-paginator"
                                      *ngIf="detalhe.parcelas.length > 0"

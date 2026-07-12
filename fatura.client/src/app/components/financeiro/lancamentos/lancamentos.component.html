@@ -78,6 +78,7 @@
 
   <!-- Tabela -->
   <app-table-shell *ngIf="!carregando && lancamentosFiltrados.length > 0"
+                   class="desktop-record-table"
                    title="Lançamentos encontrados"
                    icon="receipt_long"
                    [count]="lancamentosFiltrados.length">
@@ -151,6 +152,33 @@
                      showFirstLastButtons>
       </mat-paginator>
   </app-table-shell>
+
+  <div *ngIf="!carregando && lancamentosFiltrados.length > 0" class="mobile-record-list">
+    <app-record-card *ngFor="let lancamento of lancamentosPaginados"
+                     [title]="lancamento.descricao || 'Lançamento sem descrição'"
+                     [eyebrow]="(lancamento.data | date:'dd/MM/yyyy') || ''"
+                     [value]="(lancamento.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR') || ''"
+                     [tone]="getTipoLabel(lancamento.tipo) === 'Receita' ? 'success' : 'danger'"
+                     [icon]="getTipoLabel(lancamento.tipo) === 'Receita' ? 'trending_up' : 'trending_down'">
+      <dl record-details class="record-detail-grid">
+        <div><dt>Conta</dt><dd>{{ lancamento.contaFinanceiraNome }}</dd></div>
+        <div><dt>Categoria</dt><dd>{{ lancamento.categoriaNome || 'Não informada' }}</dd></div>
+        <div><dt>Subcategoria</dt><dd>{{ lancamento.subcategoriaNome || 'Não informada' }}</dd></div>
+        <div><dt>Origem</dt><dd>{{ getOrigemLabel(lancamento.origem) || 'Não informada' }}</dd></div>
+      </dl>
+      <div record-actions>
+        <button mat-icon-button color="primary" (click)="abrirDialog(lancamento)"
+                [disabled]="isReadonly(lancamento)" aria-label="Editar lançamento"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="deletar(lancamento)"
+                [disabled]="isReadonly(lancamento)" aria-label="Excluir lançamento"><mat-icon>delete</mat-icon></button>
+      </div>
+    </app-record-card>
+  </div>
+  <mat-paginator *ngIf="!carregando && lancamentosFiltrados.length > 0"
+                 class="mobile-record-paginator"
+                 [length]="lancamentosFiltrados.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                 [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+  </mat-paginator>
 
   <app-feedback-state *ngIf="!carregando && lancamentosFiltrados.length === 0"
                       kind="empty"

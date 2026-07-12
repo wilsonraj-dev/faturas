@@ -1,18 +1,16 @@
 <div class="container">
-  <h2>Lembretes de Pagamento</h2>
-
-  <div class="header-actions">
-    <button mat-raised-button color="primary" (click)="abrirDialog()">
+  <app-page-header title="Lembretes de Pagamento"
+                   subtitle="Receba avisos antes do vencimento das suas contas."
+                   icon="notifications_active">
+    <button page-actions mat-raised-button color="primary" (click)="abrirDialog()">
       <mat-icon>add_alert</mat-icon>
       Novo Lembrete
     </button>
-  </div>
+  </app-page-header>
 
-  <div *ngIf="carregando" class="loading">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
+  <app-feedback-state *ngIf="carregando" kind="loading" title="Carregando lembretes"></app-feedback-state>
 
-  <mat-card *ngIf="!carregando && lembretes.length > 0" class="table-card">
+  <mat-card *ngIf="!carregando && lembretes.length > 0" class="table-card desktop-record-table">
     <mat-card-header>
       <mat-card-title>
         <mat-icon class="title-icon">notifications_active</mat-icon>
@@ -41,9 +39,9 @@
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let item">
-            <mat-chip class="status-chip" [class.inativo]="!item.ativo">
+            <app-status-chip [tone]="item.ativo ? 'success' : 'neutral'">
               {{ item.ativo ? 'Ativo' : 'Inativo' }}
-            </mat-chip>
+            </app-status-chip>
           </td>
         </ng-container>
 
@@ -80,10 +78,37 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card *ngIf="!carregando && lembretes.length === 0" class="empty-card">
-    <mat-card-content class="empty-state">
-      <mat-icon>notifications_off</mat-icon>
-      <p>Nenhum lembrete de pagamento cadastrado.</p>
-    </mat-card-content>
-  </mat-card>
+  <div *ngIf="!carregando && lembretes.length > 0" class="mobile-record-list">
+    <app-record-card *ngFor="let lembrete of lembretesPaginados"
+                     [title]="lembrete.nomeConta"
+                     [eyebrow]="'Vencimento no dia ' + lembrete.diaVencimento"
+                     [value]="(lembrete.valorConta | currency:'BRL':'symbol':'1.2-2':'pt-BR') || ''"
+                     [tone]="lembrete.ativo ? 'success' : 'neutral'"
+                     icon="notifications_active">
+      <dl record-details class="record-detail-grid">
+        <div><dt>Status</dt><dd>{{ lembrete.ativo ? 'Ativo' : 'Inativo' }}</dd></div>
+        <div><dt>Vencimento</dt><dd>Dia {{ lembrete.diaVencimento }}</dd></div>
+      </dl>
+      <div record-actions>
+        <button mat-icon-button color="primary" (click)="abrirDialog(lembrete)" aria-label="Editar lembrete"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="primary" (click)="alternarStatus(lembrete)"
+                [attr.aria-label]="lembrete.ativo ? 'Desativar lembrete' : 'Ativar lembrete'">
+          <mat-icon>{{ lembrete.ativo ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="excluir(lembrete)" aria-label="Excluir lembrete"><mat-icon>delete</mat-icon></button>
+      </div>
+    </app-record-card>
+  </div>
+  <mat-paginator *ngIf="!carregando && lembretes.length > 0"
+                 class="mobile-record-paginator"
+                 [length]="lembretes.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                 [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
+  </mat-paginator>
+
+  <app-feedback-state *ngIf="!carregando && lembretes.length === 0"
+                      kind="empty" icon="notifications_off"
+                      title="Nenhum lembrete cadastrado"
+                      message="Crie um lembrete para receber avisos antes do vencimento.">
+    <button mat-raised-button color="primary" (click)="abrirDialog()">Criar lembrete</button>
+  </app-feedback-state>
 </div>
