@@ -1,20 +1,22 @@
 :host {
   display: block;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
 .layout-container {
   height: 100vh;
-  background: var(--mat-app-background-color, var(--color-surface-hover));
+  height: 100dvh;
+  background: var(--color-background);
 }
 
 .sidebar {
   width: var(--sidebar-width);
   color: var(--color-on-primary);
-  background: var(--mat-sys-primary, var(--color-primary));
+  background: var(--color-primary);
   border-right: 1px solid color-mix(in srgb, var(--color-on-primary) 12%, transparent);
-  transition: width 200ms ease-in-out;
+  transition: width 180ms ease-in-out;
 }
 
 .sidebar-collapsed {
@@ -31,72 +33,92 @@
 .sidebar-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   min-height: var(--topbar-height);
-  padding: 0 20px;
+  padding: env(safe-area-inset-top) var(--space-5) 0;
+  font-size: 1.1rem;
   font-weight: 600;
-  font-size: 1.2rem;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.sidebar-header-spacer {
+  flex: 1 1 auto;
+}
+
+.sidebar-close {
+  min-width: 44px;
+  min-height: 44px;
+  margin-right: calc(var(--space-2) * -1);
 }
 
 .navigation {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 12px;
+  gap: var(--space-1);
+  max-height: calc(100dvh - var(--topbar-height) - env(safe-area-inset-top));
+  padding: var(--space-3);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .navigation-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 0 16px;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: 0 var(--space-4);
   border-radius: var(--radius-md);
-  text-decoration: none;
   color: var(--color-on-primary);
-  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
-  /* garante que o conteúdo não quebre verticalmente */
+  text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
+  transition: background-color 180ms ease-in-out, color 180ms ease-in-out;
 }
 
-  .navigation-item:hover {
-    background-color: color-mix(in srgb, var(--color-on-primary) 12%, transparent);
-  }
+.navigation-item:hover {
+  background-color: color-mix(in srgb, var(--color-on-primary) 12%, transparent);
+}
 
-/* container do ícone com tamanho fixo para alinhamento consistente */
+.navigation-item:focus-visible {
+  outline: 2px solid var(--color-on-primary);
+  outline-offset: -3px;
+}
+
 .navigation-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px; /* largura fixa do "slot" do ícone */
-  min-width: 36px;
-  height: 36px;
-  font-size: 20px;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
   margin: 0;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
-/* label ocupa o espaço restante e com ellipsis se ultrapassar */
 .navigation-label {
-  font-size: 1.05rem;
-  font-weight: 500;
+  flex: 1 1 auto;
   overflow: hidden;
+  font-size: 1rem;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex: 1 1 auto;
 }
 
-/* quando o menu está colapsado, centraliza apenas o ícone */
+.sidebar-collapsed .sidebar-header {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.sidebar-collapsed .sidebar-header-spacer {
+  display: none;
+}
+
 .sidebar-collapsed .navigation-item {
   justify-content: center;
-  padding: 0;
-}
-
-.sidebar-collapsed .navigation-icon {
-  margin-right: 0;
+  padding-inline: 0;
 }
 
 .active-link {
@@ -107,11 +129,12 @@
 .layout-content {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  max-height: 100vh;
-  transition: margin-left 200ms ease-in-out;
-  overflow-y: auto;
+  height: 100vh;
+  height: 100dvh;
+  min-width: 0;
   overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   scroll-behavior: smooth;
 }
 
@@ -119,15 +142,32 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  gap: 12px;
+  min-height: calc(var(--topbar-height) + env(safe-area-inset-top));
+  gap: var(--space-2);
+  padding-top: env(safe-area-inset-top);
+  padding-right: max(var(--space-4), env(safe-area-inset-right));
+  padding-left: max(var(--space-4), env(safe-area-inset-left));
   box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.topbar button {
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  min-width: 0;
+  gap: var(--space-2);
   font-weight: 600;
+}
+
+.brand span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .spacer {
@@ -139,21 +179,29 @@
 }
 
 .user-name {
-  margin-left: 4px;
   max-width: 160px;
+  margin-left: var(--space-1);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .page-content {
-  flex: 1;
-  padding: 24px;
-  transition: padding 200ms ease-in-out;
-  min-height: calc(100vh - var(--topbar-height));
+  flex: 1 0 auto;
+  min-width: 0;
+  padding: var(--space-6);
+  padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  transition: padding 180ms ease-in-out;
 }
 
-@media (max-width: 960px) {
+@media (min-width: 1280px) {
+  .page-content {
+    padding: var(--space-8);
+    padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 600px) and (max-width: 959.98px) {
   .sidebar {
     width: 220px;
   }
@@ -163,11 +211,49 @@
   }
 
   .page-content {
-    padding: 16px;
+    padding: var(--space-5);
+    padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
   }
 
   .brand span,
   .user-name {
     display: none;
+  }
+}
+
+@media (max-width: 599.98px) {
+  .sidebar {
+    width: min(86vw, 320px);
+    padding-left: env(safe-area-inset-left);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar-header {
+    min-height: calc(var(--topbar-height) + env(safe-area-inset-top));
+  }
+
+  .navigation {
+    max-height: calc(100dvh - var(--topbar-height) - env(safe-area-inset-top));
+  }
+
+  .topbar {
+    gap: var(--space-1);
+    padding-right: max(var(--space-2), env(safe-area-inset-right));
+    padding-left: max(var(--space-2), env(safe-area-inset-left));
+  }
+
+  .brand span,
+  .user-name {
+    display: none;
+  }
+
+  .user-menu-btn {
+    min-width: 44px;
+    padding-inline: 10px;
+  }
+
+  .page-content {
+    padding: var(--space-3);
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
   }
 }

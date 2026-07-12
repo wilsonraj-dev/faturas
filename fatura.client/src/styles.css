@@ -188,6 +188,8 @@ body {
 .mat-toolbar.mat-primary {
   --mat-toolbar-container-background-color: var(--color-primary);
   --mat-toolbar-container-text-color: var(--color-on-primary);
+  --mdc-icon-button-icon-color: var(--color-on-primary);
+  --mdc-text-button-label-text-color: var(--color-on-primary);
 }
 
 .mat-primary {

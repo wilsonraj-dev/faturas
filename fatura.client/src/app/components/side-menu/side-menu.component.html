@@ -1,12 +1,27 @@
-<mat-sidenav-container class="layout-container" autosize>
-  <mat-sidenav mode="side"
-               [opened]="true"
-               [disableClose]="true"
+<mat-sidenav-container class="layout-container"
+                       [class.is-handset]="isHandset"
+                       [class.is-tablet]="isTablet"
+                       [hasBackdrop]="isHandset"
+                       autosize>
+  <mat-sidenav [mode]="isHandset ? 'over' : 'side'"
+               [opened]="isMenuOpen"
+               [disableClose]="!isHandset"
+               (openedChange)="onMenuOpenedChange($event)"
                class="sidebar"
-               [class.sidebar-collapsed]="isCollapsed">
+               [class.sidebar-collapsed]="isCollapsed"
+               aria-label="Navegação principal">
     <div class="sidebar-header">
       <mat-icon>credit_card</mat-icon>
       <span *ngIf="!isCollapsed">Controle de Faturas</span>
+      <span class="sidebar-header-spacer"></span>
+      <button *ngIf="isHandset"
+              mat-icon-button
+              type="button"
+              class="sidebar-close"
+              (click)="toggleMenu()"
+              aria-label="Fechar menu de navegação">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
 
     <mat-divider></mat-divider>
@@ -19,6 +34,7 @@
          [routerLinkActiveOptions]="{ exact: item.exact }"
          [matTooltip]="isCollapsed ? item.label : ''"
          matTooltipPosition="right"
+         (click)="onNavigation()"
          class="navigation-item">
         <mat-icon class="navigation-icon">{{ item.icon }}</mat-icon>
         <span *ngIf="!isCollapsed" class="navigation-label">{{ item.label }}</span>
@@ -31,9 +47,10 @@
       <button mat-icon-button
               type="button"
               (click)="toggleMenu()"
-              [attr.aria-label]="isCollapsed ? 'Expandir menu lateral' : 'Contrair menu lateral'"
-              [matTooltip]="isCollapsed ? 'Expandir menu' : 'Contrair menu'">
-        <mat-icon>{{ isCollapsed ? 'menu' : 'menu_open' }}</mat-icon>
+              [attr.aria-label]="menuButtonLabel"
+              [attr.aria-expanded]="isHandset ? isMenuOpen : !isCollapsed"
+              [matTooltip]="menuButtonLabel">
+        <mat-icon>{{ menuButtonIcon }}</mat-icon>
       </button>
 
       <div class="brand">
@@ -43,11 +60,11 @@
 
       <span class="spacer"></span>
 
-      <button mat-icon-button type="button" (click)="themeService.toggleTheme()" matTooltip="Alternar tema">
+      <button mat-icon-button type="button" (click)="themeService.toggleTheme()" aria-label="Alternar tema" matTooltip="Alternar tema">
         <mat-icon>{{ themeService.isDark ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
 
-      <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+      <button mat-button type="button" [matMenuTriggerFor]="userMenu" class="user-menu-btn" aria-label="Abrir menu do usuário">
         <mat-icon>account_circle</mat-icon>
         <span class="user-name">{{ userName }}</span>
       </button>
