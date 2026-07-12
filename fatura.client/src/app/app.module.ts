@@ -32,6 +32,7 @@ import { SubcategoriaFormDialogComponent } from './components/financeiro/dialogs
 import { LancamentoFormDialogComponent } from './components/financeiro/dialogs/lancamento-form-dialog.component';
 import { LembretesPagamentoComponent } from './components/lembretes-pagamento/lembretes-pagamento.component';
 import { LembretePagamentoFormDialogComponent } from './components/lembretes-pagamento/lembrete-pagamento-form-dialog.component';
+import { DashboardFinanceiroComponent } from './components/financeiro/dashboard-financeiro/dashboard-financeiro.component';
 import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -65,7 +66,8 @@ registerLocaleData(localePt);
     SubcategoriaFormDialogComponent,
     LancamentoFormDialogComponent,
     LembretesPagamentoComponent,
-    LembretePagamentoFormDialogComponent
+    LembretePagamentoFormDialogComponent,
+    DashboardFinanceiroComponent
   ],
   imports: [
     BrowserModule,

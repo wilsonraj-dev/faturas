@@ -24,6 +24,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 const modules = [
   MatToolbarModule,
@@ -50,7 +52,9 @@ const modules = [
   MatMenuModule,
   MatPaginatorModule,
   MatSidenavModule,
-  MatButtonToggleModule
+  MatButtonToggleModule,
+  MatGridListModule,
+  MatExpansionModule
 ];
 
 @NgModule({

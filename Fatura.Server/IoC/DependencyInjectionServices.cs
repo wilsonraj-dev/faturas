@@ -17,6 +17,7 @@ namespace Fatura.Server.IoC
             services.AddScoped<ICategoriaService, CategoriaService>();
             services.AddScoped<ISubcategoriaService, SubcategoriaService>();
             services.AddScoped<ILancamentoFinanceiroService, LancamentoFinanceiroService>();
+            services.AddScoped<IDashboardFinanceiroService, DashboardFinanceiroService>();
             services.AddScoped<ILembretePagamentoService, LembretePagamentoService>();
             services.AddScoped<ILembretePagamentoProcessamentoService, LembretePagamentoProcessamentoService>();
             services.AddScoped<IEmailService, SmtpEmailService>();

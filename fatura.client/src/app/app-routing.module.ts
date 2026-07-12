@@ -16,6 +16,7 @@ import { ContasComponent } from './components/financeiro/contas/contas.component
 import { CategoriasFinanceiroComponent } from './components/financeiro/categorias/categorias.component';
 import { LancamentosComponent } from './components/financeiro/lancamentos/lancamentos.component';
 import { LembretesPagamentoComponent } from './components/lembretes-pagamento/lembretes-pagamento.component';
+import { DashboardFinanceiroComponent } from './components/financeiro/dashboard-financeiro/dashboard-financeiro.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -64,6 +65,12 @@ const routes: Routes = [
     data: { showInMenu: true, label: 'Simulações', icon: 'calculate', exact: false }
   },
   { path: 'simulacoes/:id', component: SimulacaoDetalheComponent, canActivate: [AuthGuard] },
+  {
+    path: 'financeiro/dashboard',
+    component: DashboardFinanceiroComponent,
+    canActivate: [AuthGuard],
+    data: { showInMenu: true, label: 'Dashboard Financeiro', icon: 'query_stats', exact: true, group: 'Financeiro' }
+  },
   {
     path: 'financeiro/instituicoes',
     component: InstituicoesComponent,

@@ -31,7 +31,14 @@ import {
   LancamentoFinanceiro,
   CriarLancamentoFinanceiroRequest,
   AtualizarLancamentoFinanceiroRequest,
-  TipoCategoria
+  TipoCategoria,
+  DashboardFinanceiroFiltro,
+  DashboardFinanceiroResumo,
+  DashboardFinanceiroSerieMensalItem,
+  DashboardFinanceiroAgrupamentoItem,
+  DashboardFinanceiroComparativo,
+  DashboardFinanceiroComparativoFiltro,
+  DashboardFinanceiroRankings
 } from '../models/models';
 import { environment } from '../../environments/environment';
 
@@ -334,5 +341,53 @@ export class LancamentoFinanceiroService {
 
   deletar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class DashboardFinanceiroService {
+  private readonly baseUrl = `${environment.apiUrl}/dashboard-financeiro`;
+
+  constructor(private http: HttpClient) { }
+
+  obterResumo(filtro: DashboardFinanceiroFiltro): Observable<DashboardFinanceiroResumo> {
+    return this.http.get<DashboardFinanceiroResumo>(`${this.baseUrl}/resumo${this.toQuery(filtro)}`);
+  }
+
+  obterReceitaDespesa(filtro: DashboardFinanceiroFiltro): Observable<DashboardFinanceiroSerieMensalItem[]> {
+    return this.http.get<DashboardFinanceiroSerieMensalItem[]>(`${this.baseUrl}/receita-despesa${this.toQuery(filtro)}`);
+  }
+
+  obterCategorias(filtro: DashboardFinanceiroFiltro): Observable<DashboardFinanceiroAgrupamentoItem[]> {
+    return this.http.get<DashboardFinanceiroAgrupamentoItem[]>(`${this.baseUrl}/categorias${this.toQuery(filtro)}`);
+  }
+
+  obterSubcategorias(filtro: DashboardFinanceiroFiltro): Observable<DashboardFinanceiroAgrupamentoItem[]> {
+    return this.http.get<DashboardFinanceiroAgrupamentoItem[]>(`${this.baseUrl}/subcategorias${this.toQuery(filtro)}`);
+  }
+
+  obterEvolucao(filtro: DashboardFinanceiroFiltro): Observable<DashboardFinanceiroSerieMensalItem[]> {
+    return this.http.get<DashboardFinanceiroSerieMensalItem[]>(`${this.baseUrl}/evolucao${this.toQuery(filtro)}`);
+  }
+
+  obterComparativo(filtro: DashboardFinanceiroComparativoFiltro): Observable<DashboardFinanceiroComparativo> {
+    return this.http.get<DashboardFinanceiroComparativo>(`${this.baseUrl}/comparativo${this.toQuery(filtro)}`);
+  }
+
+  obterRankings(filtro: DashboardFinanceiroFiltro): Observable<DashboardFinanceiroRankings> {
+    return this.http.get<DashboardFinanceiroRankings>(`${this.baseUrl}/rankings${this.toQuery(filtro)}`);
+  }
+
+  private toQuery(filtro: object): string {
+    const params = new URLSearchParams();
+
+    Object.entries(filtro).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && value !== '') {
+        params.set(key, value.toString());
+      }
+    });
+
+    const query = params.toString();
+    return query ? `?${query}` : '';
   }
 }

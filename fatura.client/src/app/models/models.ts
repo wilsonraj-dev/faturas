@@ -344,3 +344,69 @@ export interface AtualizarLancamentoFinanceiroRequest {
   subcategoriaId?: number;
   contaFinanceiraId: number;
 }
+
+// Dashboard Financeiro
+export interface DashboardFinanceiroFiltro {
+  dataInicial?: string;
+  dataFinal?: string;
+  contaFinanceiraId?: number;
+  categoriaId?: number;
+  subcategoriaId?: number;
+}
+
+export interface DashboardFinanceiroResumo {
+  totalRecebido: number;
+  totalGasto: number;
+  saldo: number;
+  percentualReceitaComprometida: number;
+  ticketMedioDespesas: number;
+  ticketMedioReceitas: number;
+  quantidadeLancamentos: number;
+  maiorDespesaValor: number;
+  maiorDespesaDescricao?: string;
+}
+
+export interface DashboardFinanceiroSerieMensalItem {
+  ano: number;
+  mes: number;
+  label: string;
+  receitas: number;
+  despesas: number;
+  saldo: number;
+}
+
+export interface DashboardFinanceiroAgrupamentoItem {
+  id?: number | null;
+  nome: string;
+  valor: number;
+  percentual: number;
+}
+
+export interface DashboardFinanceiroPeriodoResumo {
+  receita: number;
+  despesa: number;
+  saldo: number;
+}
+
+export interface DashboardFinanceiroComparativo {
+  periodoA: DashboardFinanceiroPeriodoResumo;
+  periodoB: DashboardFinanceiroPeriodoResumo;
+  variacaoReceitaPercentual: number;
+  variacaoDespesaPercentual: number;
+  variacaoSaldoPercentual: number;
+}
+
+export interface DashboardFinanceiroComparativoFiltro {
+  periodoAInicial: string;
+  periodoAFinal: string;
+  periodoBInicial: string;
+  periodoBFinal: string;
+  contaFinanceiraId?: number;
+  categoriaId?: number;
+  subcategoriaId?: number;
+}
+
+export interface DashboardFinanceiroRankings {
+  maioresCategorias: DashboardFinanceiroAgrupamentoItem[];
+  maioresSubcategorias: DashboardFinanceiroAgrupamentoItem[];
+}
