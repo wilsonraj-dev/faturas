@@ -79,12 +79,10 @@ export class FaturasComponent implements OnInit {
   }
 
   getCorOrcamento(percentual: number): string {
-    if (percentual <= 0) return '#9e9e9e';
-    if (percentual <= 25) return '#66bb6a';
-    if (percentual <= 50) return '#a5d6a7';
-    if (percentual <= 75) return '#ffca28';
-    if (percentual <= 90) return '#ff9800';
-    return '#f44336';
+    if (percentual <= 0) return 'var(--color-text-disabled)';
+    if (percentual <= 50) return 'var(--color-success)';
+    if (percentual <= 90) return 'var(--color-warning)';
+    return 'var(--color-danger)';
   }
 
   getMensagemAlerta(percentual: number): string {

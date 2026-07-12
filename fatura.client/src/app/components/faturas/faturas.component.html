@@ -49,7 +49,7 @@
             <ng-container *ngIf="getFaturaPorMes(i + 1) as fatura">
               <mat-card class="fatura-detail-card" [class.quitada]="fatura.quitada" [class.em-aberto]="!fatura.quitada">
                 <mat-card-header>
-                  <mat-icon mat-card-avatar [style.color]="fatura.quitada ? '#4caf50' : '#3f51b5'" style="font-size: 36px; width: 36px; height: 36px;">
+                  <mat-icon mat-card-avatar [style.color]="fatura.quitada ? 'var(--color-success)' : 'var(--color-primary)'" style="font-size: 36px; width: 36px; height: 36px;">
                     {{ fatura.quitada ? 'check_circle' : 'receipt_long' }}
                   </mat-icon>
                   <mat-card-title>{{ mes }} / {{ fatura.ano }}</mat-card-title>
@@ -123,7 +123,7 @@
                     <div class="orcamento-detalhe">
                       <span>Gasto: <strong>R$ {{ fatura.valorTotal | number:'1.2-2' }}</strong></span>
                       <span>
-                        Disponível: <strong [style.color]="fatura.orcamento - fatura.valorTotal >= 0 ? '#4caf50' : '#f44336'">
+                        Disponível: <strong [style.color]="fatura.orcamento - fatura.valorTotal >= 0 ? 'var(--color-success)' : 'var(--color-danger)'">
                           R$ {{ (fatura.orcamento - fatura.valorTotal) | number:'1.2-2' }}
                         </strong>
                       </span>
@@ -219,7 +219,7 @@
 
             <!-- Nenhuma fatura para este mês -->
             <div *ngIf="!getFaturaPorMes(i + 1)" class="sem-fatura">
-              <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: #ccc;">receipt_long</mat-icon>
+              <mat-icon style="font-size: 48px; width: 48px; height: 48px; color: var(--color-text-disabled);">receipt_long</mat-icon>
               <p>Nenhuma fatura para {{ mes }} de {{ anoSelecionado }}.</p>
             </div>
           </div>

@@ -80,7 +80,7 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
-        <div *ngIf="fatura.parcelas.length === 0" style="text-align: center; padding: 24px; color: #999;">
+        <div *ngIf="fatura.parcelas.length === 0" style="text-align: center; padding: 24px; color: var(--color-text-disabled);">
           Nenhuma parcela vinculada a esta fatura.
         </div>
       </mat-card-content>

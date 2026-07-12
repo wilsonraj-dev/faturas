@@ -28,8 +28,8 @@
   }
 
   .lembretes-table .mat-mdc-header-row {
-    background: #3f51b5;
-    color: #FFFFFF;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
   }
 
 .title-icon {
@@ -38,14 +38,14 @@
 }
 
 .status-chip {
-  background-color: rgba(56, 142, 60, 0.15);
-  color: #2e7d32;
+  background-color: color-mix(in srgb, var(--color-success) 15%, transparent);
+  color: var(--color-success-strong);
   font-weight: 600;
 }
 
   .status-chip.inativo {
-    background-color: rgba(117, 117, 117, 0.15);
-    color: #616161;
+    background-color: color-mix(in srgb, var(--color-neutral-strong) 15%, transparent);
+    color: var(--color-text-secondary);
   }
 
 .actions-cell {
@@ -66,7 +66,7 @@
   align-items: center;
   gap: 12px;
   padding: 24px 0;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
   .empty-state mat-icon {
@@ -76,8 +76,8 @@
   }
 
 .lembretes-paginator {
-  background: #3f51b5;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
   .lembretes-paginator ::ng-deep .mat-mdc-paginator-container,
@@ -86,7 +86,7 @@
   .lembretes-paginator ::ng-deep .mat-mdc-icon-button,
   .lembretes-paginator ::ng-deep .mat-mdc-select-arrow,
   .lembretes-paginator ::ng-deep .mdc-text-field {
-    color: #fff;
+    color: var(--color-on-primary);
   }
 
   .lembretes-paginator ::ng-deep .mdc-text-field {

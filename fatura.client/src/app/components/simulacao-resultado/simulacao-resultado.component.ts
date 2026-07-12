@@ -66,11 +66,11 @@ export class SimulacaoResultadoComponent implements OnChanges {
   }
 
   getCorPercentual(percentual: number): string {
-    if (percentual <= 0) return '#9e9e9e';
-    if (percentual <= 50) return '#4caf50';
-    if (percentual <= 75) return '#ff9800';
-    if (percentual <= 100) return '#f44336';
-    return '#b71c1c';
+    if (percentual <= 0) return 'var(--color-text-disabled)';
+    if (percentual <= 50) return 'var(--color-success)';
+    if (percentual <= 75) return 'var(--color-warning)';
+    if (percentual <= 100) return 'var(--color-danger)';
+    return 'var(--color-danger-strong)';
   }
 
   private carregarFaturasExistentes(): void {

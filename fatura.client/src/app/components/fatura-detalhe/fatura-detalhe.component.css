@@ -14,13 +14,13 @@
   border-radius: 16px;
   font-size: 14px;
   font-weight: 500;
-  background: #e3f2fd;
-  color: #1565c0;
+  background: var(--color-info-subtle);
+  color: var(--color-info-strong);
 }
 
 .status.paga {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--color-success-subtle);
+  color: var(--color-success-strong);
 }
 
 .resumo-card .resumo-info {
@@ -34,14 +34,14 @@
 .resumo-info .label {
   display: block;
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .resumo-info .valor {
   display: block;
   font-size: 28px;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .resumo-info .acoes {
@@ -62,15 +62,15 @@
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #eceff1;
-  color: #455a64;
+  background: var(--color-neutral-subtle);
+  color: var(--color-text-secondary);
   font-size: 12px;
   font-weight: 500;
 }
 
 .tipo-chip.recorrente {
-  background: #e0f2f1;
-  color: #00695c;
+  background: var(--color-info-subtle);
+  color: var(--color-info-strong);
 }
 
 .tipo-chip mat-icon {

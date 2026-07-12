@@ -21,6 +21,7 @@ import {
   DashboardFinanceiroSerieMensalItem,
   Subcategoria
 } from '../../../models/models';
+import { ThemeService } from '../../../services/theme.service';
 
 type GraficoAlternavel = 'bar' | 'pie';
 
@@ -61,17 +62,18 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
   private evolucaoChart?: Chart;
   private ChartCtor?: typeof import('chart.js').Chart;
   private categoriaSubscription?: Subscription;
+  private themeSubscription?: Subscription;
   private chartAreaReady = false;
 
-  private readonly cores = [
-    '#2563eb',
-    '#dc2626',
-    '#16a34a',
-    '#f59e0b',
-    '#7c3aed',
-    '#0891b2',
-    '#db2777',
-    '#4d7c0f'
+  private readonly colorTokens = [
+    '--chart-1',
+    '--chart-2',
+    '--chart-3',
+    '--chart-4',
+    '--chart-5',
+    '--chart-6',
+    '--chart-7',
+    '--chart-8'
   ];
 
   constructor(
@@ -80,7 +82,8 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     private contaService: ContaFinanceiraService,
     private categoriaService: CategoriaService,
     private subcategoriaService: SubcategoriaService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private themeService: ThemeService
   ) { }
 
   ngOnInit(): void {
@@ -110,6 +113,11 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
       this.filtroForm.patchValue({ subcategoriaId: null }, { emitEvent: false });
       this.carregarSubcategorias(categoriaId);
     });
+    this.themeSubscription = this.themeService.theme$.subscribe(() => {
+      if (this.chartAreaReady) {
+        this.atualizarGraficos();
+      }
+    });
   }
 
   async ngAfterViewInit(): Promise<void> {
@@ -122,6 +130,7 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnDestroy(): void {
     this.categoriaSubscription?.unsubscribe();
+    this.themeSubscription?.unsubscribe();
     this.destroyCharts();
   }
 
@@ -293,7 +302,10 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     if (this.receitaDespesaTipo === 'pie') {
       const totalReceitas = this.receitaDespesa.reduce((sum, item) => sum + item.receitas, 0);
       const totalDespesas = this.receitaDespesa.reduce((sum, item) => sum + item.despesas, 0);
-      this.receitaDespesaChart = this.createChart(canvas, 'pie', ['Receitas', 'Despesas'], [totalReceitas, totalDespesas], ['#16a34a', '#dc2626']);
+      this.receitaDespesaChart = this.createChart(canvas, 'pie', ['Receitas', 'Despesas'], [totalReceitas, totalDespesas], [
+        this.getCssColor('--color-success'),
+        this.getCssColor('--color-danger')
+      ]);
 
       return;
     }
@@ -309,12 +321,12 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
           {
             label: 'Receitas',
             data: this.receitaDespesa.map(item => item.receitas),
-            backgroundColor: '#16a34a'
+            backgroundColor: this.getCssColor('--color-success')
           },
           {
             label: 'Despesas',
             data: this.receitaDespesa.map(item => item.despesas),
-            backgroundColor: '#dc2626'
+            backgroundColor: this.getCssColor('--color-danger')
           }
         ]
       },
@@ -332,7 +344,7 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
       this.categoriasTipo,
       this.gastosCategorias.map(item => item.nome),
       this.gastosCategorias.map(item => item.valor),
-      this.cores,
+      this.getChartColors(),
       'Gastos por Categoria'
     );
   }
@@ -347,7 +359,7 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
       this.subcategoriasTipo,
       this.gastosSubcategorias.map(item => item.nome),
       this.gastosSubcategorias.map(item => item.valor),
-      this.cores.slice().reverse(),
+      this.getChartColors().reverse(),
       'Gastos por Subcategoria'
     );
   }
@@ -367,8 +379,8 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
         datasets: [{
           label: 'Saldo',
           data: this.evolucao.map(item => item.saldo),
-          borderColor: '#2563eb',
-          backgroundColor: 'rgba(37, 99, 235, 0.14)',
+          borderColor: this.getCssColor('--chart-1'),
+          backgroundColor: `${this.getCssColor('--chart-1')}24`,
           tension: 0.28,
           fill: true,
           pointRadius: 4,
@@ -390,8 +402,6 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     const ChartClass = this.ChartCtor;
     if (!ChartClass) return undefined;
 
-    console.log(labels)
-
     return new ChartClass(canvas, {
       type,
       data: {
@@ -407,9 +417,8 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
   }
 
   private commonChartOptions(isPie = false): any {
-    const isDark = document.body.classList.contains('dark-theme');
-    const textColor = isDark ? '#e0e0e0' : '#263238';
-    const gridColor = isDark ? 'rgba(224, 224, 224, 0.16)' : 'rgba(38, 50, 56, 0.12)';
+    const textColor = this.getCssColor('--color-text-primary');
+    const gridColor = this.getCssColor('--chart-grid');
 
     return {
       responsive: true,
@@ -482,6 +491,14 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
 
   private formatCurrency(value: number): string {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  private getChartColors(): string[] {
+    return this.colorTokens.map(token => this.getCssColor(token));
+  }
+
+  private getCssColor(token: string): string {
+    return getComputedStyle(document.body).getPropertyValue(token).trim();
   }
 
   private destroyCharts(): void {

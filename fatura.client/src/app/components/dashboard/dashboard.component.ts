@@ -142,9 +142,9 @@ export class DashboardComponent implements OnInit {
   getBarColor(fatura: FaturaResumo): string {
     const status = this.getStatus(fatura);
     switch (status) {
-      case 'saudavel': return '#4caf50';
-      case 'atencao': return '#ff9800';
-      case 'estourado': return '#f44336';
+      case 'saudavel': return 'var(--color-success)';
+      case 'atencao': return 'var(--color-warning)';
+      case 'estourado': return 'var(--color-danger)';
     }
   }
 

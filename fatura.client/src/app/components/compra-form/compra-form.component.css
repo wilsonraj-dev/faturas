@@ -2,7 +2,7 @@
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #263238;
+  color: var(--color-text-primary);
 }
 
 .form-grid {
@@ -33,7 +33,7 @@
 
 .preview-text {
   font-size: 18px;
-  color: #3f51b5;
+  color: var(--color-primary);
   margin-top: 12px;
 }
 

@@ -35,10 +35,15 @@ export class ThemeService {
 
   private getStoredTheme(): AppTheme {
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    return (stored === 'dark') ? 'dark' : 'light';
+    if (stored === 'light' || stored === 'dark') {
+      return stored;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
   private applyTheme(theme: AppTheme): void {
+    document.documentElement.dataset['theme'] = theme;
     document.body.classList.remove('light-theme', 'dark-theme');
     document.body.classList.add(`${theme}-theme`);
   }

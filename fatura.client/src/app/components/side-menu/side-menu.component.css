@@ -6,33 +6,33 @@
 
 .layout-container {
   height: 100vh;
-  background: var(--mat-app-background-color, #f5f5f5);
+  background: var(--mat-app-background-color, var(--color-surface-hover));
 }
 
 .sidebar {
-  width: 260px;
-  color: #fff;
-  background: var(--mat-sys-primary, #3f51b5);
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  width: var(--sidebar-width);
+  color: var(--color-on-primary);
+  background: var(--mat-sys-primary, var(--color-primary));
+  border-right: 1px solid color-mix(in srgb, var(--color-on-primary) 12%, transparent);
   transition: width 200ms ease-in-out;
 }
 
 .sidebar-collapsed {
-  width: 84px;
+  width: var(--sidebar-collapsed-width);
 }
 
 .sidebar .mat-icon,
 .sidebar mat-icon,
 .sidebar a,
 .sidebar-header {
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 64px;
+  min-height: var(--topbar-height);
   padding: 0 20px;
   font-weight: 600;
   font-size: 1.2rem;
@@ -53,9 +53,9 @@
   gap: 12px;
   min-height: 52px;
   padding: 0 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   text-decoration: none;
-  color: #fff;
+  color: var(--color-on-primary);
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
   /* garante que o conteúdo não quebre verticalmente */
   white-space: nowrap;
@@ -63,7 +63,7 @@
 }
 
   .navigation-item:hover {
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: color-mix(in srgb, var(--color-on-primary) 12%, transparent);
   }
 
 /* container do ícone com tamanho fixo para alinhamento consistente */
@@ -100,8 +100,8 @@
 }
 
 .active-link {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background-color: color-mix(in srgb, var(--color-on-primary) 20%, transparent);
+  color: var(--color-on-primary);
 }
 
 .layout-content {
@@ -120,7 +120,7 @@
   top: 0;
   z-index: 1000;
   gap: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .brand {
@@ -150,7 +150,7 @@
   flex: 1;
   padding: 24px;
   transition: padding 200ms ease-in-out;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - var(--topbar-height));
 }
 
 @media (max-width: 960px) {

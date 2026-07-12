@@ -2,7 +2,7 @@
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #263238;
+  color: var(--color-text-primary);
 }
 
 .header-actions {
@@ -19,8 +19,8 @@
   }
 
 .table-card {
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .title-icon {
@@ -29,7 +29,7 @@
   font-size: 22px;
   width: 22px;
   height: 22px;
-  color: #3f51b5;
+  color: var(--color-primary);
 }
 
 .full-table {
@@ -37,17 +37,17 @@
 }
 
 .instituicoes-table .mat-mdc-header-row {
-  background: #3f51b5;
+  background: var(--color-primary);
 }
 
 .instituicoes-table th {
-  color: #fff;
+  color: var(--color-on-primary);
   font-weight: 600;
 }
 
 .instituicoes-paginator {
-  background: #3f51b5;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
   .instituicoes-paginator ::ng-deep .mat-mdc-paginator-container,
@@ -56,7 +56,7 @@
   .instituicoes-paginator ::ng-deep .mat-mdc-icon-button,
   .instituicoes-paginator ::ng-deep .mat-mdc-select-arrow,
   .instituicoes-paginator ::ng-deep .mdc-text-field {
-    color: #fff;
+    color: var(--color-on-primary);
   }
 
   .instituicoes-paginator ::ng-deep .mdc-text-field {
@@ -64,13 +64,13 @@
   }
 
 .empty-card {
-  border-radius: 12px !important;
+  border-radius: var(--radius-md) !important;
 }
 
 .empty-state {
   text-align: center;
   padding: 48px;
-  color: #888;
+  color: var(--color-text-muted);
 }
 
   .empty-state mat-icon {

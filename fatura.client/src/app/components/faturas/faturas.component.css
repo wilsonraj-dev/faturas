@@ -2,7 +2,7 @@
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #263238;
+  color: var(--color-text-primary);
 }
 
 .filtro-row {
@@ -18,7 +18,7 @@
 
 .total-ano {
   font-size: 16px;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .faturas-tabs {
@@ -36,14 +36,14 @@
   }
 
   .tab-label.tab-quitada {
-    color: #4caf50;
+    color: var(--color-success);
   }
 
 .tab-icon-ok {
   font-size: 16px;
   width: 16px;
   height: 16px;
-  color: #4caf50;
+  color: var(--color-success);
 }
 
 .tab-content {
@@ -68,12 +68,12 @@
 }
 
   .fatura-detail-card.quitada {
-    border-left: 4px solid #4caf50;
+    border-left: 4px solid var(--color-success);
   }
 
   .fatura-detail-card.em-aberto {
-    border-left: 4px solid #3f51b5;
-    border-right: 4px solid #3f51b5;
+    border-left: 4px solid var(--color-primary);
+    border-right: 4px solid var(--color-primary);
   }
 
 .fatura-resumo {
@@ -90,7 +90,7 @@
 
 .resumo-label {
   font-size: 12px;
-  color: #888;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -98,7 +98,7 @@
 .resumo-valor {
   font-size: 22px;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-primary);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -125,8 +125,8 @@
 .orcamento-section {
   margin: 16px 0;
   padding: 16px;
-  background: #fafafa;
-  border-radius: 8px;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
 }
 
 .orcamento-header {
@@ -139,7 +139,7 @@
 .orcamento-titulo {
   font-size: 14px;
   font-weight: 500;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .orcamento-percentual {
@@ -164,7 +164,7 @@
   justify-content: space-between;
   margin-top: 12px;
   font-size: 14px;
-  color: #555;
+  color: var(--color-text-secondary);
 }
 
 .acoes-fatura {
@@ -175,22 +175,22 @@
 
 .status {
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-size: 12px;
   font-weight: 500;
-  background: #e3f2fd;
-  color: #1565c0;
+  background: var(--color-info-subtle);
+  color: var(--color-info-strong);
 }
 
   .status.paga {
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--color-success-subtle);
+    color: var(--color-success-strong);
   }
 
 .sem-fatura {
   text-align: center;
   padding: 48px;
-  color: #999;
+  color: var(--color-text-disabled);
 }
 
 /* Inline detail section */
@@ -208,7 +208,7 @@
   gap: 12px;
   padding: 24px;
   justify-content: center;
-  color: #888;
+  color: var(--color-text-muted);
   font-size: 14px;
 }
 
@@ -218,12 +218,12 @@
   gap: 8px;
   font-size: 18px;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-primary);
   margin: 0 0 16px;
 }
 
   .parcelas-titulo mat-icon {
-    color: #3f51b5;
+    color: var(--color-primary);
   }
 
 .parcelas-table {
@@ -240,13 +240,13 @@
   }
 
   .parcelas-table .mat-mdc-header-row {
-    background: #3f51b5;
-    color: #FFFFFF;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
   }
 
 .faturas-paginator {
-  background: #3f51b5;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
   .faturas-paginator ::ng-deep .mat-mdc-paginator-container,
@@ -255,7 +255,7 @@
   .faturas-paginator ::ng-deep .mat-mdc-icon-button,
   .faturas-paginator ::ng-deep .mat-mdc-select-arrow,
   .faturas-paginator ::ng-deep .mdc-text-field {
-    color: #fff;
+    color: var(--color-on-primary);
   }
 
   .faturas-paginator ::ng-deep .mdc-text-field {
@@ -268,15 +268,15 @@
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #eceff1;
-  color: #455a64;
+  background: var(--color-neutral-subtle);
+  color: var(--color-text-secondary);
   font-size: 12px;
   font-weight: 500;
 }
 
   .tipo-chip.recorrente {
-    background: #e0f2f1;
-    color: #00695c;
+    background: var(--color-info-subtle);
+    color: var(--color-info-strong);
   }
 
   .tipo-chip mat-icon {
@@ -291,6 +291,6 @@
   gap: 8px;
   justify-content: center;
   padding: 24px;
-  color: #999;
+  color: var(--color-text-disabled);
   font-size: 14px;
 }

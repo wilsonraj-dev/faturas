@@ -9,7 +9,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body class="light-theme">
+<body>
+  <script>
+    (() => {
+      const storedTheme = localStorage.getItem('app_theme');
+      const theme = storedTheme === 'light' || storedTheme === 'dark'
+        ? storedTheme
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+      document.documentElement.dataset.theme = theme;
+      document.body.classList.add(`${theme}-theme`);
+    })();
+  </script>
   <app-root></app-root>
 </body>
 </html>

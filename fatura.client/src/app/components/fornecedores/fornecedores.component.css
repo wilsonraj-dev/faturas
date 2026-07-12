@@ -2,13 +2,13 @@
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #263238;
+  color: var(--color-text-primary);
 }
 
 .novo-fornecedor-card {
   margin-bottom: 24px;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .title-icon {
@@ -17,7 +17,7 @@
   font-size: 22px;
   width: 22px;
   height: 22px;
-  color: #3f51b5;
+  color: var(--color-primary);
 }
 
 .novo-form {
@@ -37,13 +37,13 @@
 
 .fornecedores-table th {
   font-weight: 600;
-  background: #3f51b5;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .grid-footer {
-  background: #3f51b5;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
 .edit-field {
@@ -51,8 +51,8 @@
 }
 
 .empty-card {
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
   .empty-card mat-card-content {
@@ -60,7 +60,7 @@
     flex-direction: column;
     align-items: center;
     padding: 40px !important;
-    color: #90a4ae;
+    color: var(--color-text-muted);
   }
 
 .empty-icon {

@@ -7,7 +7,7 @@
     font-size: 28px;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #263238;
+    color: var(--color-text-primary);
   }
 
 .tab-content {
@@ -32,7 +32,7 @@
 }
 
 .subcategorias-filtro-field {
-  min-width: 260px;
+  min-width: var(--sidebar-width);
 }
 
 .loading {
@@ -45,8 +45,8 @@
   }
 
 .table-card {
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .full-table {
@@ -55,19 +55,19 @@
 
 .categorias-table .mat-mdc-header-row,
 .subcategorias-table .mat-mdc-header-row {
-  background: #3f51b5;
+  background: var(--color-primary);
 }
 
 .categorias-table th,
 .subcategorias-table th {
-  color: #fff;
+  color: var(--color-on-primary);
   font-weight: 600;
 }
 
 .categorias-paginator,
 .subcategorias-paginator {
-  background: #3f51b5;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
   .categorias-paginator ::ng-deep .mat-mdc-paginator-container,
@@ -82,7 +82,7 @@
   .subcategorias-paginator ::ng-deep .mat-mdc-icon-button,
   .subcategorias-paginator ::ng-deep .mat-mdc-select-arrow,
   .subcategorias-paginator ::ng-deep .mdc-text-field {
-    color: #fff;
+    color: var(--color-on-primary);
   }
 
   .categorias-paginator ::ng-deep .mdc-text-field,
@@ -98,23 +98,23 @@
 }
 
 .badge-receita {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: var(--color-success-subtle);
+  color: var(--color-success-strong);
 }
 
 .badge-despesa {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: var(--color-danger-subtle);
+  color: var(--color-danger-strong);
 }
 
 .empty-card {
-  border-radius: 12px !important;
+  border-radius: var(--radius-md) !important;
 }
 
 .empty-state {
   text-align: center;
   padding: 48px;
-  color: #888;
+  color: var(--color-text-muted);
 }
 
   .empty-state mat-icon {
