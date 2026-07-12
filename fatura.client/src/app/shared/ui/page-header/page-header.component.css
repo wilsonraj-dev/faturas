@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  margin-bottom: var(--space-6);
+}
+
+.page-header,
+.page-heading {
+  display: flex;
+  align-items: center;
+}
+
+.page-header {
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.page-heading {
+  min-width: 0;
+  gap: var(--space-3);
+}
+
+.page-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.page-copy {
+  min-width: 0;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.page-actions:empty {
+  display: none;
+}
+
+@media (max-width: 599.98px) {
+  :host {
+    margin-bottom: var(--space-4);
+  }
+
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .page-actions {
+    display: flex;
+  }
+
+  .page-actions ::ng-deep button {
+    flex: 1 1 auto;
+  }
+}

@@ -1,71 +1,66 @@
 <div class="container">
-  <h2>Contas Financeiras</h2>
-
-  <div class="header-actions">
-    <button mat-raised-button color="primary" (click)="abrirDialog()">
+  <app-page-header title="Contas Financeiras"
+                   subtitle="Gerencie as contas usadas nos seus lançamentos."
+                   icon="credit_card">
+    <button page-actions mat-raised-button color="primary" (click)="abrirDialog()">
       <mat-icon>add</mat-icon> Nova Conta
     </button>
-  </div>
+  </app-page-header>
 
-  <div *ngIf="carregando" class="loading">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
+  <app-feedback-state *ngIf="carregando" kind="loading" title="Carregando contas"></app-feedback-state>
 
-  <mat-card *ngIf="!carregando && contas.length > 0" class="table-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon class="title-icon">credit_card</mat-icon> Contas Cadastradas ({{ contas.length }})
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <table mat-table [dataSource]="contasPaginadas" class="full-table contas-table">
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>ID</th>
-          <td mat-cell *matCellDef="let c">{{ c.id }}</td>
-        </ng-container>
+  <app-table-shell *ngIf="!carregando && contas.length > 0"
+                   title="Contas cadastradas"
+                   icon="credit_card"
+                   [count]="contas.length">
+    <table mat-table [dataSource]="contasPaginadas" class="full-table contas-table">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let c">{{ c.id }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="nome">
-          <th mat-header-cell *matHeaderCellDef>Nome</th>
-          <td mat-cell *matCellDef="let c">{{ c.nome }}</td>
-        </ng-container>
+      <ng-container matColumnDef="nome">
+        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <td mat-cell *matCellDef="let c">{{ c.nome }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="tipo">
-          <th mat-header-cell *matHeaderCellDef>Tipo</th>
-          <td mat-cell *matCellDef="let c">{{ getTipoLabel(c.tipo) }}</td>
-        </ng-container>
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let c">{{ getTipoLabel(c.tipo) }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="instituicaoNome">
-          <th mat-header-cell *matHeaderCellDef>Instituição</th>
-          <td mat-cell *matCellDef="let c">{{ c.instituicaoNome }}</td>
-        </ng-container>
+      <ng-container matColumnDef="instituicaoNome">
+        <th mat-header-cell *matHeaderCellDef>Instituição</th>
+        <td mat-cell *matCellDef="let c">{{ c.instituicaoNome }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="acoes">
-          <th mat-header-cell *matHeaderCellDef>Ações</th>
-          <td mat-cell *matCellDef="let c">
-            <button mat-icon-button color="primary" (click)="abrirDialog(c)" matTooltip="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="deletar(c)" matTooltip="Excluir">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let c">
+          <button mat-icon-button color="primary" (click)="abrirDialog(c)" matTooltip="Editar" aria-label="Editar conta">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deletar(c)" matTooltip="Excluir" aria-label="Excluir conta">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 
-      <mat-paginator class="contas-paginator" [length]="contas.length" [pageSize]="pageSize"
-                     [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
-                     showFirstLastButtons>
-      </mat-paginator>
-    </mat-card-content>
-  </mat-card>
+    <mat-paginator class="contas-paginator" [length]="contas.length" [pageSize]="pageSize"
+                   [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
+                   showFirstLastButtons>
+    </mat-paginator>
+  </app-table-shell>
 
-  <mat-card *ngIf="!carregando && contas.length === 0" class="empty-card">
-    <mat-card-content class="empty-state">
-      <mat-icon>credit_card</mat-icon>
-      <p>Nenhuma conta cadastrada</p>
-    </mat-card-content>
-  </mat-card>
+  <app-feedback-state *ngIf="!carregando && contas.length === 0"
+                      kind="empty"
+                      icon="credit_card"
+                      title="Nenhuma conta cadastrada"
+                      message="Cadastre uma conta para começar a organizar seus lançamentos.">
+    <button mat-raised-button color="primary" (click)="abrirDialog()">Cadastrar conta</button>
+  </app-feedback-state>
 </div>

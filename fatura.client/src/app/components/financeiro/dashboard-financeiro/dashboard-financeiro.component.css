@@ -1,41 +1,22 @@
 .dashboard-financeiro {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
-.page-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+.shared-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
-.page-header h2 {
-  margin: 0;
-  color: var(--color-text-primary);
-  font-size: 28px;
-  font-weight: 600;
-}
-
-.page-header p {
-  margin: 6px 0 0;
-  color: var(--color-text-secondary);
-}
-
-.filtros-card,
 .chart-card,
 .ranking-card,
 .indicadores-card,
 .comparativo-panel {
   border-radius: var(--radius-sm) !important;
   box-shadow: var(--shadow-md) !important;
-}
-
-.title-icon {
-  color: var(--color-primary);
-  margin-right: 6px;
-  vertical-align: middle;
 }
 
 .filtros-grid,
@@ -52,69 +33,6 @@
   gap: 8px;
   min-height: 56px;
   align-items: center;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  padding: 18px;
-}
-
-.resumo-grid-list {
-  width: 100%;
-}
-
-.metric-card {
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius-sm) !important;
-}
-
-.metric-card mat-card-content {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  grid-template-rows: auto 1fr;
-  column-gap: 12px;
-  align-items: center;
-  padding: 18px !important;
-}
-
-.metric-card mat-icon {
-  grid-row: 1 / span 2;
-  width: 38px;
-  height: 38px;
-  font-size: 38px;
-}
-
-.metric-label {
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.metric-card strong {
-  color: var(--color-text-primary);
-  font-size: 20px;
-  line-height: 1.2;
-}
-
-.receita-card mat-icon,
-.valor-positivo {
-  color: var(--color-success) !important;
-}
-
-.despesa-card mat-icon,
-.valor-negativo {
-  color: var(--color-danger) !important;
-}
-
-.saldo-card mat-icon {
-  color: var(--color-primary);
-}
-
-.economia-card mat-icon {
-  color: var(--color-warning);
 }
 
 .charts-grid {
@@ -285,6 +203,10 @@
 }
 
 @media (max-width: 1050px) {
+  .shared-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .charts-grid,
   .bottom-grid {
     grid-template-columns: 1fr;
@@ -292,8 +214,8 @@
 }
 
 @media (max-width: 700px) {
-  .page-header {
-    flex-direction: column;
+  .shared-stats-grid {
+    grid-template-columns: 1fr;
   }
 
   .filtros-actions {

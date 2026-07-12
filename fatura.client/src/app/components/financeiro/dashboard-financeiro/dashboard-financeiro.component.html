@@ -1,23 +1,14 @@
 <div class="container dashboard-financeiro">
-  <div class="page-header">
-    <div>
-      <h2>Dashboard Financeiro</h2>
-      <p>Receitas, despesas, saldo e evolução por lançamentos financeiros.</p>
-    </div>
-    <button mat-stroked-button color="primary" type="button" (click)="carregarDashboard()">
+  <app-page-header title="Dashboard Financeiro"
+                   subtitle="Receitas, despesas, saldo e evolução por lançamentos financeiros."
+                   icon="query_stats">
+    <button page-actions mat-stroked-button color="primary" type="button" (click)="carregarDashboard()">
       <mat-icon>refresh</mat-icon>
       Atualizar
     </button>
-  </div>
+  </app-page-header>
 
-  <mat-card class="filtros-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon class="title-icon">filter_list</mat-icon>
-        Filtros
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+  <app-section-card title="Filtros" icon="filter_list">
       <form [formGroup]="filtroForm" class="filtros-grid">
         <mat-form-field appearance="outline">
           <mat-label>Data Inicial</mat-label>
@@ -70,56 +61,24 @@
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+  </app-section-card>
 
-  <div *ngIf="carregando" class="loading">
-    <mat-spinner diameter="42"></mat-spinner>
+  <app-feedback-state *ngIf="carregando" kind="loading" title="Atualizando indicadores"></app-feedback-state>
+
+  <div *ngIf="!carregando" class="shared-stats-grid">
+    <app-stat-card label="Total recebido" icon="payments" tone="success">
+      {{ resumo?.totalRecebido || 0 | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+    </app-stat-card>
+    <app-stat-card label="Total gasto" icon="shopping_cart" tone="danger">
+      {{ resumo?.totalGasto || 0 | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+    </app-stat-card>
+    <app-stat-card label="Saldo" icon="account_balance_wallet" [tone]="(resumo?.saldo || 0) >= 0 ? 'success' : 'danger'">
+      {{ resumo?.saldo || 0 | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+    </app-stat-card>
+    <app-stat-card label="Economia" icon="percent" tone="primary">
+      {{ economiaDescricao }}
+    </app-stat-card>
   </div>
-
-  <mat-grid-list [cols]="resumoCols" rowHeight="128px" gutterSize="16px" class="resumo-grid-list">
-    <mat-grid-tile>
-      <mat-card class="metric-card receita-card">
-        <mat-card-content>
-          <mat-icon>payments</mat-icon>
-          <span class="metric-label">Total Recebido</span>
-          <strong>{{ resumo?.totalRecebido || 0 | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-
-    <mat-grid-tile>
-      <mat-card class="metric-card despesa-card">
-        <mat-card-content>
-          <mat-icon>shopping_cart</mat-icon>
-          <span class="metric-label">Total Gasto</span>
-          <strong>{{ resumo?.totalGasto || 0 | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-
-    <mat-grid-tile>
-      <mat-card class="metric-card saldo-card">
-        <mat-card-content>
-          <mat-icon>account_balance_wallet</mat-icon>
-          <span class="metric-label">Saldo</span>
-          <strong [ngClass]="(resumo?.saldo || 0) >= 0 ? 'valor-positivo' : 'valor-negativo'">
-            {{ resumo?.saldo || 0 | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
-          </strong>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-
-    <mat-grid-tile>
-      <mat-card class="metric-card economia-card">
-        <mat-card-content>
-          <mat-icon>percent</mat-icon>
-          <span class="metric-label">Economia</span>
-          <strong>{{ economiaDescricao }}</strong>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
 
   <section class="charts-grid">
     <mat-card class="chart-card">

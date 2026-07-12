@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.table-shell {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+mat-card-header {
+  align-items: center;
+  padding: var(--space-5) var(--space-5) var(--space-3);
+}
+
+.table-icon {
+  display: grid;
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  place-items: center;
+}
+
+.table-count {
+  display: inline-flex;
+  min-width: 24px;
+  height: 24px;
+  margin-left: var(--space-2);
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  font-size: 0.78rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-actions {
+  margin-left: auto;
+}
+
+mat-card-content {
+  padding: 0;
+}
+
+.table-viewport {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+::ng-deep .table-viewport table {
+  width: 100%;
+}

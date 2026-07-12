@@ -1,0 +1,14 @@
+<header class="page-header">
+  <div class="page-heading">
+    <div *ngIf="icon" class="page-icon" aria-hidden="true">
+      <mat-icon>{{ icon }}</mat-icon>
+    </div>
+    <div class="page-copy">
+      <h1>{{ title }}</h1>
+      <p *ngIf="subtitle">{{ subtitle }}</p>
+    </div>
+  </div>
+  <div class="page-actions">
+    <ng-content select="[page-actions]"></ng-content>
+  </div>
+</header>

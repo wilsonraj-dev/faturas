@@ -1,38 +1,27 @@
 <div class="container">
-  <h2>Lançamentos Financeiros</h2>
+  <app-page-header title="Lançamentos Financeiros"
+                   subtitle="Acompanhe receitas, despesas e movimentações das suas contas."
+                   icon="payments">
+    <button page-actions mat-raised-button color="primary" (click)="abrirDialog()">
+      <mat-icon>add</mat-icon> Novo Lançamento
+    </button>
+  </app-page-header>
 
   <!-- Resumo -->
   <div class="resumo-grid">
-    <mat-card class="resumo-card receita-card">
-      <mat-card-content>
-        <div class="resumo-label">Receitas</div>
-        <div class="resumo-valor receita">R$ {{ totalReceitas | number:'1.2-2' }}</div>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="resumo-card despesa-card">
-      <mat-card-content>
-        <div class="resumo-label">Despesas</div>
-        <div class="resumo-valor despesa">R$ {{ totalDespesas | number:'1.2-2' }}</div>
-      </mat-card-content>
-    </mat-card>
-    <mat-card class="resumo-card saldo-card">
-      <mat-card-content>
-        <div class="resumo-label">Saldo</div>
-        <div class="resumo-valor" [ngClass]="saldo >= 0 ? 'receita' : 'despesa'">
-          R$ {{ saldo | number:'1.2-2' }}
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <app-stat-card label="Receitas" icon="trending_up" tone="success">
+      R$ {{ totalReceitas | number:'1.2-2' }}
+    </app-stat-card>
+    <app-stat-card label="Despesas" icon="trending_down" tone="danger">
+      R$ {{ totalDespesas | number:'1.2-2' }}
+    </app-stat-card>
+    <app-stat-card label="Saldo" icon="account_balance_wallet" [tone]="saldo >= 0 ? 'success' : 'danger'">
+      R$ {{ saldo | number:'1.2-2' }}
+    </app-stat-card>
   </div>
 
   <!-- Filtros -->
-  <mat-card class="filtros-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon class="title-icon">filter_list</mat-icon> Filtros
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+  <app-section-card title="Filtros" icon="filter_list">
       <form [formGroup]="filtroForm" class="filtros-grid">
         <mat-form-field appearance="outline">
           <mat-label>Data Inicial</mat-label>
@@ -82,24 +71,16 @@
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Ações -->
-  <div class="header-actions">
-    <button mat-raised-button color="primary" (click)="abrirDialog()">
-      <mat-icon>add</mat-icon> Novo Lançamento
-    </button>
-  </div>
+  </app-section-card>
 
   <!-- Loading -->
-  <div *ngIf="carregando" class="loading">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
+  <app-feedback-state *ngIf="carregando" kind="loading" title="Carregando lançamentos"></app-feedback-state>
 
   <!-- Tabela -->
-  <mat-card *ngIf="!carregando && lancamentosFiltrados.length > 0" class="table-card">
-    <mat-card-content>
+  <app-table-shell *ngIf="!carregando && lancamentosFiltrados.length > 0"
+                   title="Lançamentos encontrados"
+                   icon="receipt_long"
+                   [count]="lancamentosFiltrados.length">
       <table mat-table [dataSource]="lancamentosPaginados" class="lancamentos-table">
         <ng-container matColumnDef="data">
           <th mat-header-cell *matHeaderCellDef>Data</th>
@@ -134,7 +115,9 @@
         <ng-container matColumnDef="tipo">
           <th mat-header-cell *matHeaderCellDef>Tipo</th>
           <td mat-cell *matCellDef="let l">
-            <span class="badge" [ngClass]="getTipoClass(l.tipo)">{{ getTipoLabel(l.tipo) }}</span>
+            <app-status-chip [tone]="l.tipo === 1 ? 'success' : 'danger'">
+              {{ getTipoLabel(l.tipo) }}
+            </app-status-chip>
           </td>
         </ng-container>
 
@@ -167,13 +150,13 @@
                      [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
                      showFirstLastButtons>
       </mat-paginator>
-    </mat-card-content>
-  </mat-card>
+  </app-table-shell>
 
-  <mat-card *ngIf="!carregando && lancamentosFiltrados.length === 0" class="empty-card">
-    <mat-card-content class="empty-state">
-      <mat-icon>receipt_long</mat-icon>
-      <p>Nenhum lançamento encontrado</p>
-    </mat-card-content>
-  </mat-card>
+  <app-feedback-state *ngIf="!carregando && lancamentosFiltrados.length === 0"
+                      kind="empty"
+                      icon="receipt_long"
+                      title="Nenhum lançamento encontrado"
+                      message="Ajuste os filtros ou registre um novo lançamento.">
+    <button mat-raised-button color="primary" (click)="abrirDialog()">Novo lançamento</button>
+  </app-feedback-state>
 </div>

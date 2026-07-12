@@ -1,0 +1,42 @@
+.status-chip {
+  display: inline-flex;
+  min-height: 26px;
+  padding: 3px 10px;
+  border: 1px solid var(--tone-border);
+  border-radius: 999px;
+  color: var(--tone-color);
+  background: var(--tone-background);
+  font-size: 0.78rem;
+  font-weight: 600;
+  align-items: center;
+}
+
+.tone-success {
+  --tone-color: var(--color-success-strong);
+  --tone-background: var(--color-success-subtle);
+  --tone-border: var(--color-success-border);
+}
+
+.tone-danger {
+  --tone-color: var(--color-danger-strong);
+  --tone-background: var(--color-danger-subtle);
+  --tone-border: var(--color-danger-border);
+}
+
+.tone-warning {
+  --tone-color: var(--color-warning-strong);
+  --tone-background: var(--color-warning-subtle);
+  --tone-border: var(--color-warning-border);
+}
+
+.tone-info {
+  --tone-color: var(--color-info-strong);
+  --tone-background: var(--color-info-subtle);
+  --tone-border: var(--color-info-border);
+}
+
+.tone-neutral {
+  --tone-color: var(--color-neutral-strong);
+  --tone-background: var(--color-neutral-subtle);
+  --tone-border: var(--color-border);
+}

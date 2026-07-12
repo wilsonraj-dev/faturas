@@ -139,13 +139,6 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     this.atualizarGraficos();
   }
 
-  get resumoCols(): number {
-    if (window.innerWidth < 700) return 1;
-    if (window.innerWidth < 1100) return 2;
-
-    return 4;
-  }
-
   get economiaDescricao(): string {
     const pct = this.resumo?.percentualReceitaComprometida ?? 0;
     return `${pct.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}% da receita foi comprometida`;

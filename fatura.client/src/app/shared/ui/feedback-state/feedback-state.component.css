@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.feedback-state {
+  display: flex;
+  min-height: 180px;
+  padding: var(--space-8) var(--space-5);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.feedback-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-3);
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  place-items: center;
+}
+
+.feedback-icon mat-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 28px;
+}
+
+.feedback-error .feedback-icon {
+  color: var(--color-danger);
+  background: var(--color-danger-subtle);
+}
+
+strong {
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+p {
+  max-width: 520px;
+  margin: var(--space-2) 0 0;
+  line-height: 1.5;
+}
+
+.feedback-actions:not(:empty) {
+  margin-top: var(--space-4);
+}

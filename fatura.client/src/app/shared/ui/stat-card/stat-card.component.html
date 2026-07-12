@@ -1,0 +1,12 @@
+<mat-card class="stat-card" [ngClass]="'tone-' + tone">
+  <mat-card-content>
+    <div *ngIf="icon" class="stat-icon" aria-hidden="true">
+      <mat-icon>{{ icon }}</mat-icon>
+    </div>
+    <div class="stat-copy">
+      <span class="stat-label">{{ label }}</span>
+      <strong class="stat-value"><ng-content></ng-content></strong>
+      <small *ngIf="helper">{{ helper }}</small>
+    </div>
+  </mat-card-content>
+</mat-card>

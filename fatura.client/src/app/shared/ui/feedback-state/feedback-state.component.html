@@ -1,0 +1,11 @@
+<div class="feedback-state" [class.feedback-error]="kind === 'error'" role="status" aria-live="polite">
+  <mat-spinner *ngIf="kind === 'loading'" diameter="40"></mat-spinner>
+  <div *ngIf="kind !== 'loading'" class="feedback-icon" aria-hidden="true">
+    <mat-icon>{{ resolvedIcon }}</mat-icon>
+  </div>
+  <strong *ngIf="title">{{ title }}</strong>
+  <p *ngIf="message">{{ message }}</p>
+  <div class="feedback-actions">
+    <ng-content></ng-content>
+  </div>
+</div>

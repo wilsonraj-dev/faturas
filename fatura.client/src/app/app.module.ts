@@ -36,6 +36,12 @@ import { DashboardFinanceiroComponent } from './components/financeiro/dashboard-
 import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { PageHeaderComponent } from './shared/ui/page-header/page-header.component';
+import { SectionCardComponent } from './shared/ui/section-card/section-card.component';
+import { FeedbackStateComponent } from './shared/ui/feedback-state/feedback-state.component';
+import { StatCardComponent } from './shared/ui/stat-card/stat-card.component';
+import { TableShellComponent } from './shared/ui/table-shell/table-shell.component';
+import { StatusChipComponent } from './shared/ui/status-chip/status-chip.component';
 
 registerLocaleData(localePt);
 
@@ -67,7 +73,13 @@ registerLocaleData(localePt);
     LancamentoFormDialogComponent,
     LembretesPagamentoComponent,
     LembretePagamentoFormDialogComponent,
-    DashboardFinanceiroComponent
+    DashboardFinanceiroComponent,
+    PageHeaderComponent,
+    SectionCardComponent,
+    FeedbackStateComponent,
+    StatCardComponent,
+    TableShellComponent,
+    StatusChipComponent
   ],
   imports: [
     BrowserModule,

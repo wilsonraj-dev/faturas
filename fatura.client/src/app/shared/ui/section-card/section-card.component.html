@@ -1,0 +1,13 @@
+<mat-card class="section-card">
+  <mat-card-header *ngIf="title || subtitle">
+    <mat-icon *ngIf="icon" mat-card-avatar class="section-icon">{{ icon }}</mat-icon>
+    <mat-card-title *ngIf="title">{{ title }}</mat-card-title>
+    <mat-card-subtitle *ngIf="subtitle">{{ subtitle }}</mat-card-subtitle>
+    <div class="section-actions">
+      <ng-content select="[section-actions]"></ng-content>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <ng-content></ng-content>
+  </mat-card-content>
+</mat-card>

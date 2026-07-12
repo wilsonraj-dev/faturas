@@ -1,0 +1,14 @@
+<mat-card class="table-shell">
+  <mat-card-header *ngIf="title || subtitle">
+    <mat-icon *ngIf="icon" mat-card-avatar class="table-icon">{{ icon }}</mat-icon>
+    <mat-card-title>
+      {{ title }}<span *ngIf="count !== null" class="table-count">{{ count }}</span>
+    </mat-card-title>
+    <mat-card-subtitle *ngIf="subtitle">{{ subtitle }}</mat-card-subtitle>
+    <div class="table-actions"><ng-content select="[table-actions]"></ng-content></div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="table-viewport"><ng-content select="table"></ng-content></div>
+    <ng-content select="mat-paginator"></ng-content>
+  </mat-card-content>
+</mat-card>
