@@ -23,7 +23,7 @@ import {
 } from '../../../models/models';
 import { ThemeService } from '../../../services/theme.service';
 
-type GraficoAlternavel = 'bar' | 'pie';
+type GraficoAlternavel = 'line' | 'bar' | 'pie';
 
 @Component({
   selector: 'app-dashboard-financeiro',
@@ -32,9 +32,7 @@ type GraficoAlternavel = 'bar' | 'pie';
 })
 export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('receitaDespesaCanvas') receitaDespesaCanvas?: ElementRef<HTMLCanvasElement>;
-  @ViewChild('categoriasCanvas') categoriasCanvas?: ElementRef<HTMLCanvasElement>;
   @ViewChild('subcategoriasCanvas') subcategoriasCanvas?: ElementRef<HTMLCanvasElement>;
-  @ViewChild('evolucaoCanvas') evolucaoCanvas?: ElementRef<HTMLCanvasElement>;
 
   filtroForm!: FormGroup;
   comparativoForm!: FormGroup;
@@ -47,19 +45,15 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
   receitaDespesa: DashboardFinanceiroSerieMensalItem[] = [];
   gastosCategorias: DashboardFinanceiroAgrupamentoItem[] = [];
   gastosSubcategorias: DashboardFinanceiroAgrupamentoItem[] = [];
-  evolucao: DashboardFinanceiroSerieMensalItem[] = [];
   comparativo: DashboardFinanceiroComparativo | null = null;
   rankings: DashboardFinanceiroRankings | null = null;
 
   carregando = false;
-  receitaDespesaTipo: GraficoAlternavel = 'bar';
-  categoriasTipo: GraficoAlternavel = 'pie';
+  receitaDespesaTipo: GraficoAlternavel = 'line';
   subcategoriasTipo: GraficoAlternavel = 'bar';
 
   private receitaDespesaChart?: Chart;
-  private categoriasChart?: Chart;
   private subcategoriasChart?: Chart;
-  private evolucaoChart?: Chart;
   private ChartCtor?: typeof import('chart.js').Chart;
   private categoriaSubscription?: Subscription;
   private themeSubscription?: Subscription;
@@ -149,6 +143,51 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     return this.categorias.find(c => c.id === categoriaId)?.nome ?? 'Todas as categorias';
   }
 
+  get totalGastoCategorias(): number {
+    return this.gastosCategorias.reduce((total, item) => total + item.valor, 0);
+  }
+
+  get periodoSelecionadoLabel(): string {
+    const inicio = this.filtroForm?.value?.dataInicial;
+    const fim = this.filtroForm?.value?.dataFinal;
+    if (!inicio && !fim) return 'Todo o período disponível';
+
+    const formatar = (value: Date | string): string => new Intl.DateTimeFormat('pt-BR', {
+      month: 'short',
+      year: 'numeric'
+    }).format(value instanceof Date ? value : new Date(value));
+
+    if (inicio && fim) return `${formatar(inicio)} a ${formatar(fim)}`;
+    return formatar(inicio ?? fim);
+  }
+
+  get visaoAnualLabel(): string {
+    return `Janeiro a dezembro de ${this.getAnoVisaoAnual()}`;
+  }
+
+  getCategoriaCor(index: number): string {
+    return `var(${this.colorTokens[index % this.colorTokens.length]})`;
+  }
+
+  getCategoriaPercentual(item: DashboardFinanceiroAgrupamentoItem): number {
+    if (item.percentual) return item.percentual;
+    return this.totalGastoCategorias > 0 ? (item.valor / this.totalGastoCategorias) * 100 : 0;
+  }
+
+  getCategoriaIcone(nome: string): string {
+    const valor = nome.toLocaleLowerCase('pt-BR');
+    if (/moradia|casa|aluguel/.test(valor)) return 'home';
+    if (/mercado|aliment|restaurante|comida/.test(valor)) return 'shopping_cart';
+    if (/saúde|saude|farmácia|farmacia/.test(valor)) return 'favorite';
+    if (/transporte|carro|combustível|combustivel/.test(valor)) return 'directions_car';
+    if (/assinatura|serviço|servico/.test(valor)) return 'subscriptions';
+    if (/tecnologia|eletrônico|eletronico/.test(valor)) return 'devices';
+    if (/lazer|jogo|entretenimento/.test(valor)) return 'sports_esports';
+    if (/educação|educacao|curso/.test(valor)) return 'school';
+    if (/presente/.test(valor)) return 'redeem';
+    return 'category';
+  }
+
   aplicarFiltros(): void {
     this.carregarDashboard();
   }
@@ -168,11 +207,6 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
   alterarReceitaDespesaTipo(tipo: GraficoAlternavel): void {
     this.receitaDespesaTipo = tipo;
     this.renderReceitaDespesaChart();
-  }
-
-  alterarCategoriasTipo(tipo: GraficoAlternavel): void {
-    this.categoriasTipo = tipo;
-    this.renderCategoriasChart();
   }
 
   alterarSubcategoriasTipo(tipo: GraficoAlternavel): void {
@@ -204,7 +238,7 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     if (valor > 0) return `Cresceu ${Math.abs(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%`;
     if (valor < 0) return `Reduziu ${Math.abs(valor).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%`;
 
-    return 'Sem variacao';
+    return 'Sem variação';
   }
 
   variacaoIcon(valor: number): string {
@@ -252,22 +286,21 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     if (!this.chartAreaReady) return;
 
     const filtro = this.buildFiltro();
+    const filtroAnual = this.buildFiltroAnual();
     this.carregando = true;
 
     forkJoin({
       resumo: this.dashboardService.obterResumo(filtro),
-      receitaDespesa: this.dashboardService.obterReceitaDespesa(filtro),
+      receitaDespesa: this.dashboardService.obterReceitaDespesa(filtroAnual),
       categorias: this.dashboardService.obterCategorias(filtro),
       subcategorias: this.dashboardService.obterSubcategorias(filtro),
-      evolucao: this.dashboardService.obterEvolucao(filtro),
       rankings: this.dashboardService.obterRankings(filtro)
     }).subscribe({
       next: dados => {
         this.resumo = dados.resumo;
-        this.receitaDespesa = dados.receitaDespesa;
+        this.receitaDespesa = this.normalizarSerieAnual(dados.receitaDespesa, this.getAnoVisaoAnual());
         this.gastosCategorias = dados.categorias;
         this.gastosSubcategorias = dados.subcategorias;
-        this.evolucao = dados.evolucao;
         this.rankings = dados.rankings;
         this.carregando = false;
         this.atualizarGraficos();
@@ -282,9 +315,7 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
 
   private atualizarGraficos(): void {
     this.renderReceitaDespesaChart();
-    this.renderCategoriasChart();
     this.renderSubcategoriasChart();
-    this.renderEvolucaoChart();
   }
 
   private renderReceitaDespesaChart(): void {
@@ -306,40 +337,50 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     const ChartClass = this.ChartCtor;
     if (!ChartClass) return;
 
+    const isLine = this.receitaDespesaTipo === 'line';
     this.receitaDespesaChart = new ChartClass(canvas, {
-      type: 'bar',
+      type: isLine ? 'line' : 'bar',
       data: {
         labels: this.receitaDespesa.map(item => item.label),
         datasets: [
           {
             label: 'Receitas',
             data: this.receitaDespesa.map(item => item.receitas),
-            backgroundColor: this.getCssColor('--color-success')
+            borderColor: this.getCssColor('--color-success'),
+            backgroundColor: isLine ? `${this.getCssColor('--color-success')}1f` : this.getCssColor('--color-success'),
+            pointBackgroundColor: this.getCssColor('--color-success'),
+            pointBorderColor: this.getCssColor('--color-surface'),
+            pointBorderWidth: 2,
+            tension: 0.34,
+            fill: false,
+            pointRadius: isLine ? 4 : 0,
+            pointHoverRadius: 6,
+            borderWidth: 3,
+            borderRadius: isLine ? 0 : 8,
+            borderSkipped: false,
+            maxBarThickness: 30
           },
           {
             label: 'Despesas',
             data: this.receitaDespesa.map(item => item.despesas),
-            backgroundColor: this.getCssColor('--color-danger')
+            borderColor: this.getCssColor('--color-danger'),
+            backgroundColor: isLine ? `${this.getCssColor('--color-danger')}1f` : this.getCssColor('--color-danger'),
+            pointBackgroundColor: this.getCssColor('--color-danger'),
+            pointBorderColor: this.getCssColor('--color-surface'),
+            pointBorderWidth: 2,
+            tension: 0.34,
+            fill: false,
+            pointRadius: isLine ? 4 : 0,
+            pointHoverRadius: 6,
+            borderWidth: 3,
+            borderRadius: isLine ? 0 : 8,
+            borderSkipped: false,
+            maxBarThickness: 30
           }
         ]
       },
       options: this.commonChartOptions()
     });
-  }
-
-  private renderCategoriasChart(): void {
-    this.categoriasChart?.destroy();
-    const canvas = this.categoriasCanvas?.nativeElement;
-    if (!canvas) return;
-
-    this.categoriasChart = this.createChart(
-      canvas,
-      this.categoriasTipo,
-      this.gastosCategorias.map(item => item.nome),
-      this.gastosCategorias.map(item => item.valor),
-      this.getChartColors(),
-      'Gastos por Categoria'
-    );
   }
 
   private renderSubcategoriasChart(): void {
@@ -355,33 +396,6 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
       this.getChartColors().reverse(),
       'Gastos por Subcategoria'
     );
-  }
-
-  private renderEvolucaoChart(): void {
-    this.evolucaoChart?.destroy();
-    const canvas = this.evolucaoCanvas?.nativeElement;
-    if (!canvas) return;
-
-    const ChartClass = this.ChartCtor;
-    if (!ChartClass) return;
-
-    this.evolucaoChart = new ChartClass(canvas, {
-      type: 'line',
-      data: {
-        labels: this.evolucao.map(item => item.label),
-        datasets: [{
-          label: 'Saldo',
-          data: this.evolucao.map(item => item.saldo),
-          borderColor: this.getCssColor('--chart-1'),
-          backgroundColor: `${this.getCssColor('--chart-1')}24`,
-          tension: 0.28,
-          fill: true,
-          pointRadius: 4,
-          pointHoverRadius: 6
-        }]
-      },
-      options: this.commonChartOptions()
-    });
   }
 
   private createChart(
@@ -416,10 +430,18 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     return {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: {
-          position: isPie ? 'bottom' : 'top',
-          labels: { color: textColor, boxWidth: 14 }
+          position: 'bottom',
+          labels: {
+            color: textColor,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 9,
+            boxHeight: 9,
+            padding: 20
+          }
         },
         tooltip: {
           callbacks: {
@@ -431,8 +453,25 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
         }
       },
       scales: isPie ? {} : {
-        x: { ticks: { color: textColor }, grid: { color: gridColor } },
-        y: { ticks: { color: textColor }, grid: { color: gridColor }, beginAtZero: true }
+        x: {
+          ticks: { color: textColor },
+          grid: { display: false },
+          border: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: textColor,
+            callback: (value: number | string) => Number(value).toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+              notation: 'compact',
+              maximumFractionDigits: 1
+            })
+          },
+          grid: { color: gridColor, borderDash: [4, 4] },
+          border: { display: false }
+        }
       }
     };
   }
@@ -446,6 +485,35 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
       categoriaId: f.categoriaId ?? undefined,
       subcategoriaId: f.subcategoriaId ?? undefined
     };
+  }
+
+  private buildFiltroAnual(): DashboardFinanceiroFiltro {
+    const ano = this.getAnoVisaoAnual();
+    return {
+      dataInicial: `${ano}-01-01`,
+      dataFinal: `${ano}-12-31`,
+      contaFinanceiraId: this.filtroForm.value.contaFinanceiraId ?? undefined
+    };
+  }
+
+  private getAnoVisaoAnual(): number {
+    const referencia = this.filtroForm?.value?.dataFinal ?? this.filtroForm?.value?.dataInicial;
+    if (!referencia) return new Date().getFullYear();
+    return (referencia instanceof Date ? referencia : new Date(referencia)).getFullYear();
+  }
+
+  private normalizarSerieAnual(
+    dados: DashboardFinanceiroSerieMensalItem[],
+    ano: number
+  ): DashboardFinanceiroSerieMensalItem[] {
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    return meses.map((label, index) => {
+      const mes = index + 1;
+      const item = dados.find(valor => valor.ano === ano && valor.mes === mes);
+      return item
+        ? { ...item, label }
+        : { ano, mes, label, receitas: 0, despesas: 0, saldo: 0 };
+    });
   }
 
   private buildComparativoFiltro(): DashboardFinanceiroComparativoFiltro | null {
@@ -496,8 +564,6 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
 
   private destroyCharts(): void {
     this.receitaDespesaChart?.destroy();
-    this.categoriasChart?.destroy();
     this.subcategoriasChart?.destroy();
-    this.evolucaoChart?.destroy();
   }
 }

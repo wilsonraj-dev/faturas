@@ -1,5 +1,7 @@
 .dashboard-financeiro {
   display: flex;
+  width: 100%;
+  max-width: 1440px;
   flex-direction: column;
   gap: var(--space-4);
 }
@@ -15,8 +17,9 @@
 .ranking-card,
 .indicadores-card,
 .comparativo-panel {
-  border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 .filtros-grid,
@@ -35,15 +38,11 @@
   align-items: center;
 }
 
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
 .chart-card mat-card-header {
   display: flex;
+  padding: var(--space-5) var(--space-5) 0;
   align-items: center;
+  justify-content: space-between;
 }
 
 .chart-card mat-button-toggle-group {
@@ -57,6 +56,161 @@
 .canvas-wrap {
   height: 320px;
   position: relative;
+}
+
+.cashflow-card,
+.category-composition-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.cashflow-card mat-card-content,
+.category-composition-card mat-card-content {
+  padding: var(--space-5);
+}
+
+.cashflow-canvas {
+  height: 390px;
+}
+
+.chart-heading {
+  display: flex;
+  min-width: 0;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.chart-heading > mat-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+  place-items: center;
+}
+
+.chart-heading mat-card-title {
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.chart-heading mat-card-subtitle {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+}
+
+.category-composition-card mat-card-header {
+  display: flex;
+  padding: var(--space-5) var(--space-5) 0;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.category-total {
+  color: var(--color-text-primary);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  white-space: nowrap;
+}
+
+.category-segments {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  margin: var(--space-2) 0 var(--space-6);
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  gap: 3px;
+}
+
+.category-segments button {
+  min-width: 4px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: var(--category-color);
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.category-segments button:hover,
+.category-segments button:focus-visible {
+  z-index: 1;
+  filter: brightness(1.16);
+  transform: scaleY(1.35);
+}
+
+.category-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.category-expense-card {
+  display: flex;
+  min-height: 154px;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+  flex-direction: column;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.category-expense-card:hover,
+.category-expense-card:focus-visible {
+  border-color: var(--category-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.category-card-top {
+  display: flex;
+  margin-bottom: auto;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.category-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  color: var(--category-color);
+  background: color-mix(in srgb, var(--category-color) 14%, var(--color-surface));
+  place-items: center;
+}
+
+.category-percent {
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.category-expense-card strong {
+  margin-top: var(--space-4);
+  font-size: 1rem;
+}
+
+.category-expense-card > span:last-child {
+  margin-top: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.secondary-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
 }
 
 .breakdown-list {
@@ -207,9 +361,12 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .charts-grid,
   .bottom-grid {
     grid-template-columns: 1fr;
+  }
+
+  .category-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -225,6 +382,30 @@
 
   .canvas-wrap {
     height: 260px;
+  }
+
+  .cashflow-canvas {
+    height: 310px;
+  }
+
+  .chart-card mat-card-header,
+  .category-composition-card mat-card-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .chart-card mat-button-toggle-group {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
+  .category-total {
+    margin-left: 54px;
+  }
+
+  .category-card-grid {
+    grid-template-columns: 1fr;
   }
 
   .indicadores-grid {

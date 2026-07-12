@@ -393,6 +393,7 @@ body {
 
 .mat-mdc-table {
   --mat-table-background-color: var(--color-surface);
+  --mat-table-header-container-height: 44px;
   --mat-table-header-headline-color: var(--color-text-secondary);
   --mat-table-row-item-label-text-color: var(--color-text-primary);
   --mat-table-row-item-outline-color: var(--color-divider);
@@ -508,10 +509,13 @@ body {
 }
 
 .mat-mdc-paginator {
+  --mat-paginator-container-size: 52px;
   --mat-paginator-container-text-color: var(--color-text-secondary);
   --mat-paginator-container-background-color: var(--color-surface);
   --mat-paginator-enabled-icon-color: var(--color-text-secondary);
   --mat-paginator-disabled-icon-color: var(--color-text-disabled);
+  --mat-paginator-form-field-container-height: 40px;
+  --mat-paginator-form-field-container-vertical-padding: 8px;
 }
 
 h1,
