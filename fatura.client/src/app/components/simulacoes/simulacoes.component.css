@@ -59,6 +59,14 @@
   flex-wrap: wrap;
 }
 
+.create-simulation-button {
+  --mdc-protected-button-container-color: var(--color-primary);
+  --mdc-protected-button-label-text-color: var(--color-on-primary);
+  --mdc-protected-button-disabled-container-color: var(--color-surface-hover);
+  --mdc-protected-button-disabled-label-text-color: var(--color-text-disabled);
+  --mdc-icon-button-icon-color: var(--color-on-primary);
+}
+
 .loading-wrap,
 .loading-inline {
   display: flex;

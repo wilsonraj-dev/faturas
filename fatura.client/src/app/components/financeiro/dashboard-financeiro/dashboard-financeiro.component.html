@@ -85,18 +85,23 @@
       <mat-card-header>
         <div class="chart-heading">
           <mat-icon>trending_up</mat-icon>
-          <div>
+          <div class="chart-heading-content">
             <mat-card-title>Receitas x Despesas</mat-card-title>
             <mat-card-subtitle>{{ visaoAnualLabel }}</mat-card-subtitle>
+            <mat-button-toggle-group *ngIf="!cardEstaContraido('receita-despesa')" class="chart-header-controls" [value]="receitaDespesaTipo" (change)="alterarReceitaDespesaTipo($event.value)"
+                                     aria-label="Formato do gráfico de receitas e despesas">
+              <mat-button-toggle value="line" matTooltip="Linhas"><mat-icon>show_chart</mat-icon></mat-button-toggle>
+              <mat-button-toggle value="bar" matTooltip="Barras"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
+            </mat-button-toggle-group>
           </div>
         </div>
-        <mat-button-toggle-group [value]="receitaDespesaTipo" (change)="alterarReceitaDespesaTipo($event.value)"
-                                 aria-label="Formato do gráfico de receitas e despesas">
-          <mat-button-toggle value="line" matTooltip="Linhas"><mat-icon>show_chart</mat-icon></mat-button-toggle>
-          <mat-button-toggle value="bar" matTooltip="Barras"><mat-icon>bar_chart</mat-icon></mat-button-toggle>
-        </mat-button-toggle-group>
+        <button mat-icon-button class="card-collapse-button" type="button" (click)="alternarCard('receita-despesa')"
+                [attr.aria-label]="cardEstaContraido('receita-despesa') ? 'Expandir Receitas x Despesas' : 'Contrair Receitas x Despesas'"
+                [attr.aria-expanded]="!cardEstaContraido('receita-despesa')">
+          <mat-icon>{{ cardEstaContraido('receita-despesa') ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content [class.card-content-hidden]="cardEstaContraido('receita-despesa')">
         <div class="canvas-wrap cashflow-canvas">
           <canvas #receitaDespesaCanvas></canvas>
         </div>
@@ -109,14 +114,19 @@
       <mat-card-header>
         <div class="chart-heading">
           <mat-icon>donut_large</mat-icon>
-          <div>
+          <div class="chart-heading-content">
             <mat-card-title>Despesas por categoria</mat-card-title>
             <mat-card-subtitle>{{ periodoSelecionadoLabel }}</mat-card-subtitle>
+            <strong *ngIf="!cardEstaContraido('categorias')" class="category-total">{{ totalGastoCategorias | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
           </div>
         </div>
-        <strong class="category-total">{{ totalGastoCategorias | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+        <button mat-icon-button class="card-collapse-button" type="button" (click)="alternarCard('categorias')"
+                [attr.aria-label]="cardEstaContraido('categorias') ? 'Expandir Despesas por categoria' : 'Contrair Despesas por categoria'"
+                [attr.aria-expanded]="!cardEstaContraido('categorias')">
+          <mat-icon>{{ cardEstaContraido('categorias') ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content [class.card-content-hidden]="cardEstaContraido('categorias')">
         <ng-container *ngIf="gastosCategorias.length > 0; else semCategorias">
           <div class="category-segments" aria-label="Distribuição percentual das despesas">
             <button *ngFor="let item of gastosCategorias; let index = index; trackBy: trackByNome"
@@ -133,7 +143,9 @@
             <button *ngFor="let item of gastosCategorias; let index = index; trackBy: trackByNome"
                     type="button"
                     class="category-expense-card"
+                    [class.is-selected]="filtroForm.value.categoriaId === item.id"
                     [style.--category-color]="getCategoriaCor(index)"
+                    [attr.aria-pressed]="filtroForm.value.categoriaId === item.id"
                     (click)="selecionarCategoria(item)">
               <span class="category-card-top">
                 <span class="category-icon"><mat-icon>{{ getCategoriaIcone(item.nome) }}</mat-icon></span>
@@ -155,18 +167,25 @@
   <section class="secondary-dashboard-grid">
     <mat-card class="chart-card">
       <mat-card-header>
-        <mat-card-title>Gastos por Subcategoria</mat-card-title>
-        <mat-card-subtitle>{{ categoriaSelecionadaNome }}</mat-card-subtitle>
-        <mat-button-toggle-group [value]="subcategoriasTipo" (change)="alterarSubcategoriasTipo($event.value)">
-          <mat-button-toggle value="bar" matTooltip="Barras">
-            <mat-icon>bar_chart</mat-icon>
-          </mat-button-toggle>
-          <mat-button-toggle value="pie" matTooltip="Pizza">
-            <mat-icon>pie_chart</mat-icon>
-          </mat-button-toggle>
-        </mat-button-toggle-group>
+        <div class="card-heading-stack">
+          <mat-card-title>Gastos por Subcategoria</mat-card-title>
+          <mat-card-subtitle>{{ categoriaSelecionadaNome }}</mat-card-subtitle>
+          <mat-button-toggle-group *ngIf="!cardEstaContraido('subcategorias')" class="chart-header-controls" [value]="subcategoriasTipo" (change)="alterarSubcategoriasTipo($event.value)">
+            <mat-button-toggle value="bar" matTooltip="Barras">
+              <mat-icon>bar_chart</mat-icon>
+            </mat-button-toggle>
+            <mat-button-toggle value="pie" matTooltip="Pizza">
+              <mat-icon>pie_chart</mat-icon>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+        <button mat-icon-button class="card-collapse-button" type="button" (click)="alternarCard('subcategorias')"
+                [attr.aria-label]="cardEstaContraido('subcategorias') ? 'Expandir Gastos por Subcategoria' : 'Contrair Gastos por Subcategoria'"
+                [attr.aria-expanded]="!cardEstaContraido('subcategorias')">
+          <mat-icon>{{ cardEstaContraido('subcategorias') ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content [class.card-content-hidden]="cardEstaContraido('subcategorias')">
         <div class="canvas-wrap">
           <canvas #subcategoriasCanvas></canvas>
         </div>
@@ -272,8 +291,13 @@
           <mat-icon class="title-icon">leaderboard</mat-icon>
           Maiores Categorias
         </mat-card-title>
+        <button mat-icon-button class="card-collapse-button" type="button" (click)="alternarCard('maiores-categorias')"
+                [attr.aria-label]="cardEstaContraido('maiores-categorias') ? 'Expandir Maiores Categorias' : 'Contrair Maiores Categorias'"
+                [attr.aria-expanded]="!cardEstaContraido('maiores-categorias')">
+          <mat-icon>{{ cardEstaContraido('maiores-categorias') ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content [class.card-content-hidden]="cardEstaContraido('maiores-categorias')">
         <div class="ranking-item" *ngFor="let item of rankings?.maioresCategorias; index as i; trackBy: trackByNome">
           <span class="ranking-pos">{{ i + 1 }}o</span>
           <span>{{ item.nome }}</span>
@@ -288,8 +312,13 @@
           <mat-icon class="title-icon">format_list_numbered</mat-icon>
           Maiores Subcategorias
         </mat-card-title>
+        <button mat-icon-button class="card-collapse-button" type="button" (click)="alternarCard('maiores-subcategorias')"
+                [attr.aria-label]="cardEstaContraido('maiores-subcategorias') ? 'Expandir Maiores Subcategorias' : 'Contrair Maiores Subcategorias'"
+                [attr.aria-expanded]="!cardEstaContraido('maiores-subcategorias')">
+          <mat-icon>{{ cardEstaContraido('maiores-subcategorias') ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content [class.card-content-hidden]="cardEstaContraido('maiores-subcategorias')">
         <div class="ranking-item" *ngFor="let item of rankings?.maioresSubcategorias; index as i; trackBy: trackByNome">
           <span class="ranking-pos">{{ i + 1 }}o</span>
           <span>{{ item.nome }}</span>
@@ -304,8 +333,13 @@
           <mat-icon class="title-icon">insights</mat-icon>
           Indicadores Financeiros
         </mat-card-title>
+        <button mat-icon-button class="card-collapse-button" type="button" (click)="alternarCard('indicadores')"
+                [attr.aria-label]="cardEstaContraido('indicadores') ? 'Expandir Indicadores Financeiros' : 'Contrair Indicadores Financeiros'"
+                [attr.aria-expanded]="!cardEstaContraido('indicadores')">
+          <mat-icon>{{ cardEstaContraido('indicadores') ? 'expand_more' : 'expand_less' }}</mat-icon>
+        </button>
       </mat-card-header>
-      <mat-card-content>
+      <mat-card-content [class.card-content-hidden]="cardEstaContraido('indicadores')">
         <div class="indicadores-grid">
           <div>
             <span>Ticket Medio das Despesas</span>

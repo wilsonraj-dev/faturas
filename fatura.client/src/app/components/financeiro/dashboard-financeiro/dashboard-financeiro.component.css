@@ -45,8 +45,44 @@
   justify-content: space-between;
 }
 
+.ranking-card mat-card-header,
+.indicadores-card mat-card-header {
+  display: flex;
+  padding: var(--space-5) var(--space-5) 0;
+  align-items: center;
+}
+
+.card-collapse-button {
+  margin-left: auto;
+  color: var(--color-text-secondary);
+  flex: 0 0 auto;
+}
+
+.card-collapse-button:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-subtle);
+}
+
+.card-content-hidden {
+  display: none;
+}
+
 .chart-card mat-button-toggle-group {
   margin-left: auto;
+}
+
+.chart-heading-content,
+.card-heading-stack {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.chart-heading .chart-header-controls,
+.card-heading-stack .chart-header-controls {
+  margin-top: var(--space-2);
+  margin-left: 0;
 }
 
 .chart-card mat-button-toggle {
@@ -110,6 +146,8 @@
 }
 
 .category-total {
+  display: block;
+  margin-top: var(--space-2);
   color: var(--color-text-primary);
   font-size: clamp(1.15rem, 2vw, 1.5rem);
   white-space: nowrap;
@@ -168,6 +206,11 @@
   border-color: var(--category-color);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+}
+
+.category-expense-card.is-selected {
+  border-color: var(--category-color);
+  background: color-mix(in srgb, var(--category-color) 10%, var(--color-surface));
 }
 
 .category-card-top {

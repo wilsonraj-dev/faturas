@@ -29,6 +29,19 @@
   padding-top: 4px;
 }
 
+.clear-filters-button {
+  --mdc-outlined-button-label-text-color: var(--color-text-primary);
+  --mdc-outlined-button-outline-color: var(--color-border-strong);
+  --mat-outlined-button-state-layer-color: var(--color-text-primary);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+  background-color: var(--color-surface-muted);
+}
+
+.clear-filters-button:hover {
+  background-color: var(--color-surface-hover);
+}
+
 .lancamentos-table {
   width: 100%;
 }
@@ -133,7 +146,7 @@
     align-items: stretch;
   }
 
-  .filtros-actions button {
-    min-height: 44px;
-  }
+    .filtros-actions button {
+      min-height: 44px;
+    }
 }

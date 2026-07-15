@@ -205,7 +205,9 @@ body {
 
 .mobile-record-list,
 .mobile-record-paginator {
-  display: none;
+  /* Angular Material declares its paginator as a block element. Keep the
+     mobile-only control out of desktop layouts even after Material styles load. */
+  display: none !important;
 }
 
 .record-detail-grid {
@@ -240,12 +242,12 @@ body {
   }
 
   .mobile-record-list {
-    display: grid;
+    display: grid !important;
     gap: var(--space-3);
   }
 
   .mobile-record-paginator {
-    display: block;
+    display: block !important;
     margin-top: var(--space-3);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -429,6 +431,47 @@ body {
   --mdc-dialog-container-color: var(--color-surface-raised);
   --mdc-dialog-subhead-color: var(--color-text-primary);
   --mdc-dialog-supporting-text-color: var(--color-text-secondary);
+  color: var(--color-text-primary);
+}
+
+/* The prebuilt Material theme defines these MDC tokens on html with light-theme
+   values. Dialog fields and their overlay options need explicit semantic tokens
+   so their labels and values remain readable in dark mode. */
+.mat-mdc-dialog-container .mat-mdc-form-field {
+  --mdc-outlined-text-field-caret-color: var(--color-primary);
+  --mdc-outlined-text-field-input-text-color: var(--color-text-primary);
+  --mdc-outlined-text-field-input-text-placeholder-color: var(--color-text-muted);
+  --mdc-outlined-text-field-label-text-color: var(--color-text-secondary);
+  --mdc-outlined-text-field-hover-label-text-color: var(--color-text-secondary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--color-primary);
+  --mdc-outlined-text-field-outline-color: var(--color-border-strong);
+  --mdc-outlined-text-field-hover-outline-color: var(--color-text-secondary);
+  --mdc-outlined-text-field-focus-outline-color: var(--color-primary);
+  --mat-form-field-enabled-select-arrow-color: var(--color-text-secondary);
+  --mat-form-field-focus-select-arrow-color: var(--color-primary);
+}
+
+.mat-mdc-dialog-container .mat-mdc-input-element,
+.mat-mdc-dialog-container .mat-mdc-select-value,
+.mat-mdc-dialog-container .mat-mdc-select-placeholder,
+.mat-mdc-dialog-container .mat-mdc-form-field-label,
+.mat-mdc-dialog-container .mdc-floating-label {
+  color: var(--color-text-primary);
+}
+
+.cdk-overlay-container .mat-mdc-select-panel,
+.cdk-overlay-container .mat-mdc-autocomplete-panel {
+  --mat-option-label-text-color: var(--color-text-primary);
+  --mat-option-selected-state-label-text-color: var(--color-primary);
+  --mat-option-hover-state-layer-color: var(--color-surface-hover);
+  --mat-option-focus-state-layer-color: var(--color-surface-hover);
+  --mat-option-selected-state-layer-color: var(--color-primary-subtle);
+  color: var(--color-text-primary);
+  background: var(--color-surface-raised);
+}
+
+.cdk-overlay-container .mat-mdc-option {
+  color: var(--color-text-primary);
 }
 
 .mat-mdc-menu-panel,

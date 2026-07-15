@@ -80,7 +80,7 @@
       </div>
 
       <div class="actions">
-        <button mat-raised-button color="accent" (click)="criar()" [disabled]="!formularioValido || criando">
+        <button mat-raised-button color="accent" class="create-simulation-button" (click)="criar()" [disabled]="!formularioValido || criando">
           <mat-icon>{{ criando ? 'hourglass_top' : 'add' }}</mat-icon>
           {{ criando ? 'Criando...' : 'Criar Simulação' }}
         </button>

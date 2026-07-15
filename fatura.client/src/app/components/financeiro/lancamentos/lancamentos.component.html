@@ -22,55 +22,55 @@
 
   <!-- Filtros -->
   <app-section-card title="Filtros" icon="filter_list">
-      <form [formGroup]="filtroForm" class="filtros-grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Data Inicial</mat-label>
-          <input matInput [matDatepicker]="pickerInicio" formControlName="dataInicial">
-          <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-          <mat-datepicker #pickerInicio></mat-datepicker>
-        </mat-form-field>
+    <form [formGroup]="filtroForm" class="filtros-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Data Inicial</mat-label>
+        <input matInput [matDatepicker]="pickerInicio" formControlName="dataInicial">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+        <mat-datepicker #pickerInicio></mat-datepicker>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Data Final</mat-label>
-          <input matInput [matDatepicker]="pickerFim" formControlName="dataFinal">
-          <mat-datepicker-toggle matIconSuffix [for]="pickerFim"></mat-datepicker-toggle>
-          <mat-datepicker #pickerFim></mat-datepicker>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Data Final</mat-label>
+        <input matInput [matDatepicker]="pickerFim" formControlName="dataFinal">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerFim"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFim></mat-datepicker>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo</mat-label>
-          <mat-select formControlName="tipo">
-            <mat-option [value]="null">Todos</mat-option>
-            <mat-option [value]="1">Receita</mat-option>
-            <mat-option [value]="2">Despesa</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo</mat-label>
+        <mat-select formControlName="tipo">
+          <mat-option [value]="null">Todos</mat-option>
+          <mat-option [value]="1">Receita</mat-option>
+          <mat-option [value]="2">Despesa</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Conta</mat-label>
-          <mat-select formControlName="contaFinanceiraId">
-            <mat-option [value]="null">Todas</mat-option>
-            <mat-option *ngFor="let conta of contas" [value]="conta.id">{{ conta.nome }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Conta</mat-label>
+        <mat-select formControlName="contaFinanceiraId">
+          <mat-option [value]="null">Todas</mat-option>
+          <mat-option *ngFor="let conta of contas" [value]="conta.id">{{ conta.nome }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Categoria</mat-label>
-          <mat-select formControlName="categoriaId">
-            <mat-option [value]="null">Todas</mat-option>
-            <mat-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Categoria</mat-label>
+        <mat-select formControlName="categoriaId">
+          <mat-option [value]="null">Todas</mat-option>
+          <mat-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <div class="filtros-actions">
-          <button mat-raised-button color="primary" (click)="filtrar()">
-            <mat-icon>search</mat-icon> Filtrar
-          </button>
-          <button mat-stroked-button (click)="limparFiltros()">
-            <mat-icon>clear</mat-icon> Limpar
-          </button>
-        </div>
-      </form>
+      <div class="filtros-actions">
+        <button mat-raised-button color="primary" (click)="filtrar()">
+          <mat-icon>search</mat-icon> Filtrar
+        </button>
+        <button mat-stroked-button class="clear-filters-button" (click)="limparFiltros()">
+          <mat-icon>clear</mat-icon> Limpar
+        </button>
+      </div>
+    </form>
   </app-section-card>
 
   <!-- Loading -->
@@ -82,75 +82,75 @@
                    title="Lançamentos encontrados"
                    icon="receipt_long"
                    [count]="lancamentosFiltrados.length">
-      <table mat-table [dataSource]="lancamentosPaginados" class="lancamentos-table">
-        <ng-container matColumnDef="data">
-          <th mat-header-cell *matHeaderCellDef>Data</th>
-          <td mat-cell *matCellDef="let l">{{ l.data | date:'dd/MM/yyyy' }}</td>
-        </ng-container>
+    <table mat-table [dataSource]="lancamentosPaginados" class="lancamentos-table">
+      <ng-container matColumnDef="data">
+        <th mat-header-cell *matHeaderCellDef>Data</th>
+        <td mat-cell *matCellDef="let l">{{ l.data | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="descricao">
-          <th mat-header-cell *matHeaderCellDef>Descrição</th>
-          <td mat-cell *matCellDef="let l">
-            {{ l.descricao || '-' }}
-            <mat-icon *ngIf="isReadonly(l)" class="origem-icon" [matTooltip]="'Origem: ' + getOrigemLabel(l.origem)">
-              lock
-            </mat-icon>
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="descricao">
+        <th mat-header-cell *matHeaderCellDef>Descrição</th>
+        <td mat-cell *matCellDef="let l">
+          {{ l.descricao || '-' }}
+          <mat-icon *ngIf="isReadonly(l)" class="origem-icon" [matTooltip]="'Origem: ' + getOrigemLabel(l.origem)">
+            lock
+          </mat-icon>
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="categoriaNome">
-          <th mat-header-cell *matHeaderCellDef>Categoria</th>
-          <td mat-cell *matCellDef="let l">{{ l.categoriaNome || '-' }}</td>
-        </ng-container>
+      <ng-container matColumnDef="categoriaNome">
+        <th mat-header-cell *matHeaderCellDef>Categoria</th>
+        <td mat-cell *matCellDef="let l">{{ l.categoriaNome || '-' }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="subcategoriaNome">
-          <th mat-header-cell *matHeaderCellDef>Subcategoria</th>
-          <td mat-cell *matCellDef="let l">{{ l.subcategoriaNome || '-' }}</td>
-        </ng-container>
+      <ng-container matColumnDef="subcategoriaNome">
+        <th mat-header-cell *matHeaderCellDef>Subcategoria</th>
+        <td mat-cell *matCellDef="let l">{{ l.subcategoriaNome || '-' }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="contaFinanceiraNome">
-          <th mat-header-cell *matHeaderCellDef>Conta</th>
-          <td mat-cell *matCellDef="let l">{{ l.contaFinanceiraNome }}</td>
-        </ng-container>
+      <ng-container matColumnDef="contaFinanceiraNome">
+        <th mat-header-cell *matHeaderCellDef>Conta</th>
+        <td mat-cell *matCellDef="let l">{{ l.contaFinanceiraNome }}</td>
+      </ng-container>
 
-        <ng-container matColumnDef="tipo">
-          <th mat-header-cell *matHeaderCellDef>Tipo</th>
-          <td mat-cell *matCellDef="let l">
-            <app-status-chip [tone]="l.tipo === 1 ? 'success' : 'danger'">
-              {{ getTipoLabel(l.tipo) }}
-            </app-status-chip>
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let l">
+          <app-status-chip [tone]="getTipoLabel(l.tipo) === 'Receita' ? 'success' : 'danger'">
+            {{ getTipoLabel(l.tipo) }}
+          </app-status-chip>
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="valor">
-          <th mat-header-cell *matHeaderCellDef>Valor</th>
-          <td mat-cell *matCellDef="let l" [ngClass]="getTipoClass(l.tipo)">
-            R$ {{ l.valor | number:'1.2-2' }}
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="valor">
+        <th mat-header-cell *matHeaderCellDef>Valor</th>
+        <td mat-cell *matCellDef="let l" [ngClass]="getTipoClass(l.tipo)">
+          R$ {{ l.valor | number:'1.2-2' }}
+        </td>
+      </ng-container>
 
-        <ng-container matColumnDef="acoes">
-          <th mat-header-cell *matHeaderCellDef>Ações</th>
-          <td mat-cell *matCellDef="let l">
-            <button mat-icon-button color="primary" (click)="abrirDialog(l)" matTooltip="Editar"
-                    [disabled]="isReadonly(l)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="deletar(l)" matTooltip="Excluir"
-                    [disabled]="isReadonly(l)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <ng-container matColumnDef="acoes">
+        <th mat-header-cell *matHeaderCellDef>Ações</th>
+        <td mat-cell *matCellDef="let l">
+          <button mat-icon-button color="primary" (click)="abrirDialog(l)" matTooltip="Editar"
+                  [disabled]="isReadonly(l)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deletar(l)" matTooltip="Excluir"
+                  [disabled]="isReadonly(l)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
 
-      <mat-paginator class="contas-paginator" [length]="lancamentosFiltrados.length" [pageSize]="pageSize"
-                     [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
-                     showFirstLastButtons>
-      </mat-paginator>
+    <mat-paginator class="contas-paginator" [length]="lancamentosFiltrados.length" [pageSize]="pageSize"
+                   [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
+                   showFirstLastButtons>
+    </mat-paginator>
   </app-table-shell>
 
   <div *ngIf="!carregando && lancamentosFiltrados.length > 0" class="mobile-record-list">
@@ -168,9 +168,13 @@
       </dl>
       <div record-actions>
         <button mat-icon-button color="primary" (click)="abrirDialog(lancamento)"
-                [disabled]="isReadonly(lancamento)" aria-label="Editar lançamento"><mat-icon>edit</mat-icon></button>
+                [disabled]="isReadonly(lancamento)" aria-label="Editar lançamento">
+          <mat-icon>edit</mat-icon>
+        </button>
         <button mat-icon-button color="warn" (click)="deletar(lancamento)"
-                [disabled]="isReadonly(lancamento)" aria-label="Excluir lançamento"><mat-icon>delete</mat-icon></button>
+                [disabled]="isReadonly(lancamento)" aria-label="Excluir lançamento">
+          <mat-icon>delete</mat-icon>
+        </button>
       </div>
     </app-record-card>
   </div>

@@ -51,6 +51,7 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
   carregando = false;
   receitaDespesaTipo: GraficoAlternavel = 'line';
   subcategoriasTipo: GraficoAlternavel = 'bar';
+  private readonly cardsContraidos = new Set<string>();
 
   private receitaDespesaChart?: Chart;
   private subcategoriasChart?: Chart;
@@ -138,6 +139,21 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     return `${pct.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}% da receita foi comprometida`;
   }
 
+  cardEstaContraido(card: string): boolean {
+    return this.cardsContraidos.has(card);
+  }
+
+  alternarCard(card: string): void {
+    if (this.cardsContraidos.has(card)) {
+      this.cardsContraidos.delete(card);
+      // Charts need a resize after their container becomes visible again.
+      setTimeout(() => this.atualizarGraficos());
+      return;
+    }
+
+    this.cardsContraidos.add(card);
+  }
+
   get categoriaSelecionadaNome(): string {
     const categoriaId = this.filtroForm?.value?.categoriaId;
     return this.categorias.find(c => c.id === categoriaId)?.nome ?? 'Todas as categorias';
@@ -217,7 +233,11 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
   selecionarCategoria(item: DashboardFinanceiroAgrupamentoItem): void {
     if (!item.id) return;
 
-    this.filtroForm.patchValue({ categoriaId: item.id, subcategoriaId: null });
+    const categoriaJaSelecionada = this.filtroForm.value.categoriaId === item.id;
+    this.filtroForm.patchValue({
+      categoriaId: categoriaJaSelecionada ? null : item.id,
+      subcategoriaId: null
+    });
     this.carregarDashboard();
   }
 
@@ -388,14 +408,50 @@ export class DashboardFinanceiroComponent implements OnInit, AfterViewInit, OnDe
     const canvas = this.subcategoriasCanvas?.nativeElement;
     if (!canvas) return;
 
-    this.subcategoriasChart = this.createChart(
-      canvas,
-      this.subcategoriasTipo,
-      this.gastosSubcategorias.map(item => item.nome),
-      this.gastosSubcategorias.map(item => item.valor),
-      this.getChartColors().reverse(),
-      'Gastos por Subcategoria'
-    );
+    const labels = this.gastosSubcategorias.map(item => item.nome);
+    const valores = this.gastosSubcategorias.map(item => item.valor);
+    const cores = this.getChartColors().reverse();
+
+    if (this.subcategoriasTipo === 'pie') {
+      this.subcategoriasChart = this.createChart(canvas, 'pie', labels, valores, cores);
+      return;
+    }
+
+    const ChartClass = this.ChartCtor;
+    if (!ChartClass) return;
+
+    const options = this.commonChartOptions();
+    options.plugins.legend.labels.generateLabels = (chart: any) => labels.map((label, index) => ({
+      text: label,
+      fillStyle: cores[index % cores.length],
+      strokeStyle: cores[index % cores.length],
+      lineWidth: 0,
+      hidden: !chart.getDataVisibility(index),
+      index
+    }));
+    options.plugins.legend.onClick = (_event: unknown, legendItem: { index?: number }, legend: any) => {
+      if (legendItem.index === undefined) return;
+
+      legend.chart.toggleDataVisibility(legendItem.index);
+      legend.chart.update();
+    };
+
+    this.subcategoriasChart = new ChartClass(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Gastos por Subcategoria',
+          data: valores,
+          backgroundColor: labels.map((_, index) => cores[index % cores.length]),
+          borderRadius: 8,
+          borderSkipped: false,
+          barPercentage: 0.9,
+          categoryPercentage: 0.8
+        }]
+      },
+      options
+    });
   }
 
   private createChart(
