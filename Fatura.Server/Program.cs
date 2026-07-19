@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var useHttpsRedirection = builder.Configuration.GetValue("UseHttpsRedirection", builder.Environment.IsDevelopment());
 
-// Configura o Entity Framework Core com MySQL
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Configura o Entity Framework Core com PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("A connection string 'DefaultConnection' não foi configurada.");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySQL(connectionString!));
+    options.UseNpgsql(connectionString));
 
 // Registra os serviços da aplicação
 builder.Services.AddInfrastructureServices();

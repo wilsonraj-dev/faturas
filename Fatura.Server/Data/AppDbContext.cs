@@ -7,6 +7,20 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+
+        // Preserva a semântica temporal existente. O domínio usa datas locais e UTC,
+        // portanto timestamptz rejeitaria valores DateTime com Kind diferente de UTC.
+        configurationBuilder.Properties<DateTime>()
+            .HaveConversion<DateTimeToUnspecifiedConverter>()
+            .HaveColumnType("timestamp without time zone");
+        configurationBuilder.Properties<DateTime?>()
+            .HaveConversion<NullableDateTimeToUnspecifiedConverter>()
+            .HaveColumnType("timestamp without time zone");
+    }
+
     public DbSet<User> Users => Set<User>();
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<CompraRecorrente> ComprasRecorrentes => Set<CompraRecorrente>();

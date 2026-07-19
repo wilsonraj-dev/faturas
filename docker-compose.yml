@@ -1,21 +1,20 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: fatura-mysql
+  postgres:
+    image: postgres:17-alpine
+    container_name: fatura-postgres
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: fatura_db
-      MYSQL_USER: fatura_user
-      MYSQL_PASSWORD: fatura_password
-      MYSQL_ROOT_PASSWORD: fatura_root_password
+      POSTGRES_DB: fatura_db
+      POSTGRES_USER: fatura_user
+      POSTGRES_PASSWORD: fatura_password
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - fatura-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pfatura_root_password"]
+      test: ["CMD-SHELL", "pg_isready -U fatura_user -d fatura_db"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -24,17 +23,17 @@ services:
   api:
     build:
       context: .
-      dockerfile: Fatura.Server/Dockerfile
+      dockerfile: Dockerfile
     container_name: fatura-api
     restart: unless-stopped
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       UseHttpsRedirection: "false"
-      ConnectionStrings__DefaultConnection: Server=mysql;Port=3306;Database=fatura_db;Uid=fatura_user;Pwd=fatura_password;
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=fatura_db;Username=fatura_user;Password=fatura_password;SSL Mode=Disable
       Jwt__Key: "ChaveSecretaSuperSeguraParaJWT_FaturaApp_2025!@#$%"
       Jwt__Issuer: FaturaApp
       Jwt__Audience: FaturaApp
@@ -62,4 +61,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  postgres_data:
