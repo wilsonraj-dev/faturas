@@ -188,7 +188,9 @@ export class LancamentosComponent implements OnInit {
 
   abrirDialog(lancamento?: LancamentoFinanceiro): void {
     const ref = this.dialog.open(LancamentoFormDialogComponent, {
-      width: '500px',
+      width: '860px',
+      maxWidth: 'calc(100vw - 32px)',
+      maxHeight: 'calc(100dvh - 32px)',
       data: lancamento || null
     });
     ref.afterClosed().subscribe(result => {

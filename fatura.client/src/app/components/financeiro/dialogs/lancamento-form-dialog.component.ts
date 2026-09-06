@@ -20,73 +20,92 @@ import {
 @Component({
   selector: 'app-lancamento-form-dialog',
   template: `
-    <h2 mat-dialog-title>{{ editando ? 'Editar' : 'Novo' }} Lançamento</h2>
-    <mat-dialog-content>
-      <form [formGroup]="form" class="form-column">
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo</mat-label>
-          <mat-select formControlName="tipo">
-            <mat-option [value]="tipoCategoria.Receita">Receita</mat-option>
-            <mat-option [value]="tipoCategoria.Despesa">Despesa</mat-option>
-          </mat-select>
-          <mat-error *ngIf="form.get('tipo')?.hasError('required')">Tipo é obrigatório</mat-error>
-        </mat-form-field>
+    <header class="dialog-header">
+      <div>
+        <h2 mat-dialog-title>{{ editando ? 'Editar' : 'Novo' }} Lançamento</h2>
+        <p>Preencha os dados da sua receita ou despesa.</p>
+      </div>
+      <button mat-icon-button type="button" aria-label="Fechar modal" (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+    <mat-dialog-content class="dialog-content">
+      <form [formGroup]="form" id="lancamento-form" (ngSubmit)="salvar()">
+        <section class="form-section" aria-labelledby="dados-lancamento">
+          <h3 id="dados-lancamento">Dados do lançamento</h3>
+          <div class="form-grid main-fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo</mat-label>
+              <mat-select formControlName="tipo">
+                <mat-option [value]="tipoCategoria.Receita">Receita</mat-option>
+                <mat-option [value]="tipoCategoria.Despesa">Despesa</mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('tipo')?.hasError('required')">Tipo é obrigatório</mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Valor</mat-label>
-          <input matInput type="number" formControlName="valor" placeholder="0.00" min="0.01" step="0.01">
-          <span matPrefix>R$&nbsp;</span>
-          <mat-error *ngIf="form.get('valor')?.hasError('required')">Valor é obrigatório</mat-error>
-          <mat-error *ngIf="form.get('valor')?.hasError('min')">Valor deve ser maior que zero</mat-error>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Valor</mat-label>
+              <input matInput type="number" formControlName="valor" placeholder="0.00" min="0.01" step="0.01">
+              <span matTextPrefix>R$&nbsp;</span>
+              <mat-error *ngIf="form.get('valor')?.hasError('required')">Valor é obrigatório</mat-error>
+              <mat-error *ngIf="form.get('valor')?.hasError('min')">Valor deve ser maior que zero</mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Data</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="data">
-          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error *ngIf="form.get('data')?.hasError('required')">Data é obrigatória</mat-error>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Data</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="data">
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="form.get('data')?.hasError('required')">Data é obrigatória</mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Descrição</mat-label>
-          <input matInput formControlName="descricao" placeholder="Ex: Pagamento de conta...">
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descrição</mat-label>
+              <input matInput formControlName="descricao" placeholder="Ex: Pagamento de conta...">
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Conta Financeira</mat-label>
-          <mat-select formControlName="contaFinanceiraId">
-            <mat-option *ngFor="let conta of contas" [value]="conta.id">{{ conta.nome }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="form.get('contaFinanceiraId')?.hasError('required')">Conta é obrigatória</mat-error>
-        </mat-form-field>
+          </div>
+        </section>
+        <section class="form-section" aria-labelledby="classificacao-lancamento">
+          <h3 id="classificacao-lancamento">Conta e classificação</h3>
+          <div class="form-grid classification-fields">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Conta Financeira</mat-label>
+              <mat-select formControlName="contaFinanceiraId">
+                <mat-option *ngFor="let conta of contas" [value]="conta.id">{{ conta.nome }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="form.get('contaFinanceiraId')?.hasError('required')">Conta é obrigatória</mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Categoria</mat-label>
-          <mat-select formControlName="categoriaId" (selectionChange)="onCategoriaChange()">
-            <mat-option [value]="null">Nenhuma</mat-option>
-            <mat-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Categoria</mat-label>
+              <mat-select formControlName="categoriaId" (selectionChange)="onCategoriaChange()">
+                <mat-option [value]="null">Nenhuma</mat-option>
+                <mat-option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nome }}</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Subcategoria</mat-label>
-          <mat-select formControlName="subcategoriaId" [disabled]="subcategorias.length === 0">
-            <mat-option [value]="null">Nenhuma</mat-option>
-            <mat-option *ngFor="let sub of subcategorias" [value]="sub.id">{{ sub.nome }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Subcategoria</mat-label>
+              <mat-select formControlName="subcategoriaId" [disabled]="subcategorias.length === 0">
+                <mat-option [value]="null">Nenhuma</mat-option>
+                <mat-option *ngFor="let sub of subcategorias" [value]="sub.id">{{ sub.nome }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </section>
       </form>
     </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="form.invalid || salvando">
+    <mat-dialog-actions class="dialog-actions" align="end">
+      <span class="required-note">* Campos obrigatórios</span>
+      <button mat-button class="cancel-button" type="button" (click)="dialogRef.close()">Cancelar</button>
+      <button mat-flat-button color="primary" type="submit" form="lancamento-form" [disabled]="form.invalid || salvando">
         <mat-spinner *ngIf="salvando" diameter="20" class="btn-spinner"></mat-spinner>
-        {{ editando ? 'Salvar' : 'Criar' }}
+        {{ salvando ? 'Salvando...' : (editando ? 'Salvar alterações' : 'Criar lançamento') }}
       </button>
     </mat-dialog-actions>
   `,
-  styles: ['.form-column { display: flex; flex-direction: column; gap: 4px; } .btn-spinner { display: inline-block; margin-right: 8px; }']
+  styleUrls: ['./lancamento-form-dialog.component.css']
 })
 export class LancamentoFormDialogComponent implements OnInit {
   form!: FormGroup;
@@ -142,7 +161,7 @@ export class LancamentoFormDialogComponent implements OnInit {
   }
 
   salvar(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || this.salvando) return;
     this.salvando = true;
 
     const formValue = this.form.value;
