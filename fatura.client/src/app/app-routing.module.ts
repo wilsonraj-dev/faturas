@@ -9,6 +9,7 @@ import { SimulacoesComponent } from './components/simulacoes/simulacoes.componen
 import { SimulacaoDetalheComponent } from './components/simulacao-detalhe/simulacao-detalhe.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { SideMenuComponent } from './components/side-menu/side-menu.component';
 import { ProfileSettingsComponent } from './components/profile-settings/profile-settings.component';
 import { AuthGuard } from './guards/auth.guard';
 import { InstituicoesComponent } from './components/financeiro/instituicoes/instituicoes.component';
@@ -18,9 +19,7 @@ import { LancamentosComponent } from './components/financeiro/lancamentos/lancam
 import { LembretesPagamentoComponent } from './components/lembretes-pagamento/lembretes-pagamento.component';
 import { DashboardFinanceiroComponent } from './components/financeiro/dashboard-financeiro/dashboard-financeiro.component';
 
-const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+const protectedRoutes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   {
     path: 'dashboard',
@@ -96,6 +95,12 @@ const routes: Routes = [
     data: { showInMenu: true, label: 'Lançamentos', icon: 'payments', exact: true, group: 'Financeiro' }
   },
   { path: 'configuracoes', component: ProfileSettingsComponent, canActivate: [AuthGuard] }
+];
+
+const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: '', component: SideMenuComponent, canActivate: [AuthGuard], children: protectedRoutes }
 ];
 
 @NgModule({

@@ -11,7 +11,7 @@ export class AuthService {
   private readonly USER_KEY = 'auth_user';
   private readonly baseUrl = `${environment.apiUrl}/auth`;
 
-  private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
+  private loggedIn = new BehaviorSubject<boolean>(this.restoreSession());
   isLoggedIn$ = this.loggedIn.asObservable();
 
   constructor(private http: HttpClient, private router: Router) { }
@@ -41,9 +41,7 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    this.loggedIn.next(false);
+    this.clearSession();
     this.router.navigate(['/login']);
   }
 
@@ -52,7 +50,12 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.hasToken();
+    if (this.isTokenValid(this.getToken())) {
+      return true;
+    }
+
+    this.clearSession();
+    return false;
   }
 
   getUserName(): string {
@@ -86,7 +89,42 @@ export class AuthService {
     }
   }
 
-  private hasToken(): boolean {
-    return !!localStorage.getItem(this.TOKEN_KEY);
+  private restoreSession(): boolean {
+    if (this.isTokenValid(this.getToken())) {
+      return true;
+    }
+
+    this.clearStoredSession();
+    return false;
+  }
+
+  private isTokenValid(token: string | null): boolean {
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) {
+        return false;
+      }
+
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))) as { exp?: unknown };
+      return typeof payload.exp === 'number' && Number.isFinite(payload.exp) && payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
+  }
+
+  private clearSession(): void {
+    this.clearStoredSession();
+    if (this.loggedIn.value) {
+      this.loggedIn.next(false);
+    }
+  }
+
+  private clearStoredSession(): void {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
   }
 }

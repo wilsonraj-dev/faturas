@@ -1,7 +1,1 @@
-<ng-container *ngIf="isAuthenticated$ | async; else publicRoutes">
-  <app-side-menu></app-side-menu>
-</ng-container>
-
-<ng-template #publicRoutes>
-  <router-outlet></router-outlet>
-</ng-template>
+<router-outlet></router-outlet>

@@ -112,6 +112,7 @@ export class SideMenuComponent implements OnDestroy {
 
   private buildNavigationItems(): SideMenuItem[] {
     return this.router.config
+      .flatMap(route => route.children ?? [route])
       .filter(route => route.path && route.data?.['showInMenu'])
       .map(route => this.mapRouteToNavigationItem(route));
   }
