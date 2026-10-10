@@ -6,5 +6,6 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="Fatura.Server.Tests/Fatura.Server.Tests.csproj" />
   <Project Path="Fatura.Server/Fatura.Server.csproj" />
 </Solution>

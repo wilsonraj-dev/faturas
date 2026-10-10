@@ -342,7 +342,7 @@ public class FaturaService : IFaturaService
 
     private static DateTime CalcularDataPagamento(FaturaEntity fatura, DateTime? dataPagamentoInformada)
     {
-        var competenciaPagamento = new DateTime(fatura.Ano, fatura.Mes, 1).AddMonths(1);
+        var competenciaPagamento = new DateTime(fatura.Ano, fatura.Mes, 1);
         var referencia = dataPagamentoInformada ?? DateTime.Now;
         var dia = Math.Min(referencia.Day, DateTime.DaysInMonth(competenciaPagamento.Year, competenciaPagamento.Month));
 
