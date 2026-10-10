@@ -2,6 +2,7 @@ using Fatura.Server.Data;
 using Fatura.Server.IoC;
 using Fatura.Server.Workers;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var useHttpsRedirection = builder.Configuration.GetValue("UseHttpsRedirection", builder.Environment.IsDevelopment());
@@ -33,7 +34,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApiDocument();
 
 var app = builder.Build();
 
@@ -48,7 +50,8 @@ app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseOpenApi(options => options.Path = "/openapi/{documentName}.json");
+    app.MapScalarApiReference();
 }
 
 if (useHttpsRedirection)
