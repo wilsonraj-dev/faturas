@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { FaturaService } from '../../services/api.service';
 import { FaturaResumo, FaturaDetalhe, ParcelaResponse } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -29,6 +30,8 @@ export class FaturasComponent implements OnInit {
   detalhesCache: { [faturaId: number]: FaturaDetalhe } = {};
   carregandoDetalhe: { [faturaId: number]: boolean } = {};
   detalhesPaginacao: { [faturaId: number]: { pageIndex: number, pageSize: number } } = {};
+  filtrosCompra: { [faturaId: number]: string } = {};
+  ordenacoesVencimento: { [faturaId: number]: SortDirection } = {};
   displayedColumns = ['nomeCompra', 'tipo', 'fornecedor', 'parcela', 'valor', 'dataVencimento'];
   readonly pageSizeOptions = [10, 15, 20, 25];
   readonly defaultPageSize = 10;
@@ -48,6 +51,8 @@ export class FaturasComponent implements OnInit {
     this.carregando = true;
     this.detalhesCache = {};
     this.detalhesPaginacao = {};
+    this.filtrosCompra = {};
+    this.ordenacoesVencimento = {};
     this.faturaService.listarFaturas(this.anoSelecionado).subscribe({
       next: (faturas) => {
         this.faturas = faturas;
@@ -174,7 +179,36 @@ export class FaturasComponent implements OnInit {
   getParcelasPaginadas(faturaId: number, parcelas: ParcelaResponse[]): ParcelaResponse[] {
     const paginacao = this.getDetalhePaginacao(faturaId);
     const inicio = paginacao.pageIndex * paginacao.pageSize;
-    return parcelas.slice(inicio, inicio + paginacao.pageSize);
+    return this.getParcelasFiltradas(faturaId, parcelas).slice(inicio, inicio + paginacao.pageSize);
+  }
+
+  getParcelasFiltradas(faturaId: number, parcelas: ParcelaResponse[]): ParcelaResponse[] {
+    const termo = this.normalizarTexto(this.filtrosCompra[faturaId] || '');
+    const filtradas = termo
+      ? parcelas.filter(parcela => this.normalizarTexto(parcela.nomeCompra).includes(termo))
+      : parcelas;
+    const direcao = this.ordenacoesVencimento[faturaId];
+
+    if (!direcao) return filtradas;
+
+    return [...filtradas].sort((a, b) => {
+      const diferenca = Date.parse(a.dataVencimento) - Date.parse(b.dataVencimento);
+      return direcao === 'asc' ? diferenca : -diferenca;
+    });
+  }
+
+  onFiltroCompraChange(faturaId: number, termo: string): void {
+    this.filtrosCompra[faturaId] = termo;
+    this.getDetalhePaginacao(faturaId).pageIndex = 0;
+  }
+
+  onOrdenacaoChange(faturaId: number, sort: Sort): void {
+    this.ordenacoesVencimento[faturaId] = sort.direction;
+    this.getDetalhePaginacao(faturaId).pageIndex = 0;
+  }
+
+  private normalizarTexto(texto: string): string {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
   }
 
   onDetalhePageChange(faturaId: number, event: PageEvent): void {

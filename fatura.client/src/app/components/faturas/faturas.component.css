@@ -222,6 +222,11 @@
   margin: 0 0 16px;
 }
 
+.filtro-compra {
+  width: min(100%, 360px);
+  margin-bottom: 8px;
+}
+
   .parcelas-titulo mat-icon {
     color: var(--color-primary);
   }

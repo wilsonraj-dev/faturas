@@ -156,57 +156,73 @@
                         <mat-icon>list_alt</mat-icon> Parcelas
                       </h3>
 
-                      <div class="parcelas-table-scroll" *ngIf="detalhe.parcelas.length > 0">
-                        <table mat-table [dataSource]="getParcelasPaginadas(fatura.id, detalhe.parcelas)" class="parcelas-table">
-                        <ng-container matColumnDef="nomeCompra">
-                          <th mat-header-cell *matHeaderCellDef>Compra</th>
-                          <td mat-cell *matCellDef="let parcela">{{ parcela.nomeCompra }}</td>
-                        </ng-container>
+                      <mat-form-field class="filtro-compra" appearance="outline" *ngIf="detalhe.parcelas.length > 0">
+                        <mat-label>Buscar compra nesta fatura</mat-label>
+                        <input matInput type="search" [ngModel]="filtrosCompra[fatura.id] || ''"
+                               (ngModelChange)="onFiltroCompraChange(fatura.id, $event)"
+                               aria-label="Buscar compra nesta fatura">
+                        <mat-icon matSuffix>search</mat-icon>
+                      </mat-form-field>
 
-                        <ng-container matColumnDef="fornecedor">
-                          <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
-                          <td mat-cell *matCellDef="let parcela">{{ parcela.fornecedorNome || '—' }}</td>
-                        </ng-container>
+                      <div class="parcelas-table-scroll" *ngIf="getParcelasFiltradas(fatura.id, detalhe.parcelas).length > 0">
+                        <table mat-table [dataSource]="getParcelasPaginadas(fatura.id, detalhe.parcelas)" class="parcelas-table"
+                               matSort [matSortActive]="ordenacoesVencimento[fatura.id] ? 'dataVencimento' : ''"
+                               [matSortDirection]="ordenacoesVencimento[fatura.id] || ''"
+                               (matSortChange)="onOrdenacaoChange(fatura.id, $event)">
+                          <ng-container matColumnDef="nomeCompra">
+                            <th mat-header-cell *matHeaderCellDef>Compra</th>
+                            <td mat-cell *matCellDef="let parcela">{{ parcela.nomeCompra }}</td>
+                          </ng-container>
 
-                        <ng-container matColumnDef="tipo">
-                          <th mat-header-cell *matHeaderCellDef>Tipo</th>
-                          <td mat-cell *matCellDef="let parcela">
-                            <span class="tipo-chip" [class.recorrente]="parcela.tipo === 'Recorrente'">
-                              <mat-icon>{{ getTipoIcon(parcela) }}</mat-icon>
-                              {{ getTipoLabel(parcela) }}
-                            </span>
-                          </td>
-                        </ng-container>
+                          <ng-container matColumnDef="fornecedor">
+                            <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+                            <td mat-cell *matCellDef="let parcela">{{ parcela.fornecedorNome || '—' }}</td>
+                          </ng-container>
 
-                        <ng-container matColumnDef="parcela">
-                          <th mat-header-cell *matHeaderCellDef>Parcela</th>
-                          <td mat-cell *matCellDef="let parcela">{{ parcela.numeroParcela }}/{{ parcela.totalParcelas }}</td>
-                        </ng-container>
+                          <ng-container matColumnDef="tipo">
+                            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                            <td mat-cell *matCellDef="let parcela">
+                              <span class="tipo-chip" [class.recorrente]="parcela.tipo === 'Recorrente'">
+                                <mat-icon>{{ getTipoIcon(parcela) }}</mat-icon>
+                                {{ getTipoLabel(parcela) }}
+                              </span>
+                            </td>
+                          </ng-container>
 
-                        <ng-container matColumnDef="valor">
-                          <th mat-header-cell *matHeaderCellDef>Valor</th>
-                          <td mat-cell *matCellDef="let parcela">R$ {{ parcela.valor | number:'1.2-2' }}</td>
-                        </ng-container>
+                          <ng-container matColumnDef="parcela">
+                            <th mat-header-cell *matHeaderCellDef>Parcela</th>
+                            <td mat-cell *matCellDef="let parcela">{{ parcela.numeroParcela }}/{{ parcela.totalParcelas }}</td>
+                          </ng-container>
 
-                        <ng-container matColumnDef="dataVencimento">
-                          <th mat-header-cell *matHeaderCellDef>Vencimento</th>
-                          <td mat-cell *matCellDef="let parcela">{{ formatarData(parcela.dataVencimento) }}</td>
-                        </ng-container>
+                          <ng-container matColumnDef="valor">
+                            <th mat-header-cell *matHeaderCellDef>Valor</th>
+                            <td mat-cell *matCellDef="let parcela">R$ {{ parcela.valor | number:'1.2-2' }}</td>
+                          </ng-container>
 
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                          <ng-container matColumnDef="dataVencimento">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Vencimento</th>
+                            <td mat-cell *matCellDef="let parcela">{{ formatarData(parcela.dataVencimento) }}</td>
+                          </ng-container>
+
+                          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                         </table>
                       </div>
 
                       <mat-paginator class="faturas-paginator"
-                                     *ngIf="detalhe.parcelas.length > 0"
-                                     [length]="detalhe.parcelas.length"
+                                     *ngIf="getParcelasFiltradas(fatura.id, detalhe.parcelas).length > 0"
+                                     [length]="getParcelasFiltradas(fatura.id, detalhe.parcelas).length"
                                      [pageIndex]="getDetalhePaginacao(fatura.id).pageIndex"
                                      [pageSize]="getDetalhePaginacao(fatura.id).pageSize"
                                      [pageSizeOptions]="pageSizeOptions"
                                      (page)="onDetalhePageChange(fatura.id, $event)"
                                      showFirstLastButtons>
                       </mat-paginator>
+
+                      <div *ngIf="detalhe.parcelas.length > 0 && getParcelasFiltradas(fatura.id, detalhe.parcelas).length === 0" class="sem-parcelas">
+                        <mat-icon>search_off</mat-icon>
+                        <span>Nenhuma compra encontrada nesta fatura.</span>
+                      </div>
 
                       <div *ngIf="detalhe.parcelas.length === 0" class="sem-parcelas">
                         <mat-icon>info_outline</mat-icon>
