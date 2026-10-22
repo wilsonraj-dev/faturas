@@ -39,6 +39,7 @@ const protectedRoutes: Routes = [
     canActivate: [AuthGuard],
     data: { showInMenu: true, label: 'Nova Compra', icon: 'add_shopping_cart', exact: true }
   },
+  { path: 'compras/:id/editar', component: CompraFormComponent, canActivate: [AuthGuard] },
   {
     path: 'compras-recorrentes',
     component: ComprasRecorrentesComponent,

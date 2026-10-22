@@ -4,6 +4,9 @@ import { Sort, SortDirection } from '@angular/material/sort';
 import { FaturaService } from '../../services/api.service';
 import { FaturaResumo, FaturaDetalhe, ParcelaResponse } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CompraService } from '../../services/api.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-faturas',
@@ -32,18 +35,26 @@ export class FaturasComponent implements OnInit {
   detalhesPaginacao: { [faturaId: number]: { pageIndex: number, pageSize: number } } = {};
   filtrosCompra: { [faturaId: number]: string } = {};
   ordenacoesVencimento: { [faturaId: number]: SortDirection } = {};
-  displayedColumns = ['nomeCompra', 'tipo', 'fornecedor', 'parcela', 'valor', 'dataVencimento'];
+  displayedColumns = ['nomeCompra', 'tipo', 'fornecedor', 'parcela', 'valor', 'dataVencimento', 'acoes'];
   readonly pageSizeOptions = [10, 15, 20, 25];
   readonly defaultPageSize = 10;
 
   constructor(
     private faturaService: FaturaService,
+    private compraService: CompraService,
+    private route: ActivatedRoute,
+    private router: Router,
     private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
+    const ano = Number(this.route.snapshot.queryParamMap.get('ano'));
+    const mes = Number(this.route.snapshot.queryParamMap.get('mes'));
+    if (ano >= 2000 && ano <= 2100) this.anoSelecionado = ano;
+    if (mes >= 1 && mes <= 12) this.mesSelecionado = mes - 1;
     const anoAtual = new Date().getFullYear();
     this.anos = Array.from({ length: 5 }, (_, i) => anoAtual - 1 + i);
+    if (!this.anos.includes(this.anoSelecionado)) this.anos.push(this.anoSelecionado);
     this.carregarFaturas();
   }
 
@@ -220,6 +231,26 @@ export class FaturasComponent implements OnInit {
 
   isCarregandoDetalhe(faturaId: number): boolean {
     return !!this.carregandoDetalhe[faturaId];
+  }
+
+  editarCompra(parcela: ParcelaResponse): void {
+    if (!parcela.compraId) return;
+    this.router.navigate(['/compras', parcela.compraId, 'editar'], {
+      queryParams: { ano: this.anoSelecionado, mes: this.mesSelecionado + 1 }
+    });
+  }
+
+  removerCompra(parcela: ParcelaResponse): void {
+    if (!parcela.compraId || !confirm(`Tem certeza que deseja remover a compra "${parcela.nomeCompra}" e todas as suas parcelas?`)) return;
+
+    this.compraService.removerCompra(parcela.compraId).subscribe({
+      next: () => {
+        this.snackBar.open('Compra removida com sucesso!', 'OK', { duration: 3000 });
+        this.carregarFaturas();
+      },
+      error: (erro: HttpErrorResponse) => this.snackBar.open(
+        typeof erro.error === 'string' ? erro.error : 'Erro ao remover compra', 'OK', { duration: 5000 })
+    });
   }
 
   quitarFatura(fatura: FaturaResumo): void {

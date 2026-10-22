@@ -20,6 +20,7 @@ public class CompraService : ICompraService
     /// </summary>
     public async Task<CompraResponse> CriarCompraAsync(CriarCompraRequest request, int userId)
     {
+        await using var transaction = await _db.Database.BeginTransactionAsync();
         // Calcula o valor de cada parcela (divisão igualitária)
         var valorParcela = Math.Round(request.ValorTotal / request.NumeroParcelas, 2);
 
@@ -69,10 +70,19 @@ public class CompraService : ICompraService
 
         // Recalcula o valor total de cada fatura afetada
         await RecalcularFaturasAsync(compra.Id);
+        await transaction.CommitAsync();
+
+        return (await ObterCompraAsync(compra.Id, userId))!;
+    }
+
+    public async Task<CompraResponse?> ObterCompraAsync(int id, int userId)
+    {
+        var compra = await _db.Compras.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+        if (compra is null) return null;
 
         // Retorna a compra com suas parcelas
         var parcelas = await _db.Parcelas
-            .Where(p => p.CompraId == compra.Id)
+            .Where(p => p.CompraId == compra.Id && p.UserId == userId)
             .OrderBy(p => p.NumeroParcela)
             .ToListAsync();
 
@@ -127,6 +137,96 @@ public class CompraService : ICompraService
                 FornecedorNome = fornecedorNome
             }).ToList()
         };
+    }
+
+    public async Task<ServiceResult<CompraResponse>> AtualizarCompraAsync(int id, CriarCompraRequest request, int userId)
+    {
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+        var compra = await _db.Compras.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+        if (compra is null) return ServiceResult<CompraResponse>.NotFoundResult("Compra não encontrada.");
+
+        var parcelasAntigas = await _db.Parcelas
+            .Where(p => p.CompraId == id && p.UserId == userId)
+            .Include(p => p.Fatura)
+            .ToListAsync();
+
+        if (parcelasAntigas.Any(p => p.Fatura?.Quitada == true))
+            return ServiceResult<CompraResponse>.Invalid("Reabra todas as faturas quitadas desta compra antes de editá-la.");
+
+        var novasDatas = Enumerable.Range(1, request.NumeroParcelas)
+            .Select(numero => request.DataCompra.AddMonths(numero)).ToList();
+        
+        var anosDestino = novasDatas.Select(d => d.Year).Distinct().ToList();
+        var faturasDestino = await _db.Faturas
+            .Where(f => f.UserId == userId && anosDestino.Contains(f.Ano))
+            .ToListAsync();
+
+        if (faturasDestino.Any(f => f.Quitada && novasDatas.Any(d => d.Year == f.Ano && d.Month == f.Mes)))
+            return ServiceResult<CompraResponse>.Invalid("Reabra as faturas de destino quitadas antes de editar esta compra.");
+
+        var faturaIdsAfetadas = parcelasAntigas.Where(p => p.FaturaId.HasValue)
+            .Select(p => p.FaturaId!.Value).ToHashSet();
+        await RemoverLancamentosDasParcelasAsync(parcelasAntigas, userId);
+        _db.Parcelas.RemoveRange(parcelasAntigas);
+        await _db.SaveChangesAsync();
+
+        compra.Nome = request.Nome.Trim();
+        compra.DataCompra = request.DataCompra;
+        compra.NumeroParcelas = request.NumeroParcelas;
+        compra.ValorTotal = request.ValorTotal;
+        compra.FornecedorId = request.FornecedorId;
+        compra.ContaFinanceiraId = request.ContaFinanceiraId;
+        compra.CategoriaId = request.CategoriaId;
+        compra.SubcategoriaId = request.SubcategoriaId;
+
+        var valorParcela = Math.Round(request.ValorTotal / request.NumeroParcelas, 2);
+        for (var i = 0; i < novasDatas.Count; i++)
+        {
+            var data = novasDatas[i];
+            var fatura = await ObterOuCriarFaturaAsync(data.Month, data.Year, userId);
+            faturaIdsAfetadas.Add(fatura.Id);
+            _db.Parcelas.Add(new Parcela
+            {
+                CompraId = compra.Id,
+                Tipo = ParcelaTipo.Normal,
+                NumeroParcela = i + 1,
+                Valor = i == novasDatas.Count - 1
+                    ? request.ValorTotal - valorParcela * (novasDatas.Count - 1)
+                    : valorParcela,
+                DataVencimento = data,
+                FaturaId = fatura.Id,
+                UserId = userId
+            });
+        }
+
+        await _db.SaveChangesAsync();
+        await RecalcularFaturasAsync(faturaIdsAfetadas);
+        await transaction.CommitAsync();
+        return ServiceResult<CompraResponse>.Ok((await ObterCompraAsync(id, userId))!);
+    }
+
+    public async Task<ServiceResult> RemoverCompraAsync(int id, int userId)
+    {
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+        var compra = await _db.Compras.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+        if (compra is null) return ServiceResult.NotFoundResult("Compra não encontrada.");
+
+        var parcelas = await _db.Parcelas
+            .Where(p => p.CompraId == id && p.UserId == userId)
+            .Include(p => p.Fatura)
+            .ToListAsync();
+        if (parcelas.Any(p => p.Fatura?.Quitada == true))
+            return ServiceResult.Invalid("Reabra todas as faturas quitadas desta compra antes de removê-la.");
+
+        var faturaIdsAfetadas = parcelas.Where(p => p.FaturaId.HasValue)
+            .Select(p => p.FaturaId!.Value).Distinct().ToList();
+        await RemoverLancamentosDasParcelasAsync(parcelas, userId);
+        _db.Parcelas.RemoveRange(parcelas);
+        _db.Compras.Remove(compra);
+        await _db.SaveChangesAsync();
+        await RecalcularFaturasAsync(faturaIdsAfetadas);
+        await transaction.CommitAsync();
+        return ServiceResult.Ok();
     }
 
     /// <summary>
@@ -197,11 +297,18 @@ public class CompraService : ICompraService
             .Distinct()
             .ToListAsync();
 
+        await RecalcularFaturasAsync(faturaIds);
+    }
+
+    private async Task RecalcularFaturasAsync(IEnumerable<int> faturaIds)
+    {
         foreach (var faturaId in faturaIds)
         {
-            var total = await _db.Parcelas
+            var valores = await _db.Parcelas
                 .Where(p => p.FaturaId == faturaId)
-                .SumAsync(p => p.Valor);
+                .Select(p => p.Valor)
+                .ToListAsync();
+            var total = valores.Sum();
 
             var fatura = await _db.Faturas.FindAsync(faturaId);
             if (fatura is not null)
@@ -211,5 +318,15 @@ public class CompraService : ICompraService
         }
 
         await _db.SaveChangesAsync();
+    }
+
+    private async Task RemoverLancamentosDasParcelasAsync(IEnumerable<Parcela> parcelas, int userId)
+    {
+        var parcelaIds = parcelas.Select(p => p.Id).ToList();
+        var lancamentos = await _db.LancamentosFinanceiros
+            .Where(l => l.UserId == userId && l.Origem == OrigemLancamento.Fatura
+                && l.OrigemId.HasValue && parcelaIds.Contains(l.OrigemId.Value))
+            .ToListAsync();
+        _db.LancamentosFinanceiros.RemoveRange(lancamentos);
     }
 }

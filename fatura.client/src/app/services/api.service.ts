@@ -52,6 +52,18 @@ export class CompraService {
     return this.http.post<CompraResponse>(this.baseUrl, request);
   }
 
+  obterCompra(id: number): Observable<CompraResponse> {
+    return this.http.get<CompraResponse>(`${this.baseUrl}/${id}`);
+  }
+
+  atualizarCompra(id: number, request: CriarCompraRequest): Observable<CompraResponse> {
+    return this.http.put<CompraResponse>(`${this.baseUrl}/${id}`, request);
+  }
+
+  removerCompra(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
   simularCompra(request: CriarCompraRequest): Observable<SimulacaoResponse> {
     return this.http.post<SimulacaoResponse>(`${this.baseUrl}/simular`, request);
   }

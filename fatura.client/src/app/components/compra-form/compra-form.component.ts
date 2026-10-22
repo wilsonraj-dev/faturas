@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CompraService, FornecedorService, ContaFinanceiraService, CategoriaService, SubcategoriaService } from '../../services/api.service';
-import { CriarCompraRequest, SimulacaoFaturaItem, Fornecedor, ContaFinanceira, Categoria, Subcategoria, TipoCategoria } from '../../models/models';
+import { CriarCompraRequest, SimulacaoFaturaItem, Fornecedor, ContaFinanceira, Categoria, Subcategoria, TipoCategoria, CompraResponse } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -19,6 +20,8 @@ export class CompraFormComponent implements OnInit {
   categoriaId: number | null = null;
   subcategoriaId: number | null = null;
   salvando = false;
+  carregandoCompra = false;
+  compraId: number | null = null;
   simulacao: SimulacaoFaturaItem[] = [];
   tentouSubmeter = false;
 
@@ -43,6 +46,7 @@ export class CompraFormComponent implements OnInit {
     private contaFinanceiraService: ContaFinanceiraService,
     private categoriaService: CategoriaService,
     private subcategoriaService: SubcategoriaService,
+    private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar
   ) { }
@@ -51,6 +55,21 @@ export class CompraFormComponent implements OnInit {
     this.carregarFornecedores();
     this.carregarContas();
     this.carregarCategorias();
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (id > 0) {
+      this.compraId = id;
+      this.carregandoCompra = true;
+      this.compraService.obterCompra(id).subscribe({
+        next: compra => {
+          this.preencherFormulario(compra);
+          this.carregandoCompra = false;
+        },
+        error: () => {
+          this.snackBar.open('Não foi possível carregar a compra.', 'OK', { duration: 3000 });
+          this.voltarParaFaturas();
+        }
+      });
+    }
   }
 
   carregarFornecedores(): void {
@@ -65,7 +84,7 @@ export class CompraFormComponent implements OnInit {
       next: (dados) => {
         this.contas = dados;
         const ultimaConta = Number(localStorage.getItem(this.ultimaContaKey));
-        if (!this.contaFinanceiraId && ultimaConta && this.contas.some(conta => conta.id === ultimaConta)) {
+        if (!this.compraId && !this.contaFinanceiraId && ultimaConta && this.contas.some(conta => conta.id === ultimaConta)) {
           this.contaFinanceiraId = ultimaConta;
         }
       },
@@ -133,14 +152,17 @@ export class CompraFormComponent implements OnInit {
     this.salvando = true;
     const request = this.montarRequest();
 
-    this.compraService.criarCompra(request).subscribe({
+    const operacao = this.compraId
+      ? this.compraService.atualizarCompra(this.compraId, request)
+      : this.compraService.criarCompra(request);
+    operacao.subscribe({
       next: () => {
         localStorage.setItem(this.ultimaContaKey, String(this.contaFinanceiraId));
-        this.snackBar.open('Compra cadastrada com sucesso!', 'OK', { duration: 3000 });
-        this.router.navigate(['/faturas']);
+        this.snackBar.open(this.compraId ? 'Compra atualizada com sucesso!' : 'Compra cadastrada com sucesso!', 'OK', { duration: 3000 });
+        this.voltarParaFaturas();
       },
-      error: () => {
-        this.snackBar.open('Erro ao cadastrar compra', 'OK', { duration: 3000 });
+      error: (erro: HttpErrorResponse) => {
+        this.snackBar.open(typeof erro.error === 'string' ? erro.error : 'Erro ao salvar compra', 'OK', { duration: 5000 });
         this.salvando = false;
       }
     });
@@ -172,5 +194,28 @@ export class CompraFormComponent implements OnInit {
       categoriaId: this.categoriaId,
       subcategoriaId: this.subcategoriaId
     };
+  }
+
+  private preencherFormulario(compra: CompraResponse): void {
+    this.nome = compra.nome;
+    this.dataCompra = compra.dataCompra.slice(0, 10);
+    this.numeroParcelas = compra.numeroParcelas;
+    this.valorTotal = compra.valorTotal;
+    this.fornecedorId = compra.fornecedorId ?? null;
+    this.contaFinanceiraId = compra.contaFinanceiraId ?? null;
+    this.categoriaId = compra.categoriaId ?? null;
+    this.subcategoriaId = compra.subcategoriaId ?? null;
+    if (this.categoriaId) {
+      this.subcategoriaService.listar(this.categoriaId).subscribe({
+        next: dados => this.subcategorias = dados,
+        error: () => this.snackBar.open('Erro ao carregar subcategorias', 'OK', { duration: 3000 })
+      });
+    }
+  }
+
+  voltarParaFaturas(): void {
+    const ano = this.route.snapshot.queryParamMap.get('ano');
+    const mes = this.route.snapshot.queryParamMap.get('mes');
+    this.router.navigate(['/faturas'], { queryParams: ano && mes ? { ano, mes } : {} });
   }
 }

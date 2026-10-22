@@ -1,5 +1,5 @@
 <div class="container">
-  <h2>Nova Compra Parcelada</h2>
+  <h2>{{ compraId ? 'Editar Compra' : 'Nova Compra Parcelada' }}</h2>
 
   <mat-card>
     <mat-card-content>
@@ -93,14 +93,14 @@
       </div>
 
       <div class="actions">
-        <button mat-raised-button color="primary" (click)="salvar()" [disabled]="!formularioValido || salvando">
+        <button mat-raised-button color="primary" (click)="salvar()" [disabled]="!formularioValido || salvando || carregandoCompra">
           <mat-icon>save</mat-icon>
-          {{ salvando ? 'Salvando...' : 'Cadastrar Compra' }}
+          {{ salvando ? 'Salvando...' : (compraId ? 'Salvar Alterações' : 'Cadastrar Compra') }}
         </button>
         <button mat-stroked-button color="accent" (click)="simular()">
           <mat-icon>calculate</mat-icon> Simular
         </button>
-        <button mat-button routerLink="/faturas">Cancelar</button>
+        <button mat-button (click)="voltarParaFaturas()">Cancelar</button>
       </div>
 
       <!-- Resultado da simulação -->

@@ -235,6 +235,11 @@
   width: 100%;
 }
 
+.parcelas-table .mat-column-acoes {
+  width: 112px;
+  white-space: nowrap;
+}
+
 .parcelas-table-scroll {
   max-width: 100%;
   overflow-x: auto;
@@ -308,7 +313,7 @@
 
 @media (max-width: 699.98px) {
   .parcelas-table {
-    min-width: 640px;
+    min-width: 760px;
   }
 
   .detalhe-inline {

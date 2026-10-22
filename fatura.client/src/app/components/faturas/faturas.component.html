@@ -204,6 +204,20 @@
                             <td mat-cell *matCellDef="let parcela">{{ formatarData(parcela.dataVencimento) }}</td>
                           </ng-container>
 
+                        <ng-container matColumnDef="acoes">
+                          <th mat-header-cell *matHeaderCellDef>Ações</th>
+                          <td mat-cell *matCellDef="let parcela">
+                            <ng-container *ngIf="parcela.compraId">
+                              <button mat-icon-button color="primary" (click)="editarCompra(parcela)" matTooltip="Editar compra" aria-label="Editar compra">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              <button mat-icon-button color="warn" (click)="removerCompra(parcela)" matTooltip="Remover compra" aria-label="Remover compra">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </ng-container>
+                          </td>
+                        </ng-container>
+
                           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                         </table>
