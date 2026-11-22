@@ -73,15 +73,23 @@
     </form>
   </app-section-card>
 
+  <mat-form-field class="busca-rapida" appearance="outline">
+    <mat-label>Buscar por descrição ou valor</mat-label>
+    <input matInput type="search" [ngModel]="buscaRapida"
+           (ngModelChange)="onBuscaRapidaChange($event)"
+           aria-label="Buscar lançamento por descrição ou valor">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
   <!-- Loading -->
   <app-feedback-state *ngIf="carregando" kind="loading" title="Carregando lançamentos"></app-feedback-state>
 
   <!-- Tabela -->
-  <app-table-shell *ngIf="!carregando && lancamentosFiltrados.length > 0"
+  <app-table-shell *ngIf="!carregando && lancamentosPesquisados.length > 0"
                    class="desktop-record-table"
                    title="Lançamentos encontrados"
                    icon="receipt_long"
-                   [count]="lancamentosFiltrados.length">
+                   [count]="lancamentosPesquisados.length">
     <table mat-table [dataSource]="lancamentosPaginados" class="lancamentos-table">
       <ng-container matColumnDef="data">
         <th mat-header-cell *matHeaderCellDef>Data</th>
@@ -147,13 +155,13 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator class="contas-paginator" [length]="lancamentosFiltrados.length" [pageSize]="pageSize"
+    <mat-paginator class="contas-paginator" [length]="lancamentosPesquisados.length" [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions" [pageIndex]="pageIndex" (page)="onPageChange($event)"
                    showFirstLastButtons>
     </mat-paginator>
   </app-table-shell>
 
-  <div *ngIf="!carregando && lancamentosFiltrados.length > 0" class="mobile-record-list">
+  <div *ngIf="!carregando && lancamentosPesquisados.length > 0" class="mobile-record-list">
     <app-record-card *ngFor="let lancamento of lancamentosPaginados"
                      [title]="lancamento.descricao || 'Lançamento sem descrição'"
                      [eyebrow]="(lancamento.data | date:'dd/MM/yyyy') || ''"
@@ -178,17 +186,17 @@
       </div>
     </app-record-card>
   </div>
-  <mat-paginator *ngIf="!carregando && lancamentosFiltrados.length > 0"
+  <mat-paginator *ngIf="!carregando && lancamentosPesquisados.length > 0"
                  class="mobile-record-paginator"
-                 [length]="lancamentosFiltrados.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+                 [length]="lancamentosPesquisados.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
                  [pageIndex]="pageIndex" (page)="onPageChange($event)" showFirstLastButtons>
   </mat-paginator>
 
-  <app-feedback-state *ngIf="!carregando && lancamentosFiltrados.length === 0"
+  <app-feedback-state *ngIf="!carregando && lancamentosPesquisados.length === 0"
                       kind="empty"
                       icon="receipt_long"
                       title="Nenhum lançamento encontrado"
-                      message="Ajuste os filtros ou registre um novo lançamento.">
+                      [message]="buscaRapida.trim() ? 'Tente outra descrição ou valor.' : 'Ajuste os filtros ou registre um novo lançamento.'">
     <button mat-raised-button color="primary" (click)="abrirDialog()">Novo lançamento</button>
   </app-feedback-state>
 </div>

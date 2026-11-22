@@ -29,6 +29,7 @@ export class LancamentosComponent implements OnInit {
   categorias: Categoria[] = [];
   carregando = false;
   filtroForm!: FormGroup;
+  buscaRapida = '';
 
   displayedColumns = ['data', 'descricao', 'categoriaNome', 'subcategoriaNome', 'contaFinanceiraNome', 'tipo', 'valor', 'acoes'];
   readonly pageSizeOptions = [10, 15, 20, 50];
@@ -63,7 +64,28 @@ export class LancamentosComponent implements OnInit {
 
   get lancamentosPaginados(): LancamentoFinanceiro[] {
     const inicio = this.pageIndex * this.pageSize;
-    return this.lancamentosFiltrados.slice(inicio, inicio + this.pageSize);
+    return this.lancamentosPesquisados.slice(inicio, inicio + this.pageSize);
+  }
+
+  get lancamentosPesquisados(): LancamentoFinanceiro[] {
+    const termo = this.normalizarBusca(this.buscaRapida);
+    if (!termo) return this.lancamentosFiltrados;
+
+    return this.lancamentosFiltrados.filter(l => {
+      const valorFormatado = l.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const valorSemAgrupamento = l.valor.toLocaleString('pt-BR', { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return [l.descricao || '', `R$ ${valorFormatado}`, valorSemAgrupamento, l.valor.toString()]
+        .some(texto => this.normalizarBusca(texto).includes(termo));
+    });
+  }
+
+  onBuscaRapidaChange(termo: string): void {
+    this.buscaRapida = termo;
+    this.pageIndex = 0;
+  }
+
+  private normalizarBusca(texto: string): string {
+    return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').trim();
   }
 
   get lancamentosFiltrados(): LancamentoFinanceiro[] {
