@@ -1,3 +1,7 @@
+.container {
+  max-width: none;
+}
+
 /* Resumo */
 .resumo-grid {
   display: grid;
@@ -44,6 +48,13 @@
 
 .lancamentos-table {
   width: 100%;
+  min-width: 1100px;
+}
+
+.lancamentos-table .mat-column-data,
+.lancamentos-table .mat-column-valor,
+.lancamentos-table .mat-column-acoes {
+  white-space: nowrap;
 }
 
   .lancamentos-table .mat-mdc-header-cell,
