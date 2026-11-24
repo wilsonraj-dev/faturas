@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
 import { FornecedorService } from '../../services/api.service';
 import { Fornecedor } from '../../models/models';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ordenarRegistros } from '../../shared/ordenar-registros';
 
 @Component({
   selector: 'app-fornecedores',
@@ -20,6 +22,7 @@ export class FornecedoresComponent implements OnInit {
   readonly pageSizeOptions = [10, 15, 20, 25];
   pageSize = 10;
   pageIndex = 0;
+  ordenacao: Sort = { active: 'id', direction: 'asc' };
 
   constructor(
     private fornecedorService: FornecedorService,
@@ -32,7 +35,12 @@ export class FornecedoresComponent implements OnInit {
 
   get fornecedoresPaginados(): Fornecedor[] {
     const inicio = this.pageIndex * this.pageSize;
-    return this.fornecedores.slice(inicio, inicio + this.pageSize);
+    return ordenarRegistros(this.fornecedores, this.ordenacao).slice(inicio, inicio + this.pageSize);
+  }
+
+  onSortChange(ordenacao: Sort): void {
+    this.ordenacao = ordenacao;
+    this.pageIndex = 0;
   }
 
   carregar(): void {

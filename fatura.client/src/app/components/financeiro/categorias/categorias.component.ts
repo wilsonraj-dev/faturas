@@ -8,6 +8,8 @@ import { CategoriaFormDialogComponent } from '../dialogs/categoria-form-dialog.c
 import { SubcategoriaFormDialogComponent } from '../dialogs/subcategoria-form-dialog.component';
 import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
 import { PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { ordenarRegistros } from '../../../shared/ordenar-registros';
 
 @Component({
   selector: 'app-categorias',
@@ -30,6 +32,8 @@ export class CategoriasFinanceiroComponent implements OnInit {
   catPageIndex = 0;
   subPageSize = 10;
   subPageIndex = 0;
+  ordenacaoCategorias: Sort = { active: 'id', direction: 'asc' };
+  ordenacaoSubcategorias: Sort = { active: 'id', direction: 'asc' };
 
   constructor(
     private fb: FormBuilder,
@@ -54,12 +58,22 @@ export class CategoriasFinanceiroComponent implements OnInit {
 
   get categoriasPaginadas(): Categoria[] {
     const inicio = this.catPageIndex * this.catPageSize;
-    return this.categorias.slice(inicio, inicio + this.catPageSize);
+    return ordenarRegistros(this.categorias, this.ordenacaoCategorias).slice(inicio, inicio + this.catPageSize);
   }
 
   get subcategoriasPaginadas(): Subcategoria[] {
     const inicio = this.subPageIndex * this.subPageSize;
-    return this.subcategoriasFiltradas.slice(inicio, inicio + this.subPageSize);
+    return ordenarRegistros(this.subcategoriasFiltradas, this.ordenacaoSubcategorias).slice(inicio, inicio + this.subPageSize);
+  }
+
+  onCatSortChange(ordenacao: Sort): void {
+    this.ordenacaoCategorias = ordenacao;
+    this.catPageIndex = 0;
+  }
+
+  onSubSortChange(ordenacao: Sort): void {
+    this.ordenacaoSubcategorias = ordenacao;
+    this.subPageIndex = 0;
   }
 
   get subcategoriasFiltradas(): Subcategoria[] {

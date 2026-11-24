@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container container--wide">
   <app-page-header title="Contas Financeiras"
                    subtitle="Gerencie as contas usadas nos seus lançamentos."
                    icon="credit_card">
@@ -14,14 +14,16 @@
                    title="Contas cadastradas"
                    icon="credit_card"
                    [count]="contas.length">
-    <table mat-table [dataSource]="contasPaginadas" class="full-table contas-table">
+    <table mat-table [dataSource]="contasPaginadas" class="full-table contas-table"
+           matSort [matSortActive]="ordenacao.active" [matSortDirection]="ordenacao.direction"
+           (matSortChange)="onSortChange($event)">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>ID</th>
         <td mat-cell *matCellDef="let c">{{ c.id }}</td>
       </ng-container>
 
       <ng-container matColumnDef="nome">
-        <th mat-header-cell *matHeaderCellDef>Nome</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Ordenar por nome">Nome</th>
         <td mat-cell *matCellDef="let c">{{ c.nome }}</td>
       </ng-container>
 
@@ -58,6 +60,15 @@
   </app-table-shell>
 
   <div *ngIf="!carregando && contas.length > 0" class="mobile-record-list">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Ordenar por</mat-label>
+      <mat-select [value]="ordenacao.active === 'nome' ? ordenacao.direction : ''"
+                  (selectionChange)="onMobileSortChange($event.value)">
+        <mat-option value="">ID (menor primeiro)</mat-option>
+        <mat-option value="asc">Nome (A a Z)</mat-option>
+        <mat-option value="desc">Nome (Z a A)</mat-option>
+      </mat-select>
+    </mat-form-field>
     <app-record-card *ngFor="let conta of contasPaginadas"
                      [title]="conta.nome"
                      [eyebrow]="getTipoLabel(conta.tipo)"

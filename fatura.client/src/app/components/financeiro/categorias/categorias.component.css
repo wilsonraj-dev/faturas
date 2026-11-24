@@ -1,6 +1,6 @@
 .categorias-container {
-  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 var(--space-4);
 }
 
   .categorias-container h2 {
@@ -60,6 +60,7 @@
 
 .categorias-table th,
 .subcategorias-table th {
+  --mat-sort-arrow-color: currentColor;
   color: var(--color-on-primary);
   font-weight: 600;
 }

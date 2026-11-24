@@ -6,6 +6,8 @@ import { ContaFinanceira, TipoContaFinanceira } from '../../../models/models';
 import { ContaFormDialogComponent } from '../dialogs/conta-form-dialog.component';
 import { ConfirmDialogComponent } from '../dialogs/confirm-dialog.component';
 import { PageEvent } from '@angular/material/paginator';
+import { Sort, SortDirection } from '@angular/material/sort';
+import { ordenarRegistros } from '../../../shared/ordenar-registros';
 
 @Component({
   selector: 'app-contas',
@@ -19,6 +21,7 @@ export class ContasComponent implements OnInit {
   readonly pageSizeOptions = [10, 15, 20];
   pageSize = 10;
   pageIndex = 0;
+  ordenacao: Sort = { active: 'id', direction: 'asc' };
 
   constructor(
     private contaService: ContaFinanceiraService,
@@ -32,7 +35,16 @@ export class ContasComponent implements OnInit {
 
   get contasPaginadas(): ContaFinanceira[] {
     const inicio = this.pageIndex * this.pageSize;
-    return this.contas.slice(inicio, inicio + this.pageSize);
+    return ordenarRegistros(this.contas, this.ordenacao).slice(inicio, inicio + this.pageSize);
+  }
+
+  onSortChange(ordenacao: Sort): void {
+    this.ordenacao = ordenacao;
+    this.pageIndex = 0;
+  }
+
+  onMobileSortChange(direction: SortDirection): void {
+    this.onSortChange({ active: 'nome', direction });
   }
 
   carregar(): void {

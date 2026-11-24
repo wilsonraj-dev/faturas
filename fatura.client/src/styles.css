@@ -199,6 +199,14 @@ body {
   padding: 0 var(--space-4);
 }
 
+.container--wide {
+  max-width: none;
+}
+
+.container--wide th[mat-sort-header] {
+  --mat-sort-arrow-color: currentColor;
+}
+
 .spacer {
   flex: 1 1 auto;
 }
